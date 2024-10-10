@@ -1,0 +1,244 @@
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+    background-size: 200% 200%;
+    animation: gradient 60s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+    animation: gradient-animation 5s ease infinite;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5em 0 0;
+    font-size: 1.2em;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Dashboard section styles */
+.dashboard {
+    background: #fff;
+    padding: 2em;
+    margin: 0 auto 2em;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+.nav-buttons button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: #833ab4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.nav-buttons button.active {
+    background: #38EF7D;
+    color: #3a3b3c;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.nav-buttons button:hover:not(.active) {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Profile page specific styles */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #833ab4;
+    padding: 1.5em;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+.profile-header h2 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.profile-header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.profile-header img:hover {
+    transform: scale(1.05);
+}
+
+/* Editable information styles */
+.profile-info {
+    background: #fff;
+    padding: 2em;
+    margin-bottom: 2em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.profile-info h3 {
+    margin-bottom: 1em;
+    color: #833ab4;
+}
+
+.profile-info form {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1em;
+}
+
+.profile-info label {
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-info input,
+.profile-info button {
+    padding: 0.8em;
+    font-size: 1.1em;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: 100%;
+}
+
+.profile-info button {
+    background: #833ab4;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.profile-info button:hover {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Recent activity styles */
+.recent-activity {
+    background: #fff;
+    padding: 2em;
+    margin-bottom: 2em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.recent-activity h3 {
+    color: #833ab4;
+    margin-bottom: 1em;
+}
+
+.recent-activity ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.recent-activity ul li {
+    padding: 1em;
+    margin-bottom: 0.5em;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.recent-activity ul li:hover {
+    background: #eaeaea;
+    transform: scale(1.02);
+}
+
+/* Social accounts styles */
+.social-accounts {
+    background: #fff;
+    padding: 2em;
+    margin-bottom: 2em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.social-accounts h3 {
+    color: #833ab4;
+    margin-bottom: 1em;
+}
+
+.social-accounts button {
+    padding: 0.8em 1.5em;
+    font-size: 1.1em;
+    color: white;
+    background: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.social-accounts button:hover {
+    background: #555;
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-info,
+.recent-activity,
+.social-accounts {
+    animation: fadeIn 0.5s ease-in-out;
+}
