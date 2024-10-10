@@ -1,0 +1,49 @@
+version: '3'
+services:
+  account-service:
+    build: ~/account-service
+    ports:
+      - "3000:3000"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb+srv://godfreyifeanyi50:Q2SMHUh2FTpWUpkG@pdf-labs-cluster.xe6c8rq.mongodb.net/?retryWrites=true&w=majority&appName=PDF-Labs-Cluster/account-service
+      - JWT_SECRET=a694602594fcb9db3675b6f1cb5e0a74b51fbf012760191e0a8a872d9dd62e38
+
+  home-service:
+    build: ~/home-service
+    ports:
+      - "4000:4000"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb+srv://godfreyifeanyi50:Q2SMHUh2FTpWUpkG@pdf-labs-cluster.xe6c8rq.mongodb.net/?retryWrites=true&w=majority&appName=PDF-Labs-Cluster/account-service
+      - JWT_SECRET=a694602594fcb9db3675b6f1cb5e0a74b51fbf012760191e0a8a872d9dd62e38
+
+  profile-service:
+    build: ~/profile-service
+    ports:
+      - "4500:4500"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb+srv://godfreyifeanyi50:Q2SMHUh2FTpWUpkG@pdf-labs-cluster.xe6c8rq.mongodb.net/?retryWrites=true&w=majority&appName=PDF-Labs-Cluster/account-service
+      - JWT_SECRET=a694602594fcb9db3675b6f1cb5e0a74b51fbf012760191e0a8a872d9dd62e38
+
+  logout-service:
+    build: ~/logout-service
+    ports:
+      - "5000:5000"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb+srv://godfreyifeanyi50:Q2SMHUh2FTpWUpkG@pdf-labs-cluster.xe6c8rq.mongodb.net/?retryWrites=true&w=majority&appName=PDF-Labs-Cluster/account-service
+      - JWT_SECRET=a694602594fcb9db3675b6f1cb5e0a74b51fbf012760191e0a8a872d9dd62e38
+
+networks:
+  pdf-labs-net:
+    driver: bridge
