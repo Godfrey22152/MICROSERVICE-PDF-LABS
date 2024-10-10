@@ -1,0 +1,261 @@
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+    background-size: 200% 200%;
+    animation: gradient 60s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+    animation: gradient-animation 5s ease infinite;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5em 0 0;
+    font-size: 1.2em;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Features section styles */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5em;
+    padding: 2em;
+    background: #fff;
+    margin: 0 auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.feature-card {
+    background: linear-gradient(20deg, #ff9a9e, #fad0c4);
+    border: none;
+    padding: 1.5em;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+}
+
+.feature-card img {
+    width: 60px;
+    height: 60px;
+    max-width: 60px;
+    max-height: 60px;
+    margin-bottom: 0.5em;
+}
+
+.feature-card h2 {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+}
+
+.feature-card p {
+    font-size: 1em;
+    color: #666;
+}
+
+/* Authentication section styles */
+.auth {
+    text-align: center;
+    padding: 3em 0;
+    background: linear-gradient(135deg, #11998E, #38EF7D);
+    color: white;
+    border-radius: 8px;
+    margin: 2em auto;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: linear-gradient(45deg, #ff6f61, #de6161);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    margin: 1em 0;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #ff6f61, #de6161, #ff6f61);
+    transform: scale(1.05);
+}
+
+/* Auth options styles */
+.auth-options {
+    display: none;
+    margin-top: 1em;
+    justify-content: center;
+    animation: fadeIn 0.5s;
+}
+
+.auth-options button {
+    margin: 0 1em;
+    background: linear-gradient(45deg, #ff6f61, #de6161);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+    transition: opacity 0.3s ease;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 8px;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Form styles */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form input {
+    padding: 1em;
+    margin: 0.5em 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 80%;
+    max-width: 400px;
+}
+
+form button {
+    padding: 1em 2em;
+    margin: 1em 0;
+    font-size: 1.2em;
+    color: white;
+    background: linear-gradient(45deg, #ff6f61, #de6161);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    border-radius: 8px;
+}
+
+form button:hover {
+    background: linear-gradient(45deg, #ff6f61, #de6161, #ff6f61);
+    transform: scale(1.05);
+}
+
+/* Add animations to hover effects */
+.feature-card:hover h2,
+.feature-card:hover p {
+    animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Account Creation & Login form styles */
+
+.modal-content h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.modal-content input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.modal-content button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
