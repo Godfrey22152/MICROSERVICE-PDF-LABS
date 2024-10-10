@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - PDF Labs</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Logout Page - PDF Labs</h1>
+        <p>So sad to see you go!</p>
+    </header>
+    <section id="confirmationSection">
+        <h2>Are you sure you want to logout?</h2>
+        <button id="continueBtn">Continue with the app</button>
+        <button id="proceedBtn">Proceed to logout</button>
+    </section>
+    <section id="ratingSection" style="display: none;">
+        <h2>Please rate your experience with PDF Labs</h2>
+        <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <button id="rateUsNowBtn">Rate Us Now</button>
+        <button id="maybeLaterBtn">Maybe Later</button>
+    </section>
+    <section id="finalLogoutSection" style="display: none;">
+        <h2>Thank you for rating us!</h2>
+        <button id="finalLogoutBtn">Logout</button>
+    </section>
+    <script src="/js/script.js"></script>
+</body>
+</html>

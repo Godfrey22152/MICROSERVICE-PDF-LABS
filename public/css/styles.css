@@ -1,0 +1,134 @@
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+    background-size: 200% 200%;
+    animation: gradient-animation 5s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5em 0 0;
+    font-size: 1.5em;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Dashboard section styles */
+.dashboard {
+    background: #fff;
+    padding: 2em;
+    margin: 0 auto 2em;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+.nav-buttons button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: #833ab4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.nav-buttons button.active {
+    background: #38EF7D;
+    color: #3a3b3c;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.nav-buttons button:hover:not(.active) {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Logout page styles */
+#confirmationSection, #ratingSection, #finalLogoutSection {
+    max-width: 500px;
+    margin: 2em auto;
+    padding: 2em;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+#confirmationSection h2, #ratingSection h2, #finalLogoutSection h2 {
+    margin-bottom: 1.5em;
+    font-size: 1.5em;
+}
+
+#confirmationSection button, #ratingSection button, #finalLogoutSection button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: #833ab4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    margin: 0.5em;
+}
+
+#confirmationSection button:hover, #ratingSection button:hover, #finalLogoutSection button:hover {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Star rating styles */
+.stars {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5em;
+}
+
+.star {
+    font-size: 2em;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.star.selected {
+    color: #ffcc00;
+}
