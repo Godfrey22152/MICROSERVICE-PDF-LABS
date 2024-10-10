@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Labs - Home</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/educational-animation.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to PDF Labs</h1>
+        <p>Your one-stop solution for all PDF needs</p>
+    </header>
+
+    <section class="dashboard">
+        <div class="nav-buttons">
+            <button id="dashboardBtn" class="active">Dashboard</button>
+            <button id="toolsBtn">Tools</button>
+            <button id="settingsBtn">Settings</button>
+            <button id="profileBtn">Profile</button>
+            <button id="logoutBtn">Logout</button>
+        </div>
+    </section>
+
+    <section id="educational-animations" class="animations">
+        <div class="slide-container">
+            <div class="slide">
+                <h2>PDF to Audio Conversion</h2>
+                <p>Convert PDFs into audio files for easy listening.</p>
+            </div>
+            <div class="slide">
+                <h2>PDF to Word Conversion</h2>
+                <p>Convert PDFs into editable Word documents.</p>
+            </div>
+            <div class="slide">
+                <h2>PDF to JPG Conversion</h2>
+                <p>Transform PDF pages into high-quality images.</p>
+            </div>
+            <div class="slide">
+                <h2>Edit PDF</h2>
+                <p>Edit text, images, and other elements directly within the PDF.</p>
+            </div>
+            <div class="slide">
+                <h2>Image Scanner</h2>
+                <p>Scan images and convert them into PDFs.</p>
+            </div>
+        </div>
+        <div class="countdown-container">
+            <div class="countdown-bar"></div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <!-- Testimonial Carousel -->
+        <div class="testimonial-section">
+            <h2>What Our Users Say</h2>
+            <div class="testimonial-carousel" id="testimonial-carousel">
+                <div class="testimonial-item">
+                    <img src="/images/serah.jpg" alt="User Avatar">
+                    <h3>Serah Johnson</h3>
+                    <div class="rating">
+                        ★★★★★
+                    </div>
+                    <p>"PDF Labs has revolutionized how I handle documents. The PDF to Word conversion is a game-changer!" - Serah Johnson</p>
+                </div>
+                <div class="testimonial-item">
+                    <img src="/images/isaac.jpg" alt="User Avatar">
+                    <h3>Isaac Michael</h3>
+                    <div class="rating">
+                        ★★★★☆
+                    </div>
+                    <p>"The PDF compressor saved me so much space. I can now share files quickly without worrying about size." - Isaac Michael</p>
+                </div>
+
+                <div class="testimonial-item">
+                    <img src="/images/angel.jpg" alt="User Avatar">
+                    <h3>Angel Chidimna</h3>
+                    <div class="rating">
+                        ★★★★☆
+                    </div>
+                    <p>"I love the PDF to Audio feature. Listening to documents on the go has never been easier!" - Angel Chidimna</p>
+                </div>
+                <div class="navigation-indicator" id="navigation-indicator"></div>
+            </div>
+        </div>
+        <script src="/js/testimonial_Carousel.js"></script>
+    </section>
+
+    <section class="contact-us">
+        <h2>Contact Us</h2>
+        <div class="social-links">
+            <a href="https://www.facebook.com"><img src="/images/facebook-icon.png" alt="Facebook">Facebook</a>
+            <a href="https://www.twitter.com"><img src="/images/twitter-icon.png" alt="Twitter">Twitter</a>
+            <a href="https://www.linkedin.com"><img src="/images/linkedin-icon.png" alt="LinkedIn">LinkedIn</a>
+        </div>
+    </section>
+
+    <script src="/js/educational-animation.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>
