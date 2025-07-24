@@ -91,19 +91,35 @@ header p {
     color: #666;
 }
 
-/* Authentication section styles */
-.auth {
-    text-align: center;
-    padding: 3em 0;
-    background: linear-gradient(135deg, #11998E, #38EF7D);
-    color: white;
+/* Auth Modal styles */
+.auth-modal-content {
+    background: #fff;
+    padding: 2em;
     border-radius: 8px;
-    margin: 2em auto;
-    max-width: 600px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 0.5s;
 }
 
-button {
+.auth-modal-content h2 {
+    margin-bottom: 0.5em;
+    font-size: 2em;
+    color: #333;
+}
+
+.auth-modal-content p {
+    margin-bottom: 1.5em;
+    font-size: 1.2em;
+    color: #666;
+}
+
+.auth-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+}
+
+.auth-buttons button {
     padding: 0.8em 1.5em;
     font-size: 1.2em;
     color: white;
@@ -112,26 +128,11 @@ button {
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s;
-    margin: 1em 0;
 }
 
-button:hover {
+.auth-buttons button:hover {
     background: linear-gradient(45deg, #ff6f61, #de6161, #ff6f61);
     transform: scale(1.05);
-}
-
-/* Auth options styles */
-.auth-options {
-    display: none;
-    margin-top: 1em;
-    justify-content: center;
-    animation: fadeIn 0.5s;
-}
-
-.auth-options button {
-    margin: 0 1em;
-    background: linear-gradient(45deg, #ff6f61, #de6161);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Modal styles */
