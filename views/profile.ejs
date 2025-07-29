@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - PDF Labs</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>PDF Labs Profile</h1>
+        <p>Manage your profile and account settings</p>
+    </header>
+
+    <section class="dashboard">
+        <div class="nav-buttons">
+            <button id="dashboardButton">Dashboard</button>
+            <button id="toolsButton">Tools</button>
+            <button id="settingsButton">Settings</button>
+            <button id="profileButton" class="active">Profile</button>
+            <button id="logoutButton">Logout</button>
+        </div>
+    </section>
+
+    <section class="profile-header">
+        <h2>Welcome, <%= user.username %></h2>
+        <img src="<%= user.profilePicture || '/images/default-profile-picture.jpeg' %>" alt="Profile Picture"> <!-- Display user's profile picture or a default one -->
+    </section>
+
+    <section class="profile-info">
+        <h3>Personal Information</h3>
+        <form id="updateProfileForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="<%= user.username %>"> <!-- Display user's name -->
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>"> <!-- Display user's email -->
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="********">
+
+            <button type="submit">Update Profile</button>
+        </form>
+    </section>
+
+    <section class="recent-activity">
+        <h3>Recent Activity</h3>
+        <ul>
+            <li>Converted PDF to Word on 2025-07-25</li>
+            <li>Compressed PDF on 2024-07-20</li>
+            <li>Scanned Image to PDF on 2025-06-04</li>
+        </ul>
+    </section>
+
+    <section class="social-accounts">
+        <h3>Connected Social Media Accounts</h3>
+        <button>Connect Facebook</button>
+        <button>Connect Google</button>
+    </section>
+<!-- Toastify JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<!-- Load JS file  -->
+<script src="/js/script.js"></script>
+</body>
+</html>
