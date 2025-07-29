@@ -1,11 +1,8 @@
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-
-// Load environment variables
-dotenv.config();
 
 // Initialize express app
 const app = express();
@@ -32,7 +29,7 @@ app.use('/api/auth', authRoutes);
 
 // Import and use protected routes
 const protectedRoutes = require('./routes/protectedRoute');
-app.use('/api', protectedRoutes); // Ensure it matches the route structure
+app.use('/api', protectedRoutes);
 
 // Test route for static files
 app.get('/test', (req, res) => {

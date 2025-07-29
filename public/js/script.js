@@ -1,32 +1,43 @@
 document.addEventListener("DOMContentLoaded", function() {
-    var startBtn = document.getElementById("startBtn");
-    var authOptions = document.getElementById("authOptions");
-    var createAccountBtn = document.getElementById("createAccountBtn");
-    var loginBtn = document.getElementById("loginBtn");
+    var authModal = document.getElementById("authModal");
     var createAccountModal = document.getElementById("createAccountModal");
     var loginModal = document.getElementById("loginModal");
+    var modalCreateAccountBtn = document.getElementById("modalCreateAccountBtn");
+    var modalLoginBtn = document.getElementById("modalLoginBtn");
     var closeButtons = document.getElementsByClassName("close");
 
-    startBtn.onclick = function() {
-        authOptions.style.display = "flex";
+    // Show the auth modal
+    window.showAuthModal = function() {
+        authModal.style.display = "block";
     }
 
-    createAccountBtn.onclick = function() {
+    // Close the auth modal
+    window.closeAuthModal = function() {
+        authModal.style.display = "none";
+    }
+
+    // Show the create account modal from the auth modal
+    modalCreateAccountBtn.onclick = function() {
+        authModal.style.display = "none";
         createAccountModal.style.display = "block";
     }
 
-    loginBtn.onclick = function() {
+    // Show the login modal from the auth modal
+    modalLoginBtn.onclick = function() {
+        authModal.style.display = "none";
         loginModal.style.display = "block";
     }
 
+    // Close modals
     Array.from(closeButtons).forEach(function(element) {
         element.onclick = function() {
-            this.parentElement.parentElement.style.display = "none";
+            this.closest('.modal').style.display = "none";
         }
     });
 
+    // Close modals if the user clicks outside of them
     window.onclick = function(event) {
-        if (event.target == createAccountModal || event.target == loginModal) {
+        if (event.target == createAccountModal || event.target == loginModal || event.target == authModal) {
             event.target.style.display = "none";
         }
     }
@@ -49,15 +60,36 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             if (response.ok) {
-                alert('Account created, You can now Login');
+                Toastify({
+                    text: "✅ Account created, You can now Login🎉",
+                    duration: 4000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                }).showToast();
                 createAccountModal.style.display = "none";
             } else {
                 const error = await response.text();
-                alert('Error: ' + error);
+                Toastify({
+                    text: "Error:❌ " + error,
+                    duration: 4000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                }).showToast();
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            Toastify({
+                text: "❌ An error occurred. Please try again🙏",
+                duration: 4000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            }).showToast();
         }
     };
 
@@ -81,15 +113,39 @@ document.addEventListener("DOMContentLoaded", function() {
             if (response.ok) {
                 const result = await response.json();
                 localStorage.setItem('token', result.token); // Save the token
-                alert('Login successful');
-                window.location.href = `http://localhost:4000?token=${result.token}`;  // Redirect to the protected route
+                Toastify({
+                    text: "Login successful👏🎉",
+                    duration: 1500,
+                    close: true,
+                    gravity: "top",
+                    position: "center",
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                }).showToast();
+
+                setTimeout(() => {
+                  window.location.href = `http://localhost:4000?token=${result.token}`;  // Redirect to the protected route
+                }, 1500); // delay redirect
             } else {
                 const error = await response.text();
-                alert('Error: ' + error);
+                Toastify({
+                    text: "Error: 🙏 " + error,
+                    duration: 4000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                }).showToast();
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            Toastify({
+                text: "An error occurred. Please try again🙏",
+                duration: 4000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            }).showToast();
         }
     };
 });

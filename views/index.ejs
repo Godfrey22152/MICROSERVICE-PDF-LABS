@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Labs</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <header>
@@ -13,73 +14,84 @@
     </header>
 
     <section class="features">
-        <div class="feature-card">
+        <div class="feature-card" onclick="showAuthModal()">
             <img src="/images/audio.png" alt="PDF to Audio">
             <h2>PDF to Audio Conversion</h2>
             <p>Convert PDFs into audio files for easy listening.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card" onclick="showAuthModal()">
             <img src="/images/image.png" alt="PDF to Image">
             <h2>PDF to Image Conversion</h2>
             <p>Transform PDF pages into high-quality images.</p>
         </div>
-        <div class="feature-card">
-            <img src="/images/compress.png" alt="PDF Compressor">
+        <div class="feature-card" onclick="showAuthModal()">
+            <img src="/images/pdf-compressor.png" alt="PDF Compressor">
             <h2>PDF Compressor</h2>
             <p>Reduce PDF file size while maintaining quality.</p>
         </div>
-        <div class="feature-card">
-            <img src="/images/word.png" alt="PDF to Word">
+        <div class="feature-card" onclick="showAuthModal()">
+            <img src="/images/pdf-to-word.png" alt="PDF to Word">
             <h2>PDF to Word Conversion</h2>
             <p>Convert PDFs into editable Word documents.</p>
         </div>
-        <div class="feature-card">
-            <img src="/images/word.png" alt="Word to PDF">
+        <div class="feature-card" onclick="showAuthModal()">
+            <img src="/images/word-to-pdf.png" alt="Word to PDF">
             <h2>Word to PDF Conversion</h2>
             <p>Create PDFs from Word documents.</p>
         </div>
-        <div class="feature-card">
-            <img src="/images/edit.png" alt="Edit PDF">
+        <div class="feature-card" onclick="showAuthModal()">
+            <img src="/images/edit-pdf.png" alt="Edit PDF">
             <h2>Edit PDF</h2>
             <p>Edit text, images, and other elements directly within the PDF.</p>
         </div>
-    </section>
-
-    <section class="auth">
-        <button id="startBtn">Click Here Let's get Started</button>
-        <div id="authOptions" class="auth-options">
-            <button id="createAccountBtn">Create Account</button>
-            <button id="loginBtn">Login</button>
-        </div>
-
-        <!-- Create Account Modal -->
-        <div id="createAccountModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Create an Account</h2>
-                <form id="createAccountForm" action="/api/auth/register" method="POST">
-                    <input type="text" name="username" placeholder="Choose a Username" required>
-                    <input type="email" name="email" placeholder="Enter your Email" required>
-                    <input type="password" name="password" placeholder="Create a New Password" required>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Login Modal -->
-        <div id="loginModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Login Details</h2>
-                <form id="loginForm" action="/api/auth/login" method="POST">
-                    <input type="text" name="username" placeholder="Username" required>
-                    <input type="password" name="password" placeholder="Password" required>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
+        <div class="feature-card" onclick="showAuthModal()">
+            <img src="/images/image-to-pdf.png" alt="Image to PDF">
+            <h2>Convert Image to PDF</h2>
+            <p>Convert Image to PDF as you like</p>
         </div>
     </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <h2>Get Started</h2>
+            <p>Create an account or log in to use this feature.</p>
+            <div class="auth-buttons">
+                <button id="modalCreateAccountBtn">Create Account</button>
+                <button id="modalLoginBtn">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Account Modal -->
+    <div id="createAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create an Account</h2>
+            <form id="createAccountForm" action="/api/auth/register" method="POST">
+                <input type="text" name="username" placeholder="Choose a Username" required>
+                <input type="email" name="email" placeholder="Enter your Email" required>
+                <input type="password" name="password" placeholder="Create a New Password" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login Details</h2>
+            <form id="loginForm" action="/api/auth/login" method="POST">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
 
     <script src="/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 </html>

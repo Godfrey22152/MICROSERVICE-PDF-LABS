@@ -3,7 +3,6 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const config = require('config');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -38,7 +37,7 @@ router.post('/login', async (req, res) => {
         const payload = { user: { id: user.id, username: user.username } };
         jwt.sign(
             payload,
-            config.get('jwtSecret'),
+            process.env.JWT_SECRET,
             { expiresIn: '1h' }, // Token expires in 1 hour
             (err, token) => {
                 if (err) throw err;
