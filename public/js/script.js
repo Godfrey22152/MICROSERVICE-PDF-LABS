@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-buttons button');
     const slides = document.querySelectorAll('.animations .slide');
@@ -37,7 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('toolsBtn').addEventListener('click', (e) => {
-        window.location.href = '/tools';
+        const token = localStorage.getItem('token');
+        if (token) {
+            window.location.href = `http://localhost:3500/tools?token=${token}`;
+        } else {
+            window.location.href = 'http://localhost:4000/home?token=${token}'; // Redirect to Home page if no token
+        }
     });
 
     document.getElementById('settingsBtn').addEventListener('click', (e) => {
