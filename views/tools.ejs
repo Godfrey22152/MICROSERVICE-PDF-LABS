@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Labs - Tools</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to PDF Tools Lab</h1>
+        <p>Choose a tool below then watch the application perform the magic</p>
+    </header>
+
+    <section class="dashboard">
+        <div class="nav-buttons">
+            <button id="dashboardBtn">Dashboard</button>
+            <button id="toolsBtn" class="active">Tools</button>
+            <button id="settingsBtn">Settings</button>
+            <button id="profileBtn">Profile</button>
+            <button id="logoutBtn">Logout</button>
+        </div>
+    </section>
+
+
+    <section class="features">
+        <a class="feature-card" href="/tools/pdf-to-audio">
+            <img src="/images/audio.png" alt="PDF to Audio">
+            <h2>PDF to Audio Conversion</h2>
+            <p>Convert PDFs into audio files for easy listening.</p>
+        </a>
+        <a class="feature-card" href="/tools/pdf-to-image">
+            <img src="/images/image.png" alt="PDF to Image">
+            <h2>PDF to Image Conversion</h2>
+            <p>Transform PDF pages into high-quality images.</p>
+        </a>
+        <a class="feature-card" href="/tools/pdf-compressor">
+            <img src="/images/pdf-compressor.png" alt="PDF Compressor">
+            <h2>PDF Compressor</h2>
+            <p>Reduce PDF file size while maintaining quality.</p>
+        </a>
+        <a class="feature-card" href="/tools/pdf-to-word">
+            <img src="/images/pdf-to-word.png" alt="PDF to Word">
+            <h2>PDF to Word Conversion</h2>
+            <p>Convert PDFs into editable Word documents.</p>
+        </a>
+        <a class="feature-card" href="/tools/word-to-pdf">
+            <img src="/images/word-to-pdf.png" alt="Word to PDF">
+            <h2>Word to PDF Conversion</h2>
+            <p>Create PDFs from Word documents.</p>
+        </a>
+        <a class="feature-card" href="/tools/edit-pdf">
+            <img src="/images/edit-pdf.png" alt="Edit PDF">
+            <h2>Edit PDF</h2>
+            <p>Edit text, images, and other elements directly within the PDF.</p>
+        </a>
+        <a class="feature-card" href="/tools/image-to-pdf">
+            <img src="/images/image-to-pdf.png" alt="Image to PDF">
+            <h2>Convert Image to PDF</h2>
+            <p>Convert Image to PDF as you like</p>
+        </a>
+    </section>
+  
+    <script src="/js/script.js"></script>
+</body>
+</html>

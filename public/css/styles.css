@@ -1,0 +1,165 @@
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+    background-size: 200% 200%;
+    animation: gradient-animation 5s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5em 0 0;
+    font-size: 1.2em;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Dashboard section styles */
+.dashboard {
+    background: #fff;
+    padding: 2em;
+    margin: 0 auto 2em;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+.nav-buttons button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: #833ab4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.nav-buttons button.active {
+    background: #38EF7D;
+    color: #3a3b3c;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.nav-buttons button:hover:not(.active) {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Navigation Indicator Styles */
+.navigation-indicator {
+    position: absolute;
+    bottom: 0.1px;
+    left: 49%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #b83c08;
+    border-radius: 50%;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.active-dot {
+    background-color: #004225;
+}
+
+/* Features section styles */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5em;
+    padding: 2em;
+    background: #fff;
+    margin: 0 auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.feature-card {
+    background: linear-gradient(20deg, #ff9a9e, #fad0c4);
+    border: none;
+    text-decoration: none;
+    color: inherit;
+    padding: 1.5em;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-image: radial-gradient( circle farthest-corner at 50.3% 55.8%,  rgba(239,0,0,1) 0.8%, rgba(93,17,17,1) 100.2% );
+}
+
+.feature-card img {
+    width: 60px;
+    height: 60px;
+    max-width: 60px;
+    max-height: 60px;
+    margin-bottom: 0.5em;
+}
+
+.feature-card h2 {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+}
+
+.feature-card p {
+    font-size: 1em;
+    color: #000000;
+}
+
+/* Add animations to hover effects */
+.feature-card:hover h2,
+.feature-card:hover p {
+    animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
