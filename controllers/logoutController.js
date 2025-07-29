@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const config = require('config');
 
 exports.logoutPage = (req, res) => {
     // Clear any session data or perform other necessary cleanup here
