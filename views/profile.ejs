@@ -56,9 +56,18 @@
     <section class="recent-activity">
         <h3>Recent Activity</h3>
         <ul>
-            <li>Converted PDF to Word on 2025-07-25</li>
-            <li>Compressed PDF on 2024-07-20</li>
-            <li>Scanned Image to PDF on 2025-06-04</li>
+            <% if (processedFiles && processedFiles.length > 0) { %>
+                <% processedFiles.forEach(file => { %>
+                    <% const imageFormats = ['png', 'jpg', 'svg', 'eps', 'ps', 'tif']; %>
+                    <% if (imageFormats.includes(file.format)) { %>
+                        <li>Converted PDF to <%= file.format.toUpperCase() %> Image on <%= new Date(file.createdAt).toLocaleDateString() %></li>
+                    <% } else { %>
+                        <li>Converted PDF to <%= file.format.toUpperCase() %> on <%= new Date(file.createdAt).toLocaleDateString() %></li>
+                    <% } %>
+                <% }) %>
+            <% } else { %>
+                <li>No recent activity</li>
+            <% } %>
         </ul>
     </section>
 
