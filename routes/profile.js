@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
+const ProcessedFile = require('../models/ProcessedFile');
 
 
 // GET /profile (with token passed via Authorization header or query param)
@@ -10,12 +11,13 @@ router.get('/profile', auth, async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;
     const user = await User.findById(userId).lean();
+    const processedFiles = await ProcessedFile.find({ userId: userId }).lean();
 
     if (!user) {
       return res.status(404).send('User not found');
     }
 
-    res.render('profile', { user });
+    res.render('profile', { user, processedFiles });
   } catch (err) {
     console.error('Error fetching profile:', err.message, err.stack); // Add stack for debugging
     res.status(500).send('Server error');
