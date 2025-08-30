@@ -32,6 +32,7 @@ services:
       - NODE_ENV=development
       - MONGO_URI=YOUR-DATABASE-URL
       - JWT_SECRET=YOUR-SECRET
+
   logout-service:
     build: ~/logout-service
     ports:
@@ -42,6 +43,29 @@ services:
       - NODE_ENV=development
       - MONGO_URI=YOUR-DATABASE-URL
       - JWT_SECRET=YOUR-SECRET
+
+  tools-service:
+    build: ~/tools-service
+    ports:
+      - "3500:3500"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=YOUR-DATABSE-URL
+      - JWT_SECRET=YOUR-SECRET
+
+  pdf-to-image-service:
+    build: ~/pdf-to-image-service
+    ports:
+      - "5500:5500"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=YOUR-DATABASE-URL
+      - JWT_SECRET=YOUR-SECRET
+
 networks:
   pdf-labs-net:
     driver: bridge
