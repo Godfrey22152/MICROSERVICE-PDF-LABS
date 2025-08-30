@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF to Image - PDF Tools</title>
+  <link rel="stylesheet" href="/css/styles.css"/>
+
+  <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const token = urlParams.get('token');
+          if (token) {
+              localStorage.setItem('token', token);
+          }
+      });
+  </script>
+
+</head>
+<body>
+<header>
+  <h1>PDF to Image Conversion</h1>
+  <p>Convert your PDF documents to various image formats</p>
+</header>
+
+<main>
+
+  <!-- NAV BUTTONS: Tools + Profile + Logout -->
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button id="toolsBtn">Tools</button>
+      <button id="profileBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </section>
+
+  <!-- UPLOAD FORM (progressive enhancement: normal POST or AJAX with progress) -->
+  <section class="dashboard">
+    <h2 class="form-title">📄 Upload PDF and Convert to Image 🖼️</h2>
+
+    <form
+      id="pdf-to-image-form"
+      class="pdf-form"
+      action="/tools/pdf-to-image?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop PDF here">
+        <p class="dropzone-title">Drag & Drop your PDF here or click to browse</p>
+        <p class="dropzone-sub">Only .pdf files are allowed</p>
+        <input
+          type="file"
+          id="pdf-file"
+          name="pdf"
+          accept="application/pdf"
+          required
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose PDF</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="image-format">Select Image Format:</label>
+        <select id="image-format" name="format">
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="jpg">JPG</option>
+          <option value="svg">SVG</option>
+          <option value="eps">EPS</option>
+          <option value="ps">PS</option>
+          <option value="tiff">TIFF</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="image-quality">Select Image Quality:</label>
+        <select id="image-quality" name="quality">
+          <option value="150">Average Quality</option>
+          <option value="300" selected>Medium Quality</option>
+          <option value="600">Best Quality</option>
+        </select>
+        <small class="helper-text">
+          Higher quality increases image size and conversion time.
+        </small>
+      </div>
+
+      <!-- Progress UI -->
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>
+        Converting your PDF... Please wait while we process your document.
+      </div>
+
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons">
+        <button type="submit" class="button">Convert to Image</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- PROCESSED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">🗂️ Processed Files</h2>
+
+    <% if (locals.processedFiles && locals.processedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.processedFiles.forEach(file => { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button class="delete-btn" title="Delete this file">&times;</button>
+            <!-- Display converted filename with format extension -->
+            <% const fullName = (file.images && file.images.length > 0 ? file.images[0].filename : file.filename) || ''; %>
+            <p class="file-name" data-full-name="<%= fullName %>">
+              <%= fullName %>
+            </p>
+
+            <!-- Preview Thumbnails -->
+            <div class="thumbs-scroller">
+              <% if (file.images && file.images.length) { %>
+                <% file.images.forEach(img => { %>
+                  <a href="<%= img.previewUrl %>" target="_blank" class="thumb-link">
+                    <div class="thumb-container">
+                      <img
+                        src="<%= img.previewUrl %>"
+                        alt="Page <%= img.page %> of <%= file.filename %>"
+                        class="thumb"
+                        loading="lazy"
+                      />
+                      <span class="thumb-page-number">Page <%= img.page %></span>
+                    </div>
+                  </a>
+                <% }) %>
+              <% } %>
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <% if (file.images && file.images.length) { %>
+                <button
+                  class="download-all button small"
+                  data-file-id="<%= file.fileId %>"
+                  data-total-pages="<%= file.totalPages %>"
+                  data-format="<%= file.format %>"
+                  data-images='<%- JSON.stringify(file.images) %>'
+                >
+                  Download All
+                </button>
+              <% } %>
+            </div>
+
+            <!-- Per-page Downloads -->
+            <div class="per-page-downloads">
+              <% if (file.images && file.images.length) { %>
+                <% file.images.forEach(img => { %>
+                  <a href="<%= img.downloadUrl %>" class="download-button" download>
+                    Page <%= img.page %>
+                  </a>
+                <% }) %>
+              <% } %>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">No files have been processed yet.</p>
+    <% } %>
+  </section>
+</main>
+
+<!-- Toasts -->
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<footer>
+    <p>PDF to Image Converter Tool Designed by Godfrey Odo &copy; 2025</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>

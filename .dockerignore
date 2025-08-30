@@ -1,0 +1,17 @@
+# Ignore files not needed in the image
+.git
+*.md
+.vscode
+*.ts
+*.log
+.env
+tests
+.gitignore
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+README.md
+coverage
+tsconfig.json
+
