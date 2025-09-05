@@ -1,0 +1,8 @@
+{
+  "jwtSecret": "${JWT_SECRET}",
+  "db": {
+    "uri": "${MONGO_URI}"
+  }
+}
+
+
