@@ -3,7 +3,7 @@ const path = require("path");
 require('dotenv').config(); // Load environment variables
 const connectDB = require("./config/db"); // Import database connection
 const { globalErrorHandler } = require("./utils/errorHandler");
-const imageRoutes = require("./routes/imageRoutes");
+const imageToPdfRoutes = require("./routes/imageToPdfRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5600;
@@ -21,7 +21,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Mount the router
-app.use("/tools", imageRoutes);
+app.use("/tools", imageToPdfRoutes);
 
 // Global error handler
 app.use(globalErrorHandler);
