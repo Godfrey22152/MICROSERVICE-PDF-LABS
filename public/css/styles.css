@@ -1,0 +1,638 @@
+/* =========================
+   Global / Base
+   ========================= */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #E0F8EE;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* =========================
+   Header
+   ========================= */
+header {
+  background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+  background-size: 200% 200%;
+  animation: gradient-animation 5s ease infinite;
+  color: #fff;
+  text-align: center;
+  padding: 2em 0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2em;
+}
+header h1 {
+  margin: 0;
+  font-size: 2.5em;
+  letter-spacing: 1px;
+}
+header p {
+  margin: 0.5em 0 0;
+  font-size: 1.2em;
+}
+/* Shared keyframes (used by header + progress bar) */
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* =========================
+   Dashboard / Nav
+   ========================= */
+.dashboard {
+  background: #fff;
+  padding: 2em;
+  margin: 0 auto 2em;
+  max-width: 800px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+.nav-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1em;
+}
+.nav-buttons button {
+  padding: 0.8em 1.5em;
+  font-size: 1.2em;
+  color: #fff;
+  background: #833ab4;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .3s, transform .3s;
+}
+.nav-buttons button:hover {
+  background: #ff3860;
+  transform: scale(1.05);
+}
+.center-buttons { justify-content: center; }
+
+/* =========================
+   Form
+   ========================= */
+.form-title {
+  text-align: center;
+  font-size: 2.2em;
+  margin-bottom: 1.2em;
+  color: #2c3e50;
+  font-weight: 600;
+  letter-spacing: .5px;
+  border-bottom: 2px solid #e67e22;
+  padding-bottom: .3em;
+}
+.pdf-form { max-width: 500px; margin: 0 auto; }
+
+.form-group { margin-bottom: 1.5em; }
+.form-group label {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 700;
+  color: #ff3860;
+}
+.form-group input[type="file"],
+.form-group select {
+  width: 100%;
+  padding: .75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+  background: #fffdfc;
+  color: #3a3b3c;
+  transition: border .3s ease, box-shadow .3s ease;
+}
+.form-group input[type="file"]:focus,
+.form-group select:focus {
+  border-color: #833ab4;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(131,58,180,.12);
+}
+
+.helper-text {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #555D50;
+  font-style: italic;
+}
+
+/* =========================
+   Processed Files Section
+   ========================= */
+.processed-files-section {
+  margin: 2em auto;
+  padding: 2em;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.section-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #2980b9;
+  margin: .5em auto 0;
+  border-radius: 2px;
+}
+
+.processed-files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5em;
+  margin-top: 1rem;
+}
+
+/* =========================
+   File Cards (harmonized)
+   ========================= */
+.processed-file-card {
+  position: relative; /* Anchor for delete button */
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e5e7eb;           /* thinner, modern border */
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.processed-file-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.processed-file-card .delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #f00;
+    font-size: 16px;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.processed-file-card .delete-btn:hover {
+    opacity: 1;
+    background-color: #f00;
+    color: #fff;
+    border-color: #f00;
+}
+
+/* =========================
+   Confirmation Modal
+   ========================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1200;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+}
+
+.modal-container {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .modal-container {
+    transform: scale(1);
+}
+
+.modal-content p {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modal-btn {
+    padding: 0.8em 1.5em;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .3s, transform .3s;
+}
+
+.modal-btn.confirm {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.modal-btn.confirm:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+.modal-btn.cancel {
+    background-color: #bdc3c7;
+    color: #2c3e50;
+}
+
+.modal-btn.cancel:hover {
+    background-color: #95a5a6;
+    transform: scale(1.05);
+}
+
+/* tidy vertical rhythm inside each card */
+.processed-file-card > * + * {
+  margin-top: .75rem;
+}
+
+.processed-file-card img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto .4rem auto;
+  background: #f9f9f9;
+}
+
+/* Filename — two-line ellipsis for layout safety */
+.file-name {
+  font-size: .95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.35;
+  /* Ensure the text can wrap and break */
+  white-space: normal;
+  word-break: break-all;
+}
+
+.file-name:hover {
+  color: #2980b9;
+  cursor: pointer;
+}
+
+/* No files message */
+.no-files-message {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin-top: 2em;
+}
+
+/* =========================
+   Drag & Drop
+   ========================= */
+
+.dropzone {
+  border: 3px dashed #833ab4;
+  border-radius: 10px;
+  padding: 1.5em;
+  text-align: center;
+  background: #fff;
+  margin: 1.2em 0;            /* remove auto centering */
+  transition: background .2s, border-color .2s;
+  width: 150%;                /* make it larger than container */
+  max-width: none;            /* no limit if you want full 200% */
+  transform: translateX(-18.7%); /* shift left by a quarter width */
+  margin-bottom: 1.2em;
+}
+.dropzone.dragover { background: #fff3f7; border-color: #ff3860; }
+.dropzone .dropzone-title {
+  font-weight: 600;
+  margin: .2em 0;
+  color: #2c3e50;
+}
+.dropzone .dropzone-sub {
+  margin: .2em 0 .8em;
+  color: #7f8c8d;
+  font-size: .9em;
+}
+.dropzone .dz-btn { margin-top: .3em; }
+.selected-file {
+  margin-top: .6em;
+  font-size: .95em;
+  color: #34495e;
+}
+
+/* =========================
+   Progress
+   ========================= */
+.progress-container {
+  position: relative;
+  background: #e0e0e0;
+  border-radius: 25px;
+  height: 20px;
+  margin: 1.5em 0;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(45deg, #ff3860, #833ab4, #ff3860, #833ab4);
+  border-radius: 25px;
+  transition: width .4s ease;
+  animation: gradient-animation 2s ease-in-out infinite;
+  background-size: 400% 400%;
+  position: relative;
+}
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+.progress-label {
+  position: absolute;
+  top: -22px;
+  right: 5px;
+  font-size: .9em;
+  font-weight: 700;
+  color: #555;
+}
+.progress-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: .95em;
+  font-weight: 500;
+}
+.progress-message .spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ddd;
+  border-top: 2px solid #ff3860;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =========================
+   Toasts
+   ========================= */
+.toast-container {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  opacity: 0;
+  transform: translateY(10px);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #fff;
+  background: #2c3e50;
+  box-shadow: 0 6px 14px rgba(0,0,0,.1);
+  transition: opacity .2s, transform .2s;
+  max-width: 320px;
+  font-size: .95em;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: #27ae60; }
+.toast.error { background: #e74c3c; }
+.toast.info { background: #2980b9; }
+
+/* =========================
+   Thumbnails scroller
+   ========================= */
+.thumbs-scroller {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+.thumbs-scroller .thumb {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  /*cursor: pointer;*/
+  transition: transform 0.3s ease;
+}
+
+.thumb-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  text-align: center;
+}
+
+.thumb-link:hover .thumb {
+  transform: scale(1.1);
+}
+
+.thumb-container {
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.thumb-page-number {
+  display: block;
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+/* =========================
+   Footer
+   ========================= */
+footer {
+  text-align: center;
+  color: #833ab4;
+  margin-top: auto;
+  padding: 25px;
+}
+
+/* =========================
+   Buttons (unified look)
+   ========================= */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem; /* Space between the buttons */
+  margin-top: auto; /* Pushes actions to the bottom of the card */
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.download-all,
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 16px;
+  font-size: .9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  background: linear-gradient(135deg, #833ab4 0%, #ff3860 100%);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(102,126,234,.25);
+  white-space: nowrap;
+}
+
+.download-all:hover,
+.download-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(102,126,234,.35);
+  background: linear-gradient(135deg, #833ab4 0%, #833ab4 100%);
+}
+
+.download-all:active,
+.download-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(102,126,234,.25);
+}
+
+.download-all:focus-visible,
+.download-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102,126,234,.35);
+}
+
+/* keep your arrow + pulse for the main button */
+.download-all::before {
+  content: "⬇";
+  font-size: 1.05em;
+  margin-right: 8px;
+  opacity: .95;
+}
+.download-all.downloading {
+  animation: downloadPulse 1.5s ease-in-out infinite;
+}
+@keyframes downloadPulse {
+  0% { box-shadow: 0 2px 8px rgba(102,126,234,.25); }
+  50% { box-shadow: 0 4px 16px rgba(102,126,234,.45); }
+  100% { box-shadow: 0 2px 8px rgba(102,126,234,.25); }
+}
+
+/* =========================
+   Per-page downloads
+   ========================= */
+.per-page-downloads {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;       /* align to left */
+  overflow-x: auto;
+  padding: 8px 0;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.per-page-downloads .download-button {
+  width: 50px;
+  min-width: 50px;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 768px) {
+  .card-actions {
+    justify-content: flex-start;
+  }
+  .download-all {
+    width: 140px;                    /* keep fixed width */
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .per-page-downloads {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 480px) {
+  .download-button,
+  .download-all { width: 120px; }    /* slightly smaller on very small screens */
+}
+
+/* =========================
+   Tools Navigation
+   ========================= */
+.tools-nav {
+    margin-top: 1.5em;
+}
+
+.tools-nav .button {
+    background: #fff;
+    color: #833ab4;
+    border: 1px solid #833ab4;
+    padding: 0.5em 1em;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background .3s, color .3s;
+}
+
+.tools-nav .button:hover {
+    background: #833ab4;
+    color: #fff;
+}
+
