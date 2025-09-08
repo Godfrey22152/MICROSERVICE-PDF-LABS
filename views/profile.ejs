@@ -58,9 +58,8 @@
         <ul>
             <% if (processedFiles && processedFiles.length > 0) { %>
                 <% processedFiles.forEach(file => { %>
-                    <% const imageFormats = ['png', 'jpg', 'svg', 'eps', 'ps', 'tif']; %>
-                    <% if (imageFormats.includes(file.format)) { %>
-                        <li>Converted PDF to <%= file.format.toUpperCase() %> Image on <%= new Date(file.createdAt).toLocaleDateString() %></li>
+                    <% if (file.format === 'pdf') { %>
+                        <li>Converted IMAGE to PDF on <%= new Date(file.createdAt).toLocaleDateString() %></li>
                     <% } else { %>
                         <li>Converted PDF to <%= file.format.toUpperCase() %> on <%= new Date(file.createdAt).toLocaleDateString() %></li>
                     <% } %>
