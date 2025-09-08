@@ -611,3 +611,26 @@ footer {
   .download-all { width: 120px; }    /* slightly smaller on very small screens */
 }
 
+/* =========================
+   Tools Navigation
+   ========================= */
+.tools-nav {
+    margin-top: 1.5em;
+}
+
+.tools-nav .button {
+    background: #fff;
+    color: #833ab4;
+    border: 1px solid #833ab4;
+    padding: 0.5em 1em;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background .3s, color .3s;
+}
+
+.tools-nav .button:hover {
+    background: #833ab4;
+    color: #fff;
+}
+
