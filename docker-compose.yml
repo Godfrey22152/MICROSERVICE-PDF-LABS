@@ -66,6 +66,17 @@ services:
       - MONGO_URI=YOUR-DATABASE-URL
       - JWT_SECRET=YOUR-SECRET
 
+  image-to-pdf-service:
+    build: ~/image-to-pdf-service
+    ports:
+      - "5600:5600"
+    networks:
+      - pdf-labs-net
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=YOUR-DATABASE-URL
+      - JWT_SECRET=YOUR-SECRET
+
 networks:
   pdf-labs-net:
     driver: bridge
