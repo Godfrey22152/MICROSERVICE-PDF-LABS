@@ -1,0 +1,248 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+  // --- Global Elements ---
+  const form = document.getElementById('pdf-to-audio-form');
+  const fileInput = document.getElementById('pdf-file');
+  const dropzone = document.getElementById('dropzone');
+  const selectedFileDisplay = document.getElementById('selected-file');
+  const chooseFileButton = document.querySelector('.dz-btn');
+  const submitButton = document.getElementById('submit-btn');
+  const progressMessage = document.getElementById('progress-message');
+  const toastContainer = document.getElementById('toast-container');
+
+  // Voice and speed labels matching the controller
+  const voiceLabels = {
+    "us": "English (US)",
+    "uk": "English (UK)",
+    "au": "English (Australia)",
+    "ca": "English (Canada)"
+  };
+  
+  const speedLabels = {
+    "0.75": "Slow (0.75x)",
+    "1.0": "Normal (1.0x)",
+    "1.5": "Fast (1.5x)"
+  };
+
+  // --- Toast Notification Logic ---
+  function showToast(message, type = 'info') {
+    if (!toastContainer) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.addEventListener('transitionend', () => toast.remove());
+    }, 5000);
+  }
+
+  // --- Custom Modal Logic ---
+  function showModal(title, message, onConfirm) {
+    const existingModal = document.querySelector('.modal-overlay');
+    if (existingModal) existingModal.remove();
+
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    modalOverlay.innerHTML = `
+      <div class="modal-container">
+        <div class="modal-content"><h3>${title}</h3><p>${message}</p></div>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel">Cancel</button>
+          <button class="modal-btn confirm">Confirm</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalOverlay);
+
+    setTimeout(() => modalOverlay.classList.add('visible'), 10);
+
+    const confirmBtn = modalOverlay.querySelector('.confirm');
+    const cancelBtn = modalOverlay.querySelector('.cancel');
+    const closeModal = () => {
+      modalOverlay.classList.remove('visible');
+      modalOverlay.addEventListener('transitionend', () => modalOverlay.remove());
+    };
+
+    confirmBtn.addEventListener('click', () => {
+      if (onConfirm) onConfirm();
+      closeModal();
+    });
+    cancelBtn.addEventListener('click', closeModal);
+  }
+
+  // --- Dynamic Element Creation ---
+  function createAudioCard(fileData) {
+    const card = document.createElement('div');
+    card.className = 'processed-file-card';
+    card.dataset.fileId = fileData.fileId;
+
+    const voiceLabel = fileData.voice ? (voiceLabels[fileData.voice] || fileData.voice) : "Default Voice";
+    const speedLabel = fileData.speed ? (speedLabels[fileData.speed] || fileData.speed) : "Normal";
+
+    card.innerHTML = `
+      <button class="delete-btn" title="Delete this file">&times;</button>
+      <p class="file-name" title="Original: ${fileData.filename}">${fileData.filename}</p>
+      <p class="file-meta">Voice: ${voiceLabel}, Speed: ${speedLabel}</p>
+      <audio controls style="width: 100%; margin-top: 1rem;">
+        <source src="${fileData.previewUrl}" type="audio/mpeg">
+      </audio>
+      <div class="card-actions" style="margin-top: 1rem;">
+        <a href="${fileData.downloadUrl}" class="download-button" download>Download</a>
+      </div>
+    `;
+    card.querySelector('.delete-btn').addEventListener('click', handleDeleteClick);
+    return card;
+  }
+
+  // --- Main Event Handlers ---
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const token = localStorage.getItem('token');
+
+    if (!form.checkValidity()) {
+      showToast('Please select a PDF file to convert.', 'error');
+      return;
+    }
+    if (!token) {
+      showToast('Authentication token not found. Please refresh.', 'error');
+      return;
+    }
+
+    const formData = new FormData(form);
+    const voice = formData.get("voice") || "us";
+    const speed = formData.get("speed") || "1.0";
+    
+    const voiceLabel = voiceLabels[voice] || "Unknown Voice";
+    const speedLabel = speedLabels[speed] || "Normal Speed";
+
+    console.log(`Submitting with voice: ${voice} (${voiceLabel}), speed: ${speed} (${speedLabel})`);
+
+    progressMessage.style.display = 'block';
+    submitButton.disabled = true;
+    submitButton.textContent = 'Converting...';
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' },
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        showToast(`Conversion successful! Voice: ${voiceLabel}, Speed: ${speedLabel}`, 'success');
+
+        // The server now returns saved db entry with voice and speed fields
+        const newCard = createAudioCard(result);
+        const grid = document.getElementById('processed-grid');
+        const noFilesMessage = document.querySelector('.no-files-message');
+        if (grid) {
+          grid.prepend(newCard);
+        } else if (noFilesMessage) {
+          const newGrid = document.createElement('div');
+          newGrid.className = 'processed-files-grid';
+          newGrid.id = 'processed-grid';
+          newGrid.prepend(newCard);
+          noFilesMessage.replaceWith(newGrid);
+        }
+      } else {
+        showToast(`Error: ${result.error || 'Unknown conversion error'}`, 'error');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      showToast('A network error occurred.', 'error');
+    } finally {
+      progressMessage.style.display = 'none';
+      submitButton.disabled = false;
+      submitButton.textContent = 'Convert to Audio';
+      form.reset();
+      if (selectedFileDisplay) selectedFileDisplay.textContent = '';
+    }
+  }
+
+  async function handleDeleteClick(e) {
+    const card = e.target.closest('.processed-file-card');
+    if (!card) return;
+    const fileId = card.dataset.fileId;
+    const token = localStorage.getItem('token');
+
+    if (!fileId || !token) {
+      showToast('Cannot delete: missing file ID or token.', 'error');
+      return;
+    }
+
+    showModal('Confirm Deletion', 'Are you sure you want to delete this file?', async () => {
+      try {
+        const response = await fetch(`/tools/pdf-to-audio/${fileId}?token=${token}`, { method: "DELETE" });
+        if (response.ok) {
+          card.remove();
+          showToast('File deleted.', 'success');
+          const grid = document.getElementById('processed-grid');
+          if (grid && grid.children.length === 0) {
+            const noFilesMessage = document.createElement('p');
+            noFilesMessage.className = 'no-files-message';
+            noFilesMessage.textContent = 'No audiobooks have been created yet.';
+            grid.replaceWith(noFilesMessage);
+          }
+        } else {
+          const error = await response.text();
+          showToast(`Error: ${error}`, 'error');
+        }
+      } catch (err) {
+        showToast('An error occurred while deleting the file.', 'error');
+      }
+    });
+  }
+
+  function handleFileSelect(file) {
+    if (file) {
+      selectedFileDisplay.textContent = `Selected File: ${file.name}`;
+    } else {
+      selectedFileDisplay.textContent = '';
+    }
+  }
+
+  // --- Attach All Event Listeners ---
+  if (form) form.addEventListener('submit', handleSubmit);
+
+  document.querySelectorAll(".delete-btn").forEach(button => {
+    button.addEventListener("click", handleDeleteClick);
+  });
+
+  if (chooseFileButton) {
+    chooseFileButton.addEventListener('click', () => fileInput.click());
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) handleFileSelect(fileInput.files[0]);
+    });
+  }
+
+  if (dropzone) {
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        if (file.type === "application/pdf") {
+          fileInput.files = e.dataTransfer.files;
+          handleFileSelect(file);
+        } else {
+          showToast("Only PDF files are allowed.", "error");
+        }
+      }
+    });
+  }
+
+});

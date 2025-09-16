@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF to Audio - PDF Tools</title>
+  <link rel="stylesheet" href="/css/styles.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+    });
+  </script>
+</head>
+<body>
+<header>
+  <h1>PDF to Audio Conversion</h1>
+  <p>Convert your PDF documents into spoken audio files</p>
+</header>
+
+<main>
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button id="toolsBtn">Tools</button>
+      <button id="profileBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </section>
+
+  <section class="dashboard">
+    <h2 class="form-title">📄 Upload PDF and Convert to Audio 🎧</h2>
+
+    <form
+      id="pdf-to-audio-form"
+      class="pdf-form"
+      action="/tools/pdf-to-audio?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop PDF here">
+        <p class="dropzone-title">Drag & Drop your PDF here or click to browse</p>
+        <p class="dropzone-sub">Only .pdf files are allowed</p>
+        <input
+          type="file"
+          id="pdf-file"
+          name="pdf"
+          accept="application/pdf"
+          required
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose PDF</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="voice-select">Select Voice Accent:</label>
+        <select id="voice-select" name="voice">
+          <option value="us">English (US)</option>
+          <option value="uk">English (UK)</option>
+          <option value="au">English (Australia)</option>
+          <option value="ca">English (Canada)</option>
+        </select>
+        <small class="helper-text">Choose the accent for the audiobook. Note: Gender selection is not available with this voice engine.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Select Speed:</label>
+        <div class="speed-options">
+          <label class="speed-option">
+            <input type="radio" id="speed-slow" name="speed" value="0.75">
+            <span>Slow (0.75x)</span>
+          </label>
+          <label class="speed-option">
+            <input type="radio" id="speed-normal" name="speed" value="1.0" checked>
+            <span>Normal (1.0x)</span>
+          </label>
+          <label class="speed-option">
+            <input type="radio" id="speed-fast" name="speed" value="1.5">
+            <span>Fast (1.5x)</span>
+          </label>
+        </div>
+        <small class="helper-text">Adjust the speaking rate.</small>
+      </div>
+
+      <!-- Preview block uses browser TTS so you can test voice and speed before uploading -->
+      <div class="form-group">
+        <label for="preview-text">Preview voice and speed</label>
+        <textarea id="preview-text" rows="3" style="width:100%; margin-top:0.5rem;">This is a short preview. Use this to test the selected voice and speed before converting your PDF.</textarea>
+
+        <div style="margin-top:0.5rem; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <select id="preview-browser-voice" aria-label="Browser voice list" style="min-width:220px;">
+            <option value="">Loading browser voices...</option>
+          </select>
+          <button type="button" id="preview-play" class="button">Play Preview</button>
+          <button type="button" id="preview-stop" class="button">Stop</button>
+        </div>
+        <small class="helper-text">Preview uses your browser voices. Server voice will be different but similar accent.</small>
+      </div>
+
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>
+        Converting your PDF... This may take a moment. Please wait.
+      </div>
+
+      <div class="nav-buttons center-buttons">
+        <button type="submit" class="button" id="submit-btn">Convert to Audio</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="processed-files-section">
+    <h2 class="section-title">🔊 Your Audiobooks</h2>
+
+    <% if (locals.processedFiles && locals.processedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.processedFiles.forEach(file => { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button class="delete-btn" title="Delete this file">&times;</button>
+            <p class="file-name" data-audio-file="<%= file.audioFile %>" title="Original: <%= file.audioFile %>">
+              <%= file.audioFile %>
+            </p>
+
+            <audio controls style="width: 100%; margin-top: 1rem;">
+              <source src="<%= file.previewUrl %>" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+
+            <div class="card-actions" style="margin-top: 1rem;">
+              <a href="<%= file.downloadUrl %>" class="download-button" download>
+                Download
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">No audiobooks have been created yet.</p>
+    <% } %>
+  </section>
+</main>
+
+<!-- Toasts Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<footer>
+    <p>PDF to Audio Converter Tool by Jules &copy; 2025</p>
+</footer>
+
+<script src="/js/eventlisteners.js"></script>
+<script src="/js/client-side-preview-logic.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
+
