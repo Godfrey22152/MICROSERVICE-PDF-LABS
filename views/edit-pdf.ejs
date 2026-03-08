@@ -137,6 +137,9 @@
           <button type="button" class="split-tab" data-mode="fixedRanges">
             <span class="tab-icon">&#x2702;&#xFE0F;</span> Fixed Ranges
           </button>
+          <button type="button" class="split-tab" data-mode="splitAll">
+            <span class="tab-icon">&#x239A;</span> Split All Pages
+          </button>
         </div>
         <input type="hidden" name="splitMode" id="splitMode" value="byRange"/>
 
@@ -165,28 +168,43 @@
             <span class="panel-badge orange">Remove</span>
             Removes the selected pages and returns the remaining pages as one PDF.
           </div>
-          <div class="range-row">
-            <div class="range-field">
-              <label for="deleteFrom">From Page</label>
-              <input type="number" id="deleteFrom" name="deleteFrom" min="1" value="1" placeholder="1"/>
-            </div>
-            <span class="range-dash">—</span>
-            <div class="range-field">
-              <label for="deleteTo">To Page</label>
-              <input type="number" id="deleteTo" name="deleteTo" min="1" value="1" placeholder="Last"/>
-            </div>
-          </div>
+          <label for="deletePageRange">Pages to Delete</label>
+          <input type="text" id="deletePageRange" name="deleteRange" placeholder="e.g. 1,3,5-10"/>
+          <span class="helper-text">Enter individual pages or ranges separated by commas.</span>
         </div>
 
         <!-- fixedRanges panel -->
         <div class="split-panel" data-panel="fixedRanges">
           <div class="split-panel-desc">
             <span class="panel-badge magenta">Batch</span>
-            Splits the PDF into equal chunks — every N pages becomes a separate downloadable PDF.
+            Splits the PDF into equal chunks — you can choose either pages per part or number of equal parts.
           </div>
-          <label for="fixedRangeSize">Pages Per Part</label>
-          <input type="number" id="fixedRangeSize" name="fixedRangeSize" min="1" value="1" placeholder="e.g. 2"/>
+          <div class="fixed-range-type">
+            <label>
+              <input type="radio" name="fixedRangeType" value="pagesPerPart" checked/> Pages per part
+            </label>
+            <label>
+              <input type="radio" name="fixedRangeType" value="partCount"/> Number of equal parts
+            </label>
+          </div>
+          <div id="pagesPerPartGroup">
+            <label for="fixedRangeSize">Pages Per Part</label>
+            <input type="number" id="fixedRangeSize" name="fixedRangeSize" min="1" value="1" placeholder="e.g. 2"/>
+          </div>
+          <div id="partCountGroup" style="display:none;">
+            <label for="fixedPartCount">Number of Parts</label>
+            <input type="number" id="fixedPartCount" name="fixedPartCount" min="1" value="2" placeholder="e.g. 4"/>
+          </div>
           <span class="helper-text">&#x1F4A1; Each chunk is available as an individual PDF. Use "Download All" to grab them all at once.</span>
+        </div>
+
+        <!-- splitAll panel -->
+        <div class="split-panel" data-panel="splitAll">
+          <div class="split-panel-desc">
+            <span class="panel-badge blue">Single</span>
+            Splits every single page into its own separate PDF file.
+          </div>
+          <p class="helper-text">Each page will be converted to an individual PDF document. You can download them one by one or all at once.</p>
         </div>
       </div>
 

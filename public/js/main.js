@@ -84,24 +84,16 @@ document.addEventListener("DOMContentLoaded", function () {
       document.querySelectorAll(".split-panel").forEach(function (p) {
         p.classList.toggle("active", p.dataset.panel === tab.dataset.mode);
       });
-      syncDeleteRange();
     });
   });
 
-  // Sync deleteFrom + deleteTo → hidden deleteRange field
-  function syncDeleteRange() {
-    var fromEl = document.getElementById("deleteFrom");
-    var toEl   = document.getElementById("deleteTo");
-    if (!fromEl || !toEl || !deleteRangeInput) return;
-    var from = Math.max(1, parseInt(fromEl.value) || 1);
-    var to   = Math.max(from, parseInt(toEl.value) || from);
-    deleteRangeInput.value = from === to ? String(from) : from + "-" + to;
-  }
-  ["deleteFrom", "deleteTo"].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener("input", syncDeleteRange);
+  document.querySelectorAll("input[name='fixedRangeType']").forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      var val = radio.value;
+      document.getElementById("pagesPerPartGroup").style.display = val === "pagesPerPart" ? "block" : "none";
+      document.getElementById("partCountGroup").style.display    = val === "partCount"    ? "block" : "none";
+    });
   });
-  syncDeleteRange();
 
   // ── File display helpers ──────────────────────────────────────────
   function truncate(s, max) {

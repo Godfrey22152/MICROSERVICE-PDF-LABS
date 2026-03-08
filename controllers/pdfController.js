@@ -162,6 +162,8 @@ const editPdf = async (req, res) => {
     rangeTo:        req.body.rangeTo        || "1",
     deleteRange:    req.body.deleteRange    || "1",
     fixedRangeSize: req.body.fixedRangeSize || "1",
+    fixedRangeType: req.body.fixedRangeType || "pagesPerPart",
+    fixedPartCount: req.body.fixedPartCount || "2",
     password:       req.body.password       || "",
     fileOrder:      req.body.fileOrder      || "",
   };
@@ -212,7 +214,7 @@ const editPdf = async (req, res) => {
       const body = await convertSingle(
         BASE + "protect" + SEC,
         primaryFile.path, primaryFile.originalname,
-        { UserPassword: p.password, OwnerPassword: p.password }
+        { UserPassword: p.password }
       );
       cleanup();
 
@@ -232,7 +234,7 @@ const editPdf = async (req, res) => {
       const body = await convertSingle(
         BASE + "unprotect" + SEC,
         primaryFile.path, primaryFile.originalname,
-        { Password: p.password }
+        { Password: p.password, UserPassword: p.password }
       );
       cleanup();
 
@@ -262,7 +264,7 @@ const editPdf = async (req, res) => {
         cleanup();
 
         if (!body?.Files?.length) return res.status(500).send("Split by range failed: no output.");
-        const outFilename = sanitizedName + "_pages_" + from + "-" + to + ".pdf";
+        const outFilename = sanitizedName + "_split_range.pdf";
         const outPath     = path.join(outDir, outFilename);
         await fetchRemote(body.Files[0].Url, outPath);
         return finishSingle(req, res, { fileId, primaryFile, sanitizedName, originalSize, outFilename, outPath, operation, operationLabel: "Split by Range" });
@@ -285,16 +287,24 @@ const editPdf = async (req, res) => {
       }
 
       // ── (c) Fixed Ranges → multiple PDFs, each downloadable ────────────
-      // SplitByPageCount=N returns multiple Files[] entries
-      if (mode === "fixedRanges") {
-        const n    = Math.max(1, parseInt(p.fixedRangeSize) || 1);
+      if (mode === "fixedRanges" || mode === "splitAll") {
+        let params = {};
+        if (mode === "splitAll") {
+          params.SplitByPageCount = 1;
+        } else if (p.fixedRangeType === "pagesPerPart") {
+          params.SplitByPageCount = Math.max(1, parseInt(p.fixedRangeSize) || 1);
+        } else {
+          params.SplitByPartCount = Math.max(1, parseInt(p.fixedPartCount) || 2);
+        }
+
         const body = await convertSingle(
-          BASE + "split" + SEC + "&SplitByPageCount=" + n,
-          primaryFile.path, primaryFile.originalname, null
+          BASE + "split" + SEC,
+          primaryFile.path, primaryFile.originalname,
+          params
         );
         cleanup();
 
-        if (!body?.Files?.length) return res.status(500).send("Fixed-range split failed: no output.");
+        if (!body?.Files?.length) return res.status(500).send("Split failed: no output.");
         const parts = await fetchAll(body.Files, outDir, sanitizedName);
         parts.forEach((pt) => {
           pt.downloadUrl = "/tools/edit-pdf/download/" + fileId + "?file=" + encodeURIComponent(pt.filename);
@@ -304,7 +314,7 @@ const editPdf = async (req, res) => {
         const payload   = {
           fileId, originalName: primaryFile.originalname, sanitizedName,
           originalSize, editedSize: totalSize, operation,
-          operationLabel: "Split PDF (" + parts.length + " parts)",
+          operationLabel: mode === "splitAll" ? "Split All Pages" : "Fixed-Range Split",
           downloadUrl:    parts[0].downloadUrl,
           filename:       parts[0].filename,
           isSplit:        true,
