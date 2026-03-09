@@ -115,14 +115,14 @@ async function fetchAll(resultFiles, outDir, baseName) {
 }
 
 // ── Shared: save record + respond ─────────────────────────────────────────────
-async function finishSingle(req, res, { fileId, primaryFile, sanitizedName, originalSize, outFilename, outPath, operation, operationLabel }) {
+async function finishSingle(req, res, { fileId, primaryFile, sanitizedName, originalSize, outFilename, outPath, operation, operationLabel, splitPages }) {
   const editedSize = fs.statSync(outPath).size;
   const dlUrl      = "/tools/edit-pdf/download/" + fileId + "?file=" + encodeURIComponent(outFilename);
   const payload    = {
     fileId, originalName: primaryFile.originalname, sanitizedName,
     originalSize, editedSize, operation, operationLabel,
     downloadUrl: dlUrl, filename: outFilename,
-    isSplit: false, splitPages: [],
+    isSplit: !!splitPages, splitPages: splitPages || [],
     createdAt: new Date(), userId: req.user.id,
   };
   try { await new EditedFile(payload).save(); } catch (e) { console.error("DB save:", e.message); }
@@ -212,9 +212,9 @@ const editPdf = async (req, res) => {
     if (operation === "protect") {
       if (!p.password.trim()) return res.status(400).send("A password is required.");
       const body = await convertSingle(
-        BASE + "protect" + SEC,
+        BASE + "encrypt" + SEC,
         primaryFile.path, primaryFile.originalname,
-        { UserPassword: p.password }
+        { Password: p.password }
       );
       cleanup();
 
@@ -232,9 +232,9 @@ const editPdf = async (req, res) => {
     if (operation === "unlock") {
       if (!p.password.trim()) return res.status(400).send("Current PDF password is required.");
       const body = await convertSingle(
-        BASE + "unprotect" + SEC,
+        "https://v2.convertapi.com/convert/pdf/to/decrypt" + SEC,
         primaryFile.path, primaryFile.originalname,
-        { Password: p.password, UserPassword: p.password }
+        { Password: p.password }
       );
       cleanup();
 
@@ -310,19 +310,16 @@ const editPdf = async (req, res) => {
           pt.downloadUrl = "/tools/edit-pdf/download/" + fileId + "?file=" + encodeURIComponent(pt.filename);
         });
 
-        const totalSize = parts.reduce((s, pt) => s + pt.size, 0);
-        const payload   = {
-          fileId, originalName: primaryFile.originalname, sanitizedName,
-          originalSize, editedSize: totalSize, operation,
+        const outFilename = parts[0].filename;
+        const outPath     = parts[0].path;
+        const splitPages  = parts.map((pt) => ({ index: pt.index, filename: pt.filename, downloadUrl: pt.downloadUrl, size: pt.size }));
+
+        return finishSingle(req, res, {
+          fileId, primaryFile, sanitizedName, originalSize,
+          outFilename, outPath, operation,
           operationLabel: mode === "splitAll" ? "Split All Pages" : "Fixed-Range Split",
-          downloadUrl:    parts[0].downloadUrl,
-          filename:       parts[0].filename,
-          isSplit:        true,
-          splitPages:     parts.map((pt) => ({ index: pt.index, filename: pt.filename, downloadUrl: pt.downloadUrl, size: pt.size })),
-          createdAt: new Date(), userId: req.user.id,
-        };
-        try { await new EditedFile(payload).save(); } catch (e) { console.error("DB save:", e.message); }
-        return req.xhr ? res.json(payload) : res.redirect("/tools/edit-pdf?token=" + req.query.token);
+          splitPages
+        });
       }
 
       cleanup();
