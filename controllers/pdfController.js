@@ -212,9 +212,9 @@ const editPdf = async (req, res) => {
     if (operation === "protect") {
       if (!p.password.trim()) return res.status(400).send("A password is required.");
       const body = await convertSingle(
-        BASE + "encrypt" + SEC,
+        BASE + "protect" + SEC,
         primaryFile.path, primaryFile.originalname,
-        { Password: p.password }
+        { UserPassword: p.password, OwnerPassword: p.password, Permissions: "None" }
       );
       cleanup();
 
@@ -232,9 +232,9 @@ const editPdf = async (req, res) => {
     if (operation === "unlock") {
       if (!p.password.trim()) return res.status(400).send("Current PDF password is required.");
       const body = await convertSingle(
-        "https://v2.convertapi.com/convert/pdf/to/decrypt" + SEC,
+        BASE + "unprotect" + SEC,
         primaryFile.path, primaryFile.originalname,
-        { Password: p.password }
+        { Password: p.password, UserPassword: p.password }
       );
       cleanup();
 

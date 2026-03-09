@@ -168,9 +168,18 @@
             <span class="panel-badge orange">Remove</span>
             Removes the selected pages and returns the remaining pages as one PDF.
           </div>
-          <label for="deletePageRange">Pages to Delete</label>
-          <input type="text" id="deletePageRange" name="deleteRange" placeholder="e.g. 1,3,5-10"/>
-          <span class="helper-text">Enter individual pages or ranges separated by commas.</span>
+          <div class="range-row">
+            <div class="range-field">
+              <label for="deleteFrom">From Page</label>
+              <input type="number" id="deleteFrom" name="deleteFrom" min="1" value="1" placeholder="1"/>
+            </div>
+            <span class="range-dash">—</span>
+            <div class="range-field">
+              <label for="deleteTo">To Page</label>
+              <input type="number" id="deleteTo" name="deleteTo" min="1" value="1" placeholder="Last"/>
+            </div>
+          </div>
+          <span class="helper-text">Select the range of pages you'd like to remove from the document.</span>
         </div>
 
         <!-- fixedRanges panel -->
@@ -263,7 +272,7 @@
     <% if (locals.editedFiles && locals.editedFiles.length > 0) { %>
       <div class="processed-files-grid" id="processed-grid">
         <% locals.editedFiles.forEach(function(file) { %>
-          <div class="processed-file-card<%= file.isSplit ? ' split-card' : '' %>" data-file-id="<%= file.fileId %>">
+          <div class="processed-file-card<%= (file.isSplit && file.splitPages && file.splitPages.length > 1) ? ' split-card' : '' %>" data-file-id="<%= file.fileId %>">
             <button type="button" class="delete-btn" title="Delete">&times;</button>
             <span class="file-icon">&#x1F4DD;</span>
             <p class="file-name" title="<%= file.originalName %>"><%= file.originalName %></p>
@@ -278,7 +287,7 @@
                 <span class="stats-value"><%= locals.formatBytes(file.editedSize) %></span>
               </div>
             </div>
-            <% if (file.isSplit && file.splitPages && file.splitPages.length > 0) { %>
+            <% if (file.isSplit && file.splitPages && file.splitPages.length > 1) { %>
               <p class="split-parts-label">&#x1F4C4; <strong><%= file.splitPages.length %></strong> parts — download individually:</p>
               <div class="split-pages-row">
                 <% file.splitPages.forEach(function(pg) { %>

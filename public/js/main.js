@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
           fileInput.setAttribute("multiple", "multiple");
         } else {
           fileInput.removeAttribute("multiple");
+          mergeFilesArr = [];
         }
         fileInput.value = ""; // clear selection
       }
@@ -94,6 +95,21 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("partCountGroup").style.display    = val === "partCount"    ? "block" : "none";
     });
   });
+
+  // Sync deleteFrom + deleteTo → hidden deleteRange field
+  function syncDeleteRange() {
+    var fromEl = document.getElementById("deleteFrom");
+    var toEl   = document.getElementById("deleteTo");
+    if (!fromEl || !toEl || !deleteRangeInput) return;
+    var from = Math.max(1, parseInt(fromEl.value) || 1);
+    var to   = Math.max(from, parseInt(toEl.value) || from);
+    deleteRangeInput.value = from === to ? String(from) : from + "-" + to;
+  }
+  ["deleteFrom", "deleteTo"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener("input", syncDeleteRange);
+  });
+  syncDeleteRange();
 
   // ── File display helpers ──────────────────────────────────────────
   function truncate(s, max) {
@@ -183,10 +199,23 @@ document.addEventListener("DOMContentLoaded", function () {
   if (dropzone) dropzone.addEventListener("click", function (e) {
     if (e.target !== dzBtn && !dzBtn.contains(e.target) && fileInput) fileInput.click();
   });
+  var mergeFilesArr = [];
   if (fileInput) fileInput.addEventListener("change", function () {
-    showSelected(fileInput.files);
-    if (currentOp === "merge") buildMergeList(fileInput.files);
+    if (currentOp === "merge") {
+      Array.from(fileInput.files).forEach(function(f) { mergeFilesArr.push(f); });
+      updateMergeInput();
+      showSelected(mergeFilesArr);
+      buildMergeList(mergeFilesArr);
+    } else {
+      showSelected(fileInput.files);
+    }
   });
+
+  function updateMergeInput() {
+    var dt = new DataTransfer();
+    mergeFilesArr.forEach(function(f) { dt.items.add(f); });
+    fileInput.files = dt.files;
+  }
   if (dropzone) {
     dropzone.addEventListener("dragover",  function (e) { e.preventDefault(); dropzone.classList.add("dragover"); });
     dropzone.addEventListener("dragleave", function ()  { dropzone.classList.remove("dragover"); });
@@ -197,12 +226,18 @@ document.addEventListener("DOMContentLoaded", function () {
       for (var i = 0; i < files.length; i++) {
         if (!files[i].name.toLowerCase().endsWith(".pdf")) { showToast("Only PDF files accepted.", "error"); return; }
       }
-      var dt = new DataTransfer();
       var limit = currentOp === "merge" ? files.length : 1;
-      for (var j = 0; j < limit; j++) dt.items.add(files[j]);
-      fileInput.files = dt.files;
-      showSelected(fileInput.files);
-      if (currentOp === "merge") buildMergeList(fileInput.files);
+      if (currentOp === "merge") {
+        for (var j = 0; j < limit; j++) mergeFilesArr.push(files[j]);
+        updateMergeInput();
+        showSelected(mergeFilesArr);
+        buildMergeList(mergeFilesArr);
+      } else {
+        var dt = new DataTransfer();
+        dt.items.add(files[0]);
+        fileInput.files = dt.files;
+        showSelected(fileInput.files);
+      }
     });
   }
 
@@ -256,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
       fileOrderInput.value = JSON.stringify(mergeFileOrder);
 
     // Ensure deleteRange is up-to-date
-    syncDeleteRange();
+    if (currentOp === "split") syncDeleteRange();
 
     var iv       = startProgress();
     var formData = new FormData(form);
@@ -273,6 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
         showToast("Done! Your edited PDF is ready.", "success");
         appendFileCard(data);
         form.reset();
+        mergeFilesArr = [];
         showSelected(null);
         if (mergeOrderList) { mergeOrderList.style.display = "none"; mergeOrderList.innerHTML = ""; }
         // Reset operation selection to rotate
@@ -312,11 +348,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var card = document.createElement("div");
-    card.className      = "processed-file-card" + (data.isSplit ? " split-card" : "");
+    card.className      = "processed-file-card" + ((data.isSplit && data.splitPages && data.splitPages.length > 1) ? " split-card" : "");
     card.dataset.fileId = data.fileId;
 
     var dlHtml = "";
-    if (data.isSplit && data.splitPages && data.splitPages.length > 0) {
+    if (data.isSplit && data.splitPages && data.splitPages.length > 1) {
       var partsLabel =
         '<p class="split-parts-label">&#x1F4C4; <strong>' + data.splitPages.length + '</strong> parts \u2014 download individually:</p>';
       var items = data.splitPages.map(function (pg) {
@@ -365,10 +401,10 @@ document.addEventListener("DOMContentLoaded", function () {
       urls.forEach(function (url, i) {
         setTimeout(function () {
           var a = document.createElement("a");
-          a.href = url; a.download = ""; a.style.display = "none";
+          a.href = url; a.download = ""; a.target = "_blank"; a.style.display = "none";
           document.body.appendChild(a); a.click();
           setTimeout(function () { document.body.removeChild(a); }, 500);
-        }, i * 700);
+        }, i * 1000);
       });
     });
   }
