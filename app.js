@@ -18,8 +18,8 @@ app.set('view engine', 'ejs');
 connectDB();
 
 // Protect all /tools routes
-const sessionCheck = require('./middleware/sessionCheck');
-app.use('/tools', sessionCheck);
+const auth = require('./middleware/auth');
+app.use('/tools', auth);
 
 // Routes
 const toolsRoutes = require('./routes/tools');
@@ -33,6 +33,18 @@ app.get('/test', (req, res) => {
 // 404 handler
 app.use((req, res, next) => {
     res.status(404).send('Sorry, that resource was not found.');
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    const status = err.status || 500;
+    res.status(status).json({
+        error: true,
+        status: status,
+        message: err.message || 'Internal Server Error',
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
 });
 
 // Start server
