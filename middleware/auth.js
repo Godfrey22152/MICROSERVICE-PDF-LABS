@@ -15,10 +15,14 @@ const auth = (req, res, next) => {
     }
 
     if (!token) {
+        const message = 'No token, authorization denied';
+        if (req.accepts('html')) {
+            return res.redirect(`http://localhost:3000?error=${encodeURIComponent(message)}`);
+        }
         return res.status(401).json({
             error: true,
             type: "NO_TOKEN",
-            msg: "No token, authorization denied"
+            msg: message
         });
     }
 
@@ -27,10 +31,14 @@ const auth = (req, res, next) => {
         req.user = decoded.user || decoded;
         next();
     } catch (err) {
+        const message = 'Session expired or token invalid';
+        if (req.accepts('html')) {
+            return res.redirect(`http://localhost:3000?error=${encodeURIComponent(message)}`);
+        }
         return res.status(401).json({
             error: true,
             type: "INVALID_TOKEN",
-            msg: "Session expired or token invalid"
+            msg: message
         });
     }
 };

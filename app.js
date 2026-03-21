@@ -39,10 +39,20 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     console.error(err.stack);
     const status = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+
+    // If it's a browser request (HTML), redirect to the current page with the error as a query parameter
+    if (req.accepts('html')) {
+        const currentUrl = req.header('Referer') || '/tools';
+        const separator = currentUrl.includes('?') ? '&' : '?';
+        return res.redirect(`${currentUrl}${separator}error=${encodeURIComponent(message)}`);
+    }
+
+    // Default to JSON response for API/AJAX requests
     res.status(status).json({
         error: true,
         status: status,
-        message: err.message || 'Internal Server Error',
+        message: message,
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
 });
