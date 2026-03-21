@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
 
@@ -7,6 +8,7 @@ const connectDB = require('./config/db');
 const app = express();
 
 // Middleware
+app.use(cors()); // Enable CORS for all origins
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -58,7 +60,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
