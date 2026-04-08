@@ -14,4 +14,10 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+const connectToDb = (dbName) => {
+  const uri = process.env.MONGO_URI || config.get('db.uri');
+  const baseUri = uri.substring(0, uri.lastIndexOf('/') + 1);
+  return mongoose.createConnection(baseUri + dbName);
+};
+
+module.exports = { connectDB, connectToDb };

@@ -5,18 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - PDF Labs</title>
     <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-            if (token) {
-                localStorage.setItem('token', token);
-            }
-        });
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
+
+    <!-- Toast container — used by script.js showToast() -->
+    <div id="toast-container"></div>
+
     <header>
         <h1>PDF Labs Profile</h1>
         <p>Manage your profile and account settings</p>
@@ -34,50 +29,106 @@
 
     <section class="profile-header">
         <h2>Welcome, <%= user.username %></h2>
-        <img src="<%= user.profilePicture || '/images/default-profile-picture.jpeg' %>" alt="Profile Picture"> <!-- Display user's profile picture or a default one -->
+        <img src="<%= user.profilePicture || '/images/default-profile-picture.jpeg' %>" alt="Profile Picture">
     </section>
 
     <section class="profile-info">
         <h3>Personal Information</h3>
+
+        <!-- ── Update form — danger zone is OUTSIDE this form ───────────── -->
         <form id="updateProfileForm">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="<%= user.username %>"> <!-- Display user's name -->
+            <input type="text" id="name" name="name" value="<%= user.username %>">
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<%= user.email %>"> <!-- Display user's email -->
+            <input type="email" id="email" name="email" value="<%= user.email %>">
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="********">
 
             <button type="submit">Update Profile</button>
         </form>
+        <!-- ── End of updateProfileForm ─────────────────────────────────── -->
+
+        <!-- Danger zone is deliberately outside the form so clicks on
+             #deleteAccountBtn are never intercepted by form submission -->
+        <div class="danger-zone">
+            <h3>⚠ Danger Zone</h3>
+            <p>
+                Permanently deletes your account and all associated data.
+                This action <strong>cannot be undone</strong>.
+            </p>
+            <button id="deleteAccountBtn" type="button">🗑 Delete My Account</button>
+        </div>
     </section>
 
     <section class="recent-activity">
         <h3>Recent Activity</h3>
         <ul>
-            <% if (processedFiles && processedFiles.length > 0) { %>
-                <% processedFiles.forEach(file => { %>
-                    <% if (file.format === 'pdf') { %>
-                        <li>Converted IMAGE to PDF on <%= new Date(file.createdAt).toLocaleDateString() %></li>
-                    <% } else { %>
-                        <li>Converted PDF to <%= file.format.toUpperCase() %> on <%= new Date(file.createdAt).toLocaleDateString() %></li>
-                    <% } %>
+            <% if (recentActivity && recentActivity.length > 0) { %>
+                <% recentActivity.forEach(function(file) { %>
+                    <% var url = activityUrl(file); %>
+                    <li class="activity-item">
+                        <div class="activity-info">
+                            <span class="activity-label"><%= activityLabel(file) %></span>
+                            <% if (file.originalName || file.sourceFilename) { %>
+                                — <strong><%= file.originalName || file.sourceFilename %></strong>
+                            <% } %>
+                            <span class="activity-date">
+                                <%= new Date(file.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                            </span>
+                        </div>
+                        <% var activityToken = token || ''; %>
+                        <% if (url) { %>
+                            <a href="<%= url %>?token=<%= activityToken %>" class="activity-btn">
+                                Open Tool &#8599;
+                            </a>
+                        <% } %>
+                    </li>
                 <% }) %>
             <% } else { %>
-                <li>No recent activity</li>
+                <li>No recent activity found.</li>
             <% } %>
         </ul>
     </section>
 
     <section class="social-accounts">
         <h3>Connected Social Media Accounts</h3>
-        <button>Connect Facebook</button>
-        <button>Connect Google</button>
+        <p class="social-subtitle">Link your social accounts for faster login and sharing</p>
+        <div class="social-grid">
+            <button class="social-btn facebook">
+                <i class="fa-brands fa-facebook-f"></i>
+                <span class="social-name">Facebook</span>
+                <span class="social-status">Connect</span>
+            </button>
+            <button class="social-btn google">
+                <i class="fa-brands fa-google"></i>
+                <span class="social-name">Google</span>
+                <span class="social-status">Connect</span>
+            </button>
+            <button class="social-btn twitter">
+                <i class="fa-brands fa-x-twitter"></i>
+                <span class="social-name">X (Twitter)</span>
+                <span class="social-status">Connect</span>
+            </button>
+            <button class="social-btn github">
+                <i class="fa-brands fa-github"></i>
+                <span class="social-name">GitHub</span>
+                <span class="social-status">Connect</span>
+            </button>
+            <button class="social-btn linkedin">
+                <i class="fa-brands fa-linkedin-in"></i>
+                <span class="social-name">LinkedIn</span>
+                <span class="social-status">Connect</span>
+            </button>
+            <button class="social-btn apple">
+                <i class="fa-brands fa-apple"></i>
+                <span class="social-name">Apple</span>
+                <span class="social-status">Connect</span>
+            </button>
+        </div>
     </section>
-<!-- Toastify JS -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<!-- Load JS file  -->
-<script src="/js/script.js"></script>
+
+    <script src="/js/script.js"></script>
 </body>
 </html>
