@@ -13,13 +13,19 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
+            // Prevent going back to previous pages from the logout page
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function() {
+                window.history.go(1);
+            };
+
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
             if (token) {
                 localStorage.setItem('token', token);
                 // Remove token from URL to prevent it from being cached or reusable
                 const newUrl = window.location.origin + window.location.pathname;
-                window.history.replaceState({}, document.title, newUrl);
+                window.history.replaceState(null, document.title, newUrl);
             }
         });
     </script>

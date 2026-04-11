@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     continueBtn.addEventListener('click', () => {
         const token = localStorage.getItem('token'); // Get the token from local storage
         if (token) {
-            window.location.replace(`http://localhost:3500/?token=${token}`); // Redirect to home service page
+            window.location.href = `http://localhost:4000/?token=${token}`; // Redirect to home service page
         } else {
             console.error('Token not found in local storage');
         }
@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     maybeLaterBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.replace('http://localhost:3000'); // Redirect to the Account service page
+        window.location.href = 'http://localhost:3000'; // Redirect to the Account service page
     });
 
     finalLogoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.replace('http://localhost:3000'); // Redirect to the Account service page
+        window.location.href = 'http://localhost:3000'; // Redirect to the Account service page
     });
 
     const stars = document.querySelectorAll('.star');
