@@ -6,11 +6,20 @@
     <title>Logout - PDF Labs</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
             if (token) {
                 localStorage.setItem('token', token);
+                // Remove token from URL to prevent it from being cached or reusable
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
             }
         });
     </script>

@@ -3,14 +3,10 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const logoutController = require('../controllers/logoutController');
 
-router.get('/logout', (req, res) => {
+router.get('/logout', auth, (req, res) => {
     const token = req.query.token;
-    if (token) {
-        // Render the logout page with the token
-        res.render('logout', { token });
-    } else {
-        res.redirect('http://localhost:3000'); // Redirect to login if no token is provided
-    }
+    // Render the logout page with the token
+    res.render('logout', { token });
 });
 
 router.get('/', auth, logoutController.logoutPage);
