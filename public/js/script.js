@@ -1,3 +1,27 @@
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container') || (() => {
+        const c = document.createElement('div');
+        c.id = 'toast-container';
+        document.body.appendChild(c);
+        return c;
+    })();
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Trigger reflow for animation
+    toast.offsetHeight;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const continueBtn = document.getElementById('continueBtn');
     const proceedBtn = document.getElementById('proceedBtn');
@@ -26,12 +50,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     maybeLaterBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.href = 'http://localhost:3000'; // Redirect to the Account service page
+        window.location.href = 'http://localhost:3000/?loggedOut=true'; // Redirect to the Account service page
     });
 
     finalLogoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.href = 'http://localhost:3000'; // Redirect to the Account service page
+        window.location.href = 'http://localhost:3000/?loggedOut=true'; // Redirect to the Account service page
     });
 
     const stars = document.querySelectorAll('.star');

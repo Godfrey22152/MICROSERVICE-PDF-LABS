@@ -6,19 +6,35 @@
     <title>Logout - PDF Labs</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script>
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                window.location.reload();
+        (function() {
+            // Push states to create a deep history stack of the logout page
+            for (var i = 0; i < 10; i++) {
+                window.history.pushState(null, null, window.location.href);
             }
-        });
+
+            window.addEventListener('popstate', function(event) {
+                // Check if user is logged out (no token in localStorage)
+                if (!localStorage.getItem('token')) {
+                    if (typeof showToast === 'function') {
+                        showToast("Kindly log in again to access the app", "info");
+                    }
+                    setTimeout(function() {
+                        window.location.href = 'http://localhost:3000';
+                    }, 2000);
+                } else {
+                    // Stay on the page if they still have a token but try to go back
+                    window.history.pushState(null, null, window.location.href);
+                }
+            });
+
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    window.location.reload();
+                }
+            });
+        })();
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Prevent going back to previous pages from the logout page
-            window.history.pushState(null, null, window.location.href);
-            window.onpopstate = function() {
-                window.history.go(1);
-            };
-
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
             if (token) {
