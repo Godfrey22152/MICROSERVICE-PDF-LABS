@@ -6,38 +6,64 @@
     <title>Logout - PDF Labs</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script>
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container') || (() => {
+                const c = document.createElement('div');
+                c.id = 'toast-container';
+                document.body.appendChild(c);
+                return c;
+            })();
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+
+            container.appendChild(toast);
+
+            // Trigger reflow for animation
+            toast.offsetHeight;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // Extremely aggressive history trapping to prevent back navigation
         (function() {
-            function preventBack() {
-                window.history.pushState(null, null, window.location.href);
+            function floodHistory() {
+                for (var i = 0; i < 50; i++) {
+                    window.history.pushState(null, null, window.location.href);
+                }
             }
 
-            // Ensure we have a history state to work with
-            preventBack();
+            floodHistory();
 
             window.addEventListener('popstate', function(event) {
-                // Every time user tries to go back, we push them forward again
-                preventBack();
+                floodHistory();
 
-                // If they are logged out (no token), show the toast and redirect
+                // If user is logged out, show the toast and keep them trapped/redirecting
                 if (!localStorage.getItem('token')) {
                     if (typeof showToast === 'function') {
                         showToast("Kindly log in again to access the app", "info");
                     }
                     setTimeout(function() {
                         window.location.href = 'http://localhost:3000';
-                    }, 2500);
+                    }, 3000);
                 }
             });
 
-            // Handle the case where the user reaches this page via back button from another service
             window.addEventListener('pageshow', function(event) {
-                if (!localStorage.getItem('token') && (event.persisted || (window.performance && window.performance.navigation.type === 2))) {
+                floodHistory();
+                // If they managed to get back here without a token, trap them again
+                if (!localStorage.getItem('token')) {
                     if (typeof showToast === 'function') {
                         showToast("Kindly log in again to access the app", "info");
                     }
                     setTimeout(function() {
                         window.location.href = 'http://localhost:3000';
-                    }, 2500);
+                    }, 3000);
                 }
             });
         })();
