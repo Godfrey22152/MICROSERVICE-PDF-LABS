@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
     continueBtn.addEventListener('click', () => {
         const token = localStorage.getItem('token'); // Get the token from local storage
         if (token) {
-            window.location.href = `http://localhost:4000/?token=${token}`; // Redirect to home service page
+            window.location.href = `http://localhost:3500/?token=${token}`; // Redirect to home service page
         } else {
             console.error('Token not found in local storage');
         }

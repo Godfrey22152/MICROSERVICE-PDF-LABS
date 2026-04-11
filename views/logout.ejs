@@ -7,29 +7,37 @@
     <link rel="stylesheet" href="/css/styles.css">
     <script>
         (function() {
-            // Push states to create a deep history stack of the logout page
-            for (var i = 0; i < 10; i++) {
+            function preventBack() {
                 window.history.pushState(null, null, window.location.href);
             }
 
+            // Ensure we have a history state to work with
+            preventBack();
+
             window.addEventListener('popstate', function(event) {
-                // Check if user is logged out (no token in localStorage)
+                // Every time user tries to go back, we push them forward again
+                preventBack();
+
+                // If they are logged out (no token), show the toast and redirect
                 if (!localStorage.getItem('token')) {
                     if (typeof showToast === 'function') {
                         showToast("Kindly log in again to access the app", "info");
                     }
                     setTimeout(function() {
                         window.location.href = 'http://localhost:3000';
-                    }, 2000);
-                } else {
-                    // Stay on the page if they still have a token but try to go back
-                    window.history.pushState(null, null, window.location.href);
+                    }, 2500);
                 }
             });
 
+            // Handle the case where the user reaches this page via back button from another service
             window.addEventListener('pageshow', function(event) {
-                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                    window.location.reload();
+                if (!localStorage.getItem('token') && (event.persisted || (window.performance && window.performance.navigation.type === 2))) {
+                    if (typeof showToast === 'function') {
+                        showToast("Kindly log in again to access the app", "info");
+                    }
+                    setTimeout(function() {
+                        window.location.href = 'http://localhost:3000';
+                    }, 2500);
                 }
             });
         })();
@@ -39,7 +47,6 @@
             const token = urlParams.get('token');
             if (token) {
                 localStorage.setItem('token', token);
-                // Remove token from URL to prevent it from being cached or reusable
                 const newUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState(null, document.title, newUrl);
             }
