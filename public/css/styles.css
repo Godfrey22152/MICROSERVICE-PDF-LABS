@@ -1,0 +1,220 @@
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+    background-size: 200% 200%;
+    animation: gradient-animation 5s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5em 0 0;
+    font-size: 1.2em;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Dashboard section styles */
+.dashboard {
+    background: #fff;
+    padding: 2em;
+    margin: 0 auto 2em;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+.nav-buttons button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: #833ab4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.nav-buttons button.active {
+    background: #38EF7D;
+    color: #3a3b3c;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.nav-buttons button:hover:not(.active) {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Educational animations section styles */
+
+/* See the style for Educational animations section in the "/css/educational-animation.css" file */
+
+/* Testimonials section styles */
+.testimonial-section {
+    background-color: #f9f9f9;
+    text-align: center;
+    padding: 2em;
+    margin: 2em auto 0;
+    max-width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.testimonial-section h2 {
+    font-size: 2em;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    color: #333;
+}
+
+.testimonial-carousel {
+    display: flex;
+    overflow-x: auto;
+    justify-content: space-around;
+    padding: 10px;
+    position: relative;
+}
+
+.testimonial-item {
+    width: 300px;
+    margin-right: 20px;
+    text-align: left;
+    padding: 10px;
+    background-color: #66cdaa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0.9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+}
+
+.testimonial-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.testimonial-item h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.rating {
+    color: #ffcc00;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.testimonial-item p {
+    font-style: italic;
+    margin-top: 5px;
+    color: #333;
+}
+
+/* Navigation Indicator Styles */
+.navigation-indicator {
+    position: absolute;
+    bottom: 0.1px;
+    left: 49%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #b83c08;
+    border-radius: 50%;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.active-dot {
+    background-color: #004225;
+}
+
+/* Contact us section styles */
+.contact-us {
+    background: #fff;
+    padding: 1em;
+    margin: 2em auto 0;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.contact-us h2 {
+    font-size: 1.8em;
+    margin-bottom: 1em;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+}
+
+.social-links a {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #007bff;
+}
+
+.social-links img {
+    width: 30px;
+    height: 30px;
+}

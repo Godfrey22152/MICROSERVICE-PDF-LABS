@@ -1,0 +1,102 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+#educational-animations {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#educational-animations .slide-container {
+    width: 80%;
+    display: flex;
+    transition: transform 1s ease-in-out;
+}
+
+#educational-animations .slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    margin: 10px;
+    text-align: center;
+    animation: fadeInSlide 1s ease-in-out;
+}
+
+#educational-animations .slide h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+#educational-animations .slide p {
+    font-size: 20px;
+    color: #666;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOutSlide {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+#educational-animations .countdown-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#educational-animations .countdown-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ffaf7b, #dc143c, #3a1c71);
+    animation: countdownAnim 10s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 175, 123, 0.5);
+}
+
+@keyframes countdownAnim {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
