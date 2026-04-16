@@ -37,42 +37,40 @@ The account service is one of many microservices in the PDF Labs ecosystem, all 
 
 ```
                         ┌─────────────────────────────────┐
-                        │         PDF Labs Platform        │
-                        │         (Docker Network)         │
+                        │         PDF Labs Platform       │
+                        │         (Docker Network)        │
                         └────────────┬────────────────────┘
                                      │
               ┌──────────────────────▼─────────────────────────┐
-              │              account-service (:3000)            │
+              │              account-service (:3000)           │
               │  • Landing page (EJS)                          │
               │  • Register / Login API                        │
               │  • JWT issuance                                │
-              └──────┬──────────────────────────┬─────────────┘
+              └──────┬────────────-──────────────┬─────────────┘
                      │                          │
            ┌─────────▼─────────┐    ┌──────────▼──────────┐
-           │  MongoDB (:27017)  │    │  home-service(:3500) │
-           │  account-service   │    │  (post-login target) │
-           └────────────────────┘    └─────────────────────┘
+           │  MongoDB (:27017) │    │  home-service(:3500)│
+           │  account-service  │    │  (post-login target)│
+           └───────────────────┘    └─────────────────────┘
 ```
 
-> **Note:** The full `docker-compose.yml` file that wires all services together lives in the **root/main repository**, not in this repository.
+> **Note:** The full **[Docker Compose file](https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/blob/main/docker-compose.yml)** that wires all services together lives in the **root/main repository**, not in this repository.
 
 ---
 
 ## Screenshots
 
-> Add your application screenshots here.
+> Account Service application screenshots.
 
 ### Landing Page
-<!-- Replace with actual screenshot -->
-![Landing Page](docs/images/landing-page.png)
+![Landing Page](images/landing-page.png)
+![Landing Page](images/landing-page2.png)
 
 ### Create Account Modal
-<!-- Replace with actual screenshot -->
-![Create Account](docs/images/create-account.png)
+![Create Account](images/create-account.png)
 
 ### Login Modal
-<!-- Replace with actual screenshot -->
-![Login](docs/images/login.png)
+![Login](images/login.png)
 
 ---
 
@@ -172,6 +170,7 @@ account-service/
 ## Environment Variables
 
 Create a `.env` file in the project root (or supply these via Docker/Compose):
+See **[Docker Compose file](https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/blob/main/docker-compose.yml)**
 
 | Variable | Required | Description |
 |---|---|---|
@@ -248,7 +247,7 @@ POST /api/auth/login (account-service :3000)
   Validate credentials against MongoDB
         │
         ▼
-  Sign JWT (expires in 300s)
+  Sign JWT (expires in 1hr)
         │
         ▼
   Return { token, redirectUrl }
@@ -263,7 +262,7 @@ POST /api/auth/login (account-service :3000)
   home-service validates token on every protected route
 ```
 
-> **Token lifetime:** JWTs are issued with a 300-second (5-minute) expiry. Downstream services are responsible for validating them on each request.
+> **Token lifetime:** JWTs are issued with a 3600-seconds (1-Hour) expiry. Downstream services are responsible for validating them on each request.
 
 ---
 
