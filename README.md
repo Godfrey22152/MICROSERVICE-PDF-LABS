@@ -95,11 +95,14 @@ The edit-pdf service calls ConvertAPI v2 over HTTPS and stores outputs locally i
 ### Split — Sub-mode Tabs
 ![Split Modes](images/split-modes.png)
 
+### Add WaterMarks to PDFs — Add WaterMarks to PDF files
+![Edited Files Grid](images/add-watermark.png)
+
+### Rotate PDF Pages — Rotate PDF Pages Tabs
+![Rotate PDF Pages Tabs](images/rotate-pages.png)
+
 ### Edited Files — Result Cards with Download
 ![Edited Files Grid](images/edited-files-grid.png)
-
-### Split Result — Per-Part Download Cards
-![Split Parts Download](images/split-parts-download.png)
 
 ---
 
