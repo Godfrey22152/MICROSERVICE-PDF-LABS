@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '300s' }, // Token Expires in 1hour
+            { expiresIn: '3600s' }, // Token Expires in 1hour
             (err, token) => {
                 if (err) throw err;
                 res.json({ token, redirectUrl: 'http://localhost:3500' });
