@@ -34,7 +34,7 @@ LABEL org.opencontainers.image.title="PDF Labs App" \
       org.opencontainers.image.description="Lightweight and secure Account-page microservice for PDF Labs" \
       org.opencontainers.image.authors="Godfrey <godfreyifeanyi50@gmail.com>" \
       org.opencontainers.image.version="1.0.0" \
-      org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/profile-service"
+      org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/account-service"
 
 # Install Node.js runtime only
 RUN apk add --no-cache nodejs=18.20.1-r0 \
