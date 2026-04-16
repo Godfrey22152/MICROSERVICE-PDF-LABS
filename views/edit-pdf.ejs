@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit PDF - PDF Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+
+<header>
+  <h1>&#x270F;&#xFE0F; Edit <span class="accent-teal">PDF</span> <span class="accent-orange">Studio</span></h1>
+  <p>Rotate, watermark, merge, split, protect or unlock your PDF files</p>
+  <nav class="tools-nav">
+    <button type="button" id="switchToPdfToWord"  class="button">&#x1F4DD; PDF to Word</button>
+    <button type="button" id="switchToWordToPdf"  class="button">&#x1F4D5; Word to PDF</button>
+    <button type="button" id="switchToCompressor" class="button">&#x1F4E6; Compressor</button>
+    <button type="button" id="switchToPdfToImage" class="button">&#x1F5BC;&#xFE0F; PDF to Image</button>
+    <button type="button" id="switchToImageToPdf" class="button">&#x1F5BC;&#xFE0F; Image to PDF</button>
+    <button type="button" id="switchToPdfToAudio" class="button">&#x1F50A; PDF to Audio</button>
+  </nav>
+</header>
+
+<main>
+
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button type="button" id="toolsBtn">&#x1F6E0; Tools</button>
+      <button type="button" id="profileBtn">&#x1F464; Profile</button>
+      <button type="button" id="logoutBtn">&#x1F6AA; Logout</button>
+    </div>
+  </section>
+
+  <section class="dashboard">
+    <h2 class="form-title">&#x1F4CB; Choose an Edit Operation</h2>
+
+    <div class="operation-cards">
+      <label class="op-card selected" data-op="rotate">
+        <input type="radio" name="operation" value="rotate" checked/>
+        <span class="op-icon">&#x1F504;</span>
+        <span class="op-label">Rotate Pages</span>
+        <span class="op-desc">Rotate all pages 90°, 180° or 270°</span>
+      </label>
+      <label class="op-card" data-op="watermark">
+        <input type="radio" name="operation" value="watermark"/>
+        <span class="op-icon">&#x1F4A7;</span>
+        <span class="op-label">Add Watermark</span>
+        <span class="op-desc">Stamp text across every page</span>
+      </label>
+      <label class="op-card" data-op="merge">
+        <input type="radio" name="operation" value="merge"/>
+        <span class="op-icon">&#x1F517;</span>
+        <span class="op-label">Merge PDFs</span>
+        <span class="op-desc">Combine 2+ PDFs into one</span>
+      </label>
+      <label class="op-card" data-op="split">
+        <input type="radio" name="operation" value="split"/>
+        <span class="op-icon">&#x2702;&#xFE0F;</span>
+        <span class="op-label">Split PDF</span>
+        <span class="op-desc">Split, extract ranges or delete pages</span>
+      </label>
+      <label class="op-card" data-op="protect">
+        <input type="radio" name="operation" value="protect"/>
+        <span class="op-icon">&#x1F512;</span>
+        <span class="op-label">Protect PDF</span>
+        <span class="op-desc">Add password protection</span>
+      </label>
+      <label class="op-card" data-op="unlock">
+        <input type="radio" name="operation" value="unlock"/>
+        <span class="op-icon">&#x1F513;</span>
+        <span class="op-label">Unlock PDF</span>
+        <span class="op-desc">Remove password protection</span>
+      </label>
+    </div>
+
+    <form
+      id="edit-pdf-form"
+      class="pdf-form"
+      action="/tools/edit-pdf?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+      <input type="hidden" name="operation"   id="operation-input"   value="rotate"/>
+      <input type="hidden" name="fileOrder"   id="file-order-input"  value=""/>
+      <input type="hidden" name="deleteRange" id="deleteRange-input" value="1"/>
+
+      <!-- ── Rotate ── -->
+      <div class="op-params active" data-op="rotate">
+        <label for="angle">Rotation Angle</label>
+        <select id="angle" name="angle">
+          <option value="90">90° Clockwise</option>
+          <option value="180">180° (Upside Down)</option>
+          <option value="270">270° Counter-Clockwise</option>
+        </select>
+      </div>
+
+      <!-- ── Watermark ── -->
+      <div class="op-params" data-op="watermark">
+        <label for="watermarkText">Watermark Text</label>
+        <input type="text" id="watermarkText" name="watermarkText" value="CONFIDENTIAL" placeholder="e.g. CONFIDENTIAL"/>
+        <label for="fontSize">Font Size</label>
+        <select id="fontSize" name="fontSize">
+          <option value="40">Small (40)</option>
+          <option value="60" selected>Medium (60)</option>
+          <option value="80">Large (80)</option>
+          <option value="100">Extra Large (100)</option>
+        </select>
+        <label for="opacity">Opacity (%)</label>
+        <input type="number" id="opacity" name="opacity" min="5" max="100" value="30"/>
+        <span class="helper-text">Lower = more transparent. Recommended: 20–40.</span>
+      </div>
+
+      <!-- ── Merge ── -->
+      <div class="op-params" data-op="merge">
+        <div class="merge-info-banner">
+          <span class="merge-info-icon">&#x2139;&#xFE0F;</span>
+          <div>
+            <strong>Select 2 or more PDF files</strong> using the drop zone below.
+            <span class="merge-min-warning" id="merge-min-warning" style="display:none;">
+              &#x26A0;&#xFE0F; At least 2 files are required to merge.
+            </span>
+          </div>
+        </div>
+
+        <!-- File counter badge -->
+        <div id="merge-file-counter" class="merge-file-counter" style="display:none;">
+          <span id="merge-file-count-text"></span>
+          <button type="button" id="merge-clear-btn" class="merge-clear-btn" title="Clear all">&#x2715; Clear All</button>
+        </div>
+
+        <!-- Reorder section — appears after 2+ files are selected -->
+        <div id="merge-order-list" class="merge-order-list" style="display:none;">
+          <div class="merge-order-header">
+            <span class="merge-order-title">&#x1F4CB; Merge Order</span>
+            <span class="merge-order-hint">Drag rows &bull; or use &#x25B2;&#x25BC; arrows</span>
+          </div>
+          <ul id="merge-sortable" class="merge-sortable"></ul>
+        </div>
+
+        <!-- Output filename -->
+        <div class="merge-name-row" id="merge-name-row" style="display:none;">
+          <label for="mergedName" class="merge-name-label">
+            &#x1F4C4; Output File Name <span class="merge-name-optional">(optional)</span>
+          </label>
+          <div class="merge-name-input-wrap">
+            <input
+              type="text"
+              id="mergedName"
+              name="mergedName"
+              class="merge-name-input"
+              placeholder="e.g. Annual Report 2025"
+              maxlength="120"
+              autocomplete="off"
+            />
+            <span class="merge-name-ext">.pdf</span>
+          </div>
+          <span class="helper-text">Leave blank to use the first file&rsquo;s name.</span>
+        </div>
+      </div>
+
+      <!-- ── Split ── -->
+      <div class="op-params" data-op="split">
+        <label>Split Mode</label>
+        <div class="split-mode-tabs">
+          <button type="button" class="split-tab active" data-mode="byRange">
+            <span class="tab-icon">&#x1F4C4;</span> Split by Range
+          </button>
+          <button type="button" class="split-tab" data-mode="deletePages">
+            <span class="tab-icon">&#x1F5D1;&#xFE0F;</span> Delete Pages
+          </button>
+          <button type="button" class="split-tab" data-mode="fixedRanges">
+            <span class="tab-icon">&#x2702;&#xFE0F;</span> Fixed Ranges
+          </button>
+          <button type="button" class="split-tab" data-mode="allPages">
+            <span class="tab-icon">&#x1F4CB;</span> Split All Pages
+          </button>
+        </div>
+        <input type="hidden" name="splitMode" id="splitMode" value="byRange"/>
+
+        <!-- byRange panel -->
+        <div class="split-panel active" data-panel="byRange">
+          <div class="split-panel-desc">
+            <span class="panel-badge teal">Extract</span>
+            Extracts all pages within the selected range into a single PDF.
+          </div>
+          <div class="range-row">
+            <div class="range-field">
+              <label for="rangeFrom">From Page</label>
+              <input type="number" id="rangeFrom" name="rangeFrom" min="1" value="1" placeholder="1"/>
+            </div>
+            <span class="range-dash">—</span>
+            <div class="range-field">
+              <label for="rangeTo">To Page</label>
+              <input type="number" id="rangeTo" name="rangeTo" min="1" value="1" placeholder="Last"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- deletePages panel -->
+        <div class="split-panel" data-panel="deletePages">
+          <div class="split-panel-desc">
+            <span class="panel-badge orange">Remove</span>
+            Removes the selected pages and returns the remaining pages as one PDF.
+          </div>
+          <div class="range-row">
+            <div class="range-field">
+              <label for="deleteFrom">From Page</label>
+              <input type="number" id="deleteFrom" name="deleteFrom" min="1" value="1" placeholder="1"/>
+            </div>
+            <span class="range-dash">—</span>
+            <div class="range-field">
+              <label for="deleteTo">To Page</label>
+              <input type="number" id="deleteTo" name="deleteTo" min="1" value="1" placeholder="Last"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- fixedRanges panel -->
+        <div class="split-panel" data-panel="fixedRanges">
+          <div class="split-panel-desc">
+            <span class="panel-badge magenta">Batch</span>
+            Splits the PDF into equal chunks — every N pages becomes a separate downloadable PDF.
+          </div>
+          <label for="fixedRangeSize">Pages Per Part</label>
+          <input type="number" id="fixedRangeSize" name="fixedRangeSize" min="1" value="1" placeholder="e.g. 2"/>
+          <span class="helper-text">&#x1F4A1; Each chunk is available as an individual PDF. Use "Download All" to grab them all at once.</span>
+        </div>
+
+        <!-- allPages panel -->
+        <div class="split-panel" data-panel="allPages">
+          <div class="split-panel-desc">
+            <span class="panel-badge blue">Single</span>
+            Splits every single page into its own separate PDF file. Download them one by one or all at once.
+          </div>
+          <div class="allpages-info">
+            <span class="allpages-icon">&#x1F4C4;</span>
+            <div>
+              <p class="allpages-title">Every page becomes its own PDF</p>
+              <p class="allpages-sub">Just upload your PDF and click <strong>Apply Edit</strong> — no settings needed. Each page will appear as an individual download card.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Protect ── -->
+      <div class="op-params" data-op="protect">
+        <label for="protectPassword">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="protectPassword" name="protectPassword" placeholder="Enter a strong password" autocomplete="new-password"/>
+          <button type="button" class="toggle-pw" data-target="protectPassword" title="Show/hide">&#x1F441;</button>
+        </div>
+        <span class="helper-text">&#x26A0;&#xFE0F; Keep this password safe — there is no recovery if lost.</span>
+      </div>
+
+      <!-- ── Unlock ── -->
+      <div class="op-params" data-op="unlock">
+        <label for="unlockPassword">Current Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="unlockPassword" name="unlockPassword" placeholder="Enter the PDF's current password" autocomplete="current-password"/>
+          <button type="button" class="toggle-pw" data-target="unlockPassword" title="Show/hide">&#x1F441;</button>
+        </div>
+        <span class="helper-text">Enter the existing password to remove all protection from the PDF.</span>
+      </div>
+
+      <!-- Drop Zone -->
+      <div id="dropzone" class="dropzone">
+        <span class="dropzone-icon">&#x1F4C4;</span>
+        <p class="dropzone-title">Drag &amp; Drop your PDF here</p>
+        <p class="dropzone-sub" id="dz-sub">or click to browse &bull; PDF only &bull; Max 100 MB per file</p>
+        <input type="file" id="pdf-files" name="pdfFiles" accept="application/pdf,.pdf" required hidden/>
+        <button type="button" class="button dz-btn">Choose File</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>Processing your PDF&hellip; Please wait.
+      </div>
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons" style="margin-top:1.8em;">
+        <button type="submit" class="button">&#x270F;&#xFE0F;&nbsp; Apply Edit</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- EDITED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">&#x1F4C2; Edited Files</h2>
+
+    <% if (locals.editedFiles && locals.editedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.editedFiles.forEach(function(file) { %>
+          <div class="processed-file-card<%= file.isSplit ? ' split-card' : '' %>" data-file-id="<%= file.fileId %>">
+            <button type="button" class="delete-btn" title="Delete">&times;</button>
+            <span class="file-icon">&#x1F4DD;</span>
+            <p class="file-name" title="<%= file.originalName %>"><%= file.originalName %></p>
+            <span class="op-badge"><%= file.operationLabel || file.operation %></span>
+            <div class="stats-block">
+              <div class="stats-row">
+                <span class="stats-label">Original</span>
+                <span class="stats-value"><%= locals.formatBytes(file.originalSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Result</span>
+                <span class="stats-value"><%= locals.formatBytes(file.editedSize) %></span>
+              </div>
+            </div>
+            <% if (file.isSplit && file.splitPages && file.splitPages.length > 0) { %>
+              <p class="split-parts-label">
+                &#x1F4C4; <strong><%= file.splitPages.length %></strong>
+                <%= file.splitPages.length === 1 ? 'part' : 'parts' %> — download individually:
+              </p>
+              <div class="split-pages-row">
+                <% file.splitPages.forEach(function(pg) { %>
+                  <div class="split-page-item">
+                    <span class="split-page-icon">&#x1F4C4;</span>
+                    <span class="split-page-label">Part <%= pg.index %></span>
+                    <span class="split-page-size"><%= locals.formatBytes(pg.size) %></span>
+                    <a href="<%= pg.downloadUrl %>" class="split-page-btn" download>&#x2B07; Download</a>
+                  </div>
+                <% }); %>
+              </div>
+              <button
+                type="button"
+                class="download-button download-all-btn"
+                data-parts='<%- JSON.stringify(file.splitPages.map(function(p){ return p.downloadUrl; })) %>'
+              >&#x1F4E5; Download All Parts</button>
+            <% } else { %>
+              <a href="<%= file.downloadUrl %>" class="download-button" download>&#x2B07; Download PDF</a>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">
+        &#x1F4C4; No edited files yet.<br/>
+        Upload a PDF above and choose an operation to get started.
+      </p>
+    <% } %>
+  </section>
+
+</main>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-container">
+    <div class="modal-content">
+      <p>Are you sure you want to delete this file?<br/>This cannot be undone.</p>
+    </div>
+    <div class="modal-buttons">
+      <button type="button" id="modal-confirm" class="modal-btn confirm">Delete</button>
+      <button type="button" id="modal-cancel"  class="modal-btn cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Edit PDF Studio &mdash; PDF Labs &copy; 2025. Developed by Godfrey &mdash; Powered by ConvertAPI.</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>

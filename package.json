@@ -1,0 +1,25 @@
+{
+  "name": "edit-pdf-service",
+  "version": "1.0.0",
+  "description": "PDF Labs: Edit PDF Microservice",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "archiver":      "^7.0.1",
+    "body-parser":   "^1.20.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv":        "^10.0.0",
+    "ejs":           "^3.1.10",
+    "express":       "^4.21.2",
+    "form-data":     "^4.0.0",
+    "jsonwebtoken":  "^9.0.2",
+    "mongoose":      "^8.4.4",
+    "morgan":        "^1.10.1",
+    "multer":        "^2.0.2",
+    "uuid":          "^11.1.0"
+  },
+  "engines": { "node": ">=15.0.0" },
+  "author": "Godfrey Ifeanyi",
+  "license": "ISC"
+}
