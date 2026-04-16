@@ -36,18 +36,18 @@ The **Account Service** is a Node.js/Express microservice that powers user authe
 The account service is one of many microservices in the PDF Labs ecosystem, all orchestrated via Docker Compose and connected through a shared bridge network (`pdf-labs-net`). MongoDB is shared across services with each service maintaining its own database namespace.
 
 ```
-                        ┌─────────────────────────────────┐
-                        │         PDF Labs Platform       │
-                        │         (Docker Network)        │
-                        └────────────┬────────────────────┘
-                                     │
-              ┌──────────────────────▼─────────────────────────┐
-              │              account-service (:3000)           │
-              │  • Landing page (EJS)                          │
-              │  • Register / Login API                        │
-              │  • JWT issuance                                │
-              └──────┬────────────-──────────────┬─────────────┘
-                     │                          │
+                     ┌─────────────────────────────────┐
+                     │      PDF Labs Platform          │
+                     │      (Docker Network)           │
+                     └────────────┬────────────────────┘
+                                  │
+              ┌───────────────────▼──────────────────---─────┐
+              │              account-service (:3000)         │
+              │  • Landing page (EJS)                        │
+              │  • Register / Login API                      │
+              │  • JWT issuance                              │
+              └──────┬────────────-────────────┬─────────────┘
+                     │                         │
            ┌─────────▼─────────┐    ┌──────────▼──────────┐
            │  MongoDB (:27017) │    │  home-service(:3500)│
            │  account-service  │    │  (post-login target)│
