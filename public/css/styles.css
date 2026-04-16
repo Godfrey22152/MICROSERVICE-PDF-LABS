@@ -1,0 +1,273 @@
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styles */
+header {
+    background: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+    background-size: 200% 200%;
+    animation: gradient-animation 5s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5em 0 0;
+    font-size: 1.2em;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Dashboard section styles */
+.dashboard {
+    background: #fff;
+    padding: 2em;
+    margin: 0 auto 2em;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+.nav-buttons button {
+    padding: 0.8em 1.5em;
+    font-size: 1.2em;
+    color: white;
+    background: #833ab4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.nav-buttons button.active {
+    background: #38EF7D;
+    color: #3a3b3c;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.nav-buttons button:hover:not(.active) {
+    background: #ff3860;
+    transform: scale(1.05);
+}
+
+/* Navigation Indicator Styles */
+.navigation-indicator {
+    position: absolute;
+    bottom: 0.1px;
+    left: 49%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #b83c08;
+    border-radius: 50%;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.active-dot {
+    background-color: #004225;
+}
+
+/* Features section styles */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5em;
+    padding: 2em;
+    background: #fff;
+    margin: 0 auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.feature-card {
+    background: linear-gradient(20deg, #ff9a9e, #fad0c4);
+    border: none;
+    text-decoration: none;
+    color: inherit;
+    padding: 1.5em;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-image: radial-gradient( circle farthest-corner at 50.3% 55.8%,  rgba(239,0,0,1) 0.8%, rgba(93,17,17,1) 100.2% );
+}
+
+.feature-card img {
+    width: 60px;
+    height: 60px;
+    max-width: 60px;
+    max-height: 60px;
+    margin-bottom: 0.5em;
+}
+
+.feature-card h2 {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+}
+
+.feature-card p {
+    font-size: 1em;
+    color: #000000;
+}
+
+/* Add animations to hover effects */
+.feature-card:hover h2,
+.feature-card:hover p {
+    animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================
+   Toasts
+   =========================*/
+/* ── Toast Notification System ────────────────────────────────────────────── */
+
+#toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.toast {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px 16px 18px;
+    min-width: 300px;
+    max-width: 420px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #333;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.07),
+        0 12px 32px rgba(131, 58, 180, 0.18),
+        0 2px 8px rgba(255, 56, 96, 0.10);
+    border: 1px solid rgba(131, 58, 180, 0.12);
+    border-left-width: 5px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: all;
+    position: relative;
+    overflow: hidden;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Animated gradient shimmer bar at the bottom of each toast */
+.toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-size: 200% 200%;
+    animation: toastBar 3s linear forwards, gradientShift 3s ease infinite;
+}
+
+@keyframes toastBar {
+    from { transform: scaleX(1); transform-origin: left; }
+    to   { transform: scaleX(0); transform-origin: left; }
+}
+
+@keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.toast.error {
+    border-left-color: #ff3860;
+    background: linear-gradient(135deg, #fff5f7 0%, #fff 100%);
+    color: #b0002a;
+}
+.toast.error::after {
+    background-image: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+}
+
+.toast.success {
+    border-left-color: #38EF7D;
+    background: linear-gradient(135deg, #f4fff8 0%, #fff 100%);
+    color: #1a7a45;
+}
+.toast.success::after {
+    background-image: linear-gradient(90deg, #38EF7D, #833ab4);
+}
+
+.toast.warning {
+    border-left-color: #ffcc70;
+    background: linear-gradient(135deg, #fffdf5 0%, #fff 100%);
+    color: #9a6c00;
+}
+.toast.warning::after {
+    background-image: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+}
+
+.toast.info {
+    border-left-color: #833ab4;
+    background: linear-gradient(135deg, #faf5ff 0%, #fff 100%);
+    color: #4a1d7a;
+}
+.toast.info::after {
+    background-image: radial-gradient(circle, #ffcc70, #ff3860, #833ab4);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
