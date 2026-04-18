@@ -95,7 +95,7 @@ The word-to-pdf service uses the same ConvertAPI raw-HTTPS pattern as the pdf-to
 ![Drop Zone](images/drop-zone.png)
 
 ### Converted Files History Grid
-![Converted Files Grid](docs/images/converted-files-grid.png)
+![Converted Files Grid](images/converted-files-grid.png)
 
 
 ---
