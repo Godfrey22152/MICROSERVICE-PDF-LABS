@@ -41,12 +41,12 @@ The account service is one of many microservices in the PDF Labs ecosystem, all 
                      │      (Docker Network)           │
                      └────────────┬────────────────────┘
                                   │
-              ┌───────────────────▼──────────────────---─────┐
+              ┌───────────────────▼──────────────────────────┐
               │              account-service (:3000)         │
               │  • Landing page (EJS)                        │
               │  • Register / Login API                      │
               │  • JWT issuance                              │
-              └──────┬────────────-────────────┬─────────────┘
+              └──────┬─────────────────────────┬─────────────┘
                      │                         │
            ┌─────────▼─────────┐    ┌──────────▼──────────┐
            │  MongoDB (:27017) │    │  home-service(:3500)│
