@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF to Word - PDF Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F4DD; PDF to <span>Word</span> Converter</h1>
+  <p>Convert PDF documents into clean, editable Word (.docx) files</p>
+  <nav class="tools-nav">
+    <button id="switchToWordToPdf" class="button">&#x1F4D5; Word to PDF</button>
+    <button id="switchToPdfToImage" class="button">&#x1F4DA; PDF to Image</button>
+    <button id="switchToCompressor" class="button">&#x1F4E6; PDF Compressor</button>
+    <button id="switchToPdfToAudio" class="button">&#x1F3A7; PDF to Audio</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- NAV BUTTONS -->
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button id="toolsBtn">&#x1F6E0; Tools</button>
+      <button id="profileBtn">&#x1F464; Profile</button>
+      <button id="logoutBtn">&#x1F6AA; Logout</button>
+    </div>
+  </section>
+
+  <!-- UPLOAD & CONVERT FORM -->
+  <section class="dashboard">
+    <h2 class="form-title">Upload PDF &amp; Convert to Word</h2>
+
+    <form
+      id="pdf-to-word-form"
+      class="pdf-form"
+      action="/tools/pdf-to-word?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop PDF here">
+        <p style="font-size:2.5em;margin:0 0 .2em;">&#x1F4C4;</p>
+        <p class="dropzone-title">Drag &amp; Drop your PDF here</p>
+        <p class="dropzone-sub">or click to browse &bull; Only .pdf files &bull; Max 100 MB</p>
+        <input
+          type="file"
+          id="pdf-file"
+          name="pdf"
+          accept="application/pdf"
+          required
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose PDF</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <!-- Conversion Mode Selection -->
+      <div class="form-group">
+        <label>Select Conversion Mode</label>
+        <div class="mode-cards">
+
+          <label class="mode-card selected" id="card-standard">
+            <input type="radio" name="conversionMode" value="standard" checked />
+            <span class="mode-icon">&#x1F4C4;</span>
+            <span class="mode-label">Standard</span>
+            <span class="mode-desc">Best for digital text PDFs. Preserves headings, tables, lists and formatting with high fidelity.</span>
+            <span class="mode-badge">Text PDFs &bull; Reports &bull; Articles</span>
+          </label>
+
+          <label class="mode-card" id="card-ocr">
+            <input type="radio" name="conversionMode" value="ocr" />
+            <span class="mode-icon">&#x1F50D;</span>
+            <span class="mode-label">OCR Mode</span>
+            <span class="mode-desc">For scanned or image-based PDFs. Forces OCR text recognition before converting.</span>
+            <span class="mode-badge">Scanned docs &bull; Image PDFs</span>
+          </label>
+
+        </div>
+        <small class="helper-text">
+          Use <strong>Standard</strong> for digital PDFs. Switch to <strong>OCR</strong> only if your PDF contains
+          scanned pages or images of text — OCR takes longer on multi-page documents.
+        </small>
+      </div>
+
+      <!-- Progress UI -->
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>Converting your PDF&hellip; Please wait.
+      </div>
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons" style="margin-top:1.5em;">
+        <button type="submit" class="button">&#x1F4DD;&nbsp; Convert to Word</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- CONVERTED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">&#x1F4C2; Converted Files</h2>
+
+    <% if (locals.convertedFiles && locals.convertedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.convertedFiles.forEach(function(file) { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button class="delete-btn" title="Delete this file">&times;</button>
+
+            <span class="file-icon">&#x1F4DD;</span>
+
+            <p class="file-name" title="<%= file.originalName %>">
+              <%= file.originalName %>
+            </p>
+
+            <span class="mode-badge">
+              <%= file.conversionMode === 'ocr' ? '🔍 OCR Conversion' : '📄 Standard Conversion' %>
+            </span>
+
+            <div class="stats-block">
+              <div class="stats-row">
+                <span class="stats-label">Original PDF</span>
+                <span class="stats-value"><%= locals.formatBytes(file.originalSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Word file</span>
+                <span class="stats-value"><%= locals.formatBytes(file.convertedSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Pages</span>
+                <span class="stats-value"><%= file.pageCount || '—' %></span>
+              </div>
+            </div>
+
+            <a href="<%= file.downloadUrl %>" class="download-button" download>Download DOCX</a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">&#x1F4C4; No converted files yet.<br/>Upload a PDF above to get started.</p>
+    <% } %>
+  </section>
+
+</main>
+
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<footer>
+  <p>PDF to Word Converter &mdash; PDF Labs &copy; 2025. Developed by Godfrey and Powered by ConvertAPI.</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>
