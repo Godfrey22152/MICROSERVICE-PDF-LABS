@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image to PDF - PDF Tools</title>
+  <link rel="stylesheet" href="/css/styles.css"/>
+
+  <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const tokenFromUrl = urlParams.get('token');
+          const tokenFromStorage = localStorage.getItem('token');
+
+          if (tokenFromUrl) {
+              localStorage.setItem('token', tokenFromUrl);
+          } else if (tokenFromStorage && !window.location.search.includes('token=')) {
+              // Redirect to the same page with the token from storage
+              window.location.href = `${window.location.pathname}?token=${tokenFromStorage}`;
+          }
+      });
+  </script>
+
+</head>
+<body>
+<header>
+  <h1>Image to PDF Conversion</h1>
+  <p>Convert your images to PDF documents</p>
+  <nav class="tools-nav">
+    <button id="switchToPdfImage" class="button">Switch to PDF to Image</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- NAV BUTTONS: Tools + Profile + Logout -->
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button id="toolsBtn">Tools</button>
+      <button id="profileBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </section>
+
+  <!-- UPLOAD FORM (progressive enhancement: normal POST or AJAX with progress) -->
+  <section class="dashboard">
+    <h2 class="form-title">🖼️ Upload Images and Convert to PDF 📄</h2>
+
+    <form
+      id="image-to-pdf-form"
+      class="pdf-form"
+      action="/tools/image-to-pdf?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop images here">
+        <p class="dropzone-title">Drag & Drop your images here or click to browse</p>
+        <p class="dropzone-sub">Only .jpg, .jpeg, .png files are allowed</p>
+        <input
+          type="file"
+          id="image-files"
+          name="images"
+          accept="image/jpeg,image/png"
+          required
+          multiple
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose Images</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <!-- Progress UI -->
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>
+        Converting your images to PDF... Please wait while we process your documents.
+      </div>
+
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons">
+        <button type="submit" class="button">Convert to PDF</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- PROCESSED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">🗂️ Processed PDF Files</h2>
+
+    <% if (locals.processedFiles && locals.processedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.processedFiles.forEach(file => { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button class="delete-btn" title="Delete this file">&times;</button>
+            <p class="file-name" title="<%= file.filename %>">
+              <%= file.filename.length > 20 ? file.filename.substring(0, 17) + '...' : file.filename %>
+            </p>
+            <div class="card-actions">
+              <a href="/tools/image-to-pdf/view/<%= file.fileId %>" class="download-button" target="_blank">View PDF</a>
+              <a href="/tools/image-to-pdf/download/<%= file.fileId %>" class="download-button">Download PDF</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">No PDF files have been generated yet.</p>
+    <% } %>
+  </section>
+</main>
+
+<!-- Toasts -->
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<footer>
+    <p>Image to PDF Converter Tool Designed by Godfrey Odo &copy; 2025</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>
