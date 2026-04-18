@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF Compressor - PDF Labs</title>
+  <link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F5DC; PDF Compressor</h1>
+  <p>Reduce PDF file sizes without compromising your workflow</p>
+  <nav class="tools-nav">
+    <button id="switchToPdfToImage" class="button">&#x1F4DA; PDF to Image</button>
+    &nbsp;
+    <button id="switchToImageToPdf" class="button">&#x1F3B4; Image to PDF</button>
+    &nbsp;
+    <button id="switchToPdfToWord" class="button">&#x1F4DD; PDF to Word</button>
+    &nbsp;
+    <button id="switchToWordToPdf" class="button">&#x1F4D5; Word to PDF</button>
+    &nbsp;
+    <button id="switchToPdfToAudio" class="button">&#x1F3A7; PDF to Audio</button>
+    &nbsp;
+    <button id="switchToEditPdf" class="button">&#x2702; Edit PDF</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- NAV BUTTONS -->
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button id="toolsBtn">Tools</button>
+      <button id="profileBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </section>
+
+  <!-- UPLOAD & COMPRESS FORM -->
+  <section class="dashboard">
+    <h2 class="form-title">&#x1F4C4; Upload PDF &amp; Compress &#x1F5DC;</h2>
+
+    <form
+      id="pdf-compressor-form"
+      class="pdf-form"
+      action="/tools/pdf-compressor?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop PDF here">
+        <p class="dropzone-title">Drag &amp; Drop your PDF here or click to browse</p>
+        <p class="dropzone-sub">Only .pdf files are accepted &bull; Max 100 MB</p>
+        <input
+          type="file"
+          id="pdf-file"
+          name="pdf"
+          accept="application/pdf"
+          required
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose PDF</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <!-- Compression Level -->
+      <div class="form-group">
+        <label>Select Compression Level:</label>
+        <div class="level-cards">
+
+          <label class="level-card" id="card-maximum">
+            <input type="radio" name="compressionLevel" value="maximum" />
+            <span class="level-icon">&#x26A1;</span>
+            <span class="level-label">Maximum</span>
+            <span class="level-desc">~40 dpi &bull; Smallest file. Best for email &amp; sharing.</span>
+            <span class="level-badge">70&ndash;90% smaller</span>
+          </label>
+
+          <label class="level-card" id="card-high">
+            <input type="radio" name="compressionLevel" value="high" checked />
+            <span class="level-icon">&#x1F4E6;</span>
+            <span class="level-label">High</span>
+            <span class="level-desc">~150 dpi &bull; Small size, decent quality. Good for digital use.</span>
+            <span class="level-badge">40&ndash;60% smaller</span>
+          </label>
+
+          <label class="level-card" id="card-medium">
+            <input type="radio" name="compressionLevel" value="medium" />
+            <span class="level-icon">&#x2696;&#xFE0F;</span>
+            <span class="level-label">Medium</span>
+            <span class="level-desc">~300 dpi &bull; Balanced quality &amp; size. Suitable for printing.</span>
+            <span class="level-badge">20&ndash;40% smaller</span>
+          </label>
+
+          <label class="level-card" id="card-low">
+            <input type="radio" name="compressionLevel" value="low" />
+            <span class="level-icon">&#x1F3A8;</span>
+            <span class="level-label">Low</span>
+            <span class="level-desc">~300 dpi with colour preservation. For professional print.</span>
+            <span class="level-badge">5&ndash;20% smaller</span>
+          </label>
+
+        </div>
+        <small class="helper-text">
+          Higher compression = smaller file but may reduce image quality inside the PDF.
+        </small>
+      </div>
+
+      <!-- Progress UI -->
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>
+        Compressing your PDF... Please wait.
+      </div>
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons">
+        <button type="submit" class="button">&#x1F5DC; Compress PDF</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- COMPRESSED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">&#x1F4C2; Compressed Files</h2>
+
+    <% if (locals.compressedFiles && locals.compressedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.compressedFiles.forEach(function(file) { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button class="delete-btn" title="Delete this file">&times;</button>
+
+            <span class="file-icon">&#x1F4E6;</span>
+
+            <p class="file-name" title="<%= file.originalName %>">
+              <%= file.originalName %>
+            </p>
+
+            <span class="compression-badge"><%= file.compressionLevel.charAt(0).toUpperCase() + file.compressionLevel.slice(1) %> Compression</span>
+
+            <div class="stats-block">
+              <div class="stats-row">
+                <span class="stats-label">Original</span>
+                <span class="stats-value"><%= locals.formatBytes(file.originalSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Compressed</span>
+                <span class="stats-value"><%= locals.formatBytes(file.compressedSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Saved</span>
+                <span class="stats-value"><%= locals.formatBytes(file.savedBytes) %></span>
+              </div>
+              <span class="stats-saved">&#x2193; <%= file.savedPercent %>% smaller</span>
+            </div>
+
+            <a href="<%= file.downloadUrl %>" class="download-button" download>Download</a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">No compressed files yet. Upload a PDF above to get started.</p>
+    <% } %>
+  </section>
+
+</main>
+
+<!-- Toasts -->
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<footer>
+  <p>PDF Compressor Tool &mdash; PDF Labs &copy; 2025; Developed by Godfrey</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>
