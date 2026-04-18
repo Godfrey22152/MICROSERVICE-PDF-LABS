@@ -75,10 +75,6 @@ Desktop.ini
 *.sublime-workspace
 .editorconfig
 
-# ── Docker (compose file lives in root repo, not here) ────────
-docker-compose*.yml
-.dockerignore
-
 # ── Optional: lock file (remove this line if you want to commit it) ──
 # package-lock.json
 
