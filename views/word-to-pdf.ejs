@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Word to PDF - PDF Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F4DD; Word to <span>PDF</span> Converter</h1>
+  <p>Convert Word, ODT, RTF &amp; PowerPoint documents into polished PDF files</p>
+  <nav class="tools-nav">
+    <button type="button" id="switchToPdfToWord"  class="button">&#x1F4DD; PDF to Word</button>
+    <button type="button" id="switchToCompressor" class="button">&#x1F4E6; PDF Compressor</button>
+    <button type="button" id="switchToPdfToImage" class="button">&#x1F4DA; PDF to Image</button>
+    <button type="button" id="switchToImageToPdf" class="button">&#x1F3B4; Image to PDF</button>
+    <button type="button" id="switchToPdfToAudio" class="button">&#x1F3A7; PDF to Audio</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- NAV BUTTONS -->
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button type="button" id="toolsBtn">&#x1F6E0; Tools</button>
+      <button type="button" id="profileBtn">&#x1F464; Profile</button>
+      <button type="button" id="logoutBtn">&#x1F6AA; Logout</button>
+    </div>
+  </section>
+
+  <!-- UPLOAD & CONVERT FORM -->
+  <section class="dashboard">
+    <h2 class="form-title">&#x1F4C4; Upload Document &amp; Convert to PDF</h2>
+
+    <!-- Supported format chips -->
+    <div class="format-strip">
+      <span class="format-chip active">&#x1F4C4; DOCX</span>
+      <span class="format-chip active">&#x1F4C4; DOC</span>
+      <span class="format-chip active">&#x1F4C3; ODT</span>
+      <span class="format-chip active">&#x1F4DD; RTF</span>
+      <span class="format-chip active">&#x1F4CA; PPTX</span>
+      <span class="format-chip active">&#x1F4CA; PPT</span>
+    </div>
+
+    <form
+      id="word-to-pdf-form"
+      class="pdf-form"
+      action="/tools/word-to-pdf?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop document here">
+        <span class="dropzone-icon">&#x1F4C1;</span>
+        <p class="dropzone-title">Drag &amp; Drop your document here</p>
+        <p class="dropzone-sub">or click to browse &bull; DOCX, DOC, ODT, RTF, PPTX, PPT &bull; Max 100 MB</p>
+        <input
+          type="file"
+          id="word-file"
+          name="wordFile"
+          accept=".docx,.doc,.odt,.rtf,.pptx,.ppt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/vnd.oasis.opendocument.text,application/rtf,text/rtf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-powerpoint"
+          required
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose File</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <!-- Progress UI -->
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>Converting your document to PDF&hellip; Please wait.
+      </div>
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons" style="margin-top:1.6em;">
+        <button type="submit" class="button">&#x1F4E4;&nbsp; Convert to PDF</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- CONVERTED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">&#x1F4C2; Converted Files</h2>
+
+    <% if (locals.convertedFiles && locals.convertedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.convertedFiles.forEach(function(file) { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button type="button" class="delete-btn" title="Delete this file">&times;</button>
+
+            <span class="file-icon">&#x1F4D5;</span>
+
+            <p class="file-name" title="<%= file.originalName %>">
+              <%= file.originalName %>
+            </p>
+
+            <span class="format-badge">
+              <%= (file.inputFormat || 'docx').toUpperCase() %> &rarr; PDF
+            </span>
+
+            <div class="stats-block">
+              <div class="stats-row">
+                <span class="stats-label">Original</span>
+                <span class="stats-value"><%= locals.formatBytes(file.originalSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">PDF size</span>
+                <span class="stats-value"><%= locals.formatBytes(file.convertedSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Format</span>
+                <span class="stats-value"><%= (file.inputFormat || 'docx').toUpperCase() %></span>
+              </div>
+            </div>
+
+            <a href="<%= file.downloadUrl %>" class="download-button" download>Download PDF</a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">
+        &#x1F4C4; No converted files yet.<br/>
+        Upload a Word document above to get started.
+      </p>
+    <% } %>
+  </section>
+
+</main>
+
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-container">
+    <div class="modal-content">
+      <p>Are you sure you want to delete this file?<br/>This action cannot be undone.</p>
+    </div>
+    <div class="modal-buttons">
+      <button type="button" id="modal-confirm" class="modal-btn confirm">Delete</button>
+      <button type="button" id="modal-cancel"  class="modal-btn cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Word to PDF Converter &mdash; PDF Labs &copy; 2025. Powered by ConvertAPI.</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>
