@@ -1,82 +1,193 @@
 version: '3'
 services:
+
+  mongo:
+    image: mongo:7.0.31-jammy
+    container_name: pdf-labs-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - pdf-labs-net
+
   account-service:
-    build: ~/account-service
+    build: ~/pdf/account-service
     ports:
       - "3000:3000"
     networks:
       - pdf-labs-net
+    depends_on:
+      - mongo
     environment:
       - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABASE-URL
-      - JWT_SECRET=YOUR-SECRET
+      - MONGO_URI=mongodb://mongo:27017/account-service
+      - JWT_SECRET=YOUR_JWT_SECRET
 
   home-service:
-    build: ~/home-service
-    ports:
-      - "4000:4000"
-    networks:
-      - pdf-labs-net
-    environment:
-      - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABASE-URL
-      - JWT_SECRET=YOUR-SECRET
-
-  profile-service:
-    build: ~/profile-service
-    ports:
-      - "4500:4500"
-    networks:
-      - pdf-labs-net
-    environment:
-      - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABASE-URL
-      - JWT_SECRET=YOUR-SECRET
-
-  logout-service:
-    build: ~/logout-service
-    ports:
-      - "5000:5000"
-    networks:
-      - pdf-labs-net
-    environment:
-      - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABASE-URL
-      - JWT_SECRET=YOUR-SECRET
-
-  tools-service:
-    build: ~/tools-service
+    build: ~/pdf/home-service
     ports:
       - "3500:3500"
     networks:
       - pdf-labs-net
+    depends_on:
+      - mongo
     environment:
       - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABSE-URL
-      - JWT_SECRET=YOUR-SECRET
+      - MONGO_URI=mongodb://mongo:27017/account-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  profile-service:
+    build: ~/pdf/profile-service
+    ports:
+      - "4000:4000"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/account-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  logout-service:
+    build: ~/pdf/logout-service
+    ports:
+      - "4500:4500"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/account-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  tools-service:
+    build: ~/pdf/tools-service
+    ports:
+      - "5000:5000"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/tools-service
+      - JWT_SECRET=YOUR_JWT_SECRET
 
   pdf-to-image-service:
-    build: ~/pdf-to-image-service
+    build: ~/pdf/pdf-to-image-service
+    ports:
+      - "5100:5100"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/pdf-to-image-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  image-to-pdf-service:
+    build: ~/pdf/image-to-pdf-service
+    ports:
+      - "5200:5200"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/image-to-pdf-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  pdf-to-audio-service:
+    build: ~/pdf/pdf-to-audio-service
+    ports:
+      - "5400:5400"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/pdf-to-audio-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  pdf-compressor-service:
+    build: ~/pdf/pdf-compressor-service
+    ports:
+      - "5300:5300"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/pdf-compressor-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+
+  pdf-to-word-service:
+    build: ~/pdf/pdf-to-word-service
     ports:
       - "5500:5500"
     networks:
       - pdf-labs-net
+    depends_on:
+      - mongo
     environment:
       - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABASE-URL
-      - JWT_SECRET=YOUR-SECRET
+      - MONGO_URI=mongodb://mongo:27017/pdf-to-word-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+      - CONVERTAPI_SECRET=YOUR_CONVERTAPI_SECRET
 
-  image-to-pdf-service:
-    build: ~/image-to-pdf-service
+  word-to-pdf-service:
+    build: ~/pdf/word-to-pdf-service
+    ports:
+      - "5700:5700"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/word-to-pdf-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+      - CONVERTAPI_SECRET=YOUR_CONVERTAPI_SECRET
+
+  edit-pdf-service:
+    build: ~/pdf/edit-pdf-service
+    ports:
+      - "5800:5800"
+    networks:
+      - pdf-labs-net
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/edit-pdf-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+      - CONVERTAPI_SECRET=YOUR_CONVERTAPI_SECRET
+
+  sheetlab-service:
+    build: ~/pdf/sheetlab-service
     ports:
       - "5600:5600"
     networks:
       - pdf-labs-net
+    depends_on:
+      - mongo
     environment:
       - NODE_ENV=development
-      - MONGO_URI=YOUR-DATABASE-URL
-      - JWT_SECRET=YOUR-SECRET
+      - MONGO_URI=mongodb://mongo:27017/sheetlab-service
+      - JWT_SECRET=YOUR_JWT_SECRET
+      - CONVERTAPI_SECRET=YOUR_CONVERTAPI_SECRET
 
 networks:
   pdf-labs-net:
     driver: bridge
+
+volumes:
+  mongo-data:
