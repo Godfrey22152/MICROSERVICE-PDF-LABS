@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= locals.title || 'Error' %> — SheetLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/sheetlab.css"/>
+  <style>
+    .sl-error-page {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2em;
+      gap: 1em;
+    }
+    .sl-error-code {
+      font-size: 5em;
+      font-weight: 800;
+      color: var(--green);
+      line-height: 1;
+      letter-spacing: -3px;
+    }
+    .sl-error-title   { font-size: 1.3em; font-weight: 700; color: var(--white); }
+    .sl-error-message { font-size: .9em;  color: var(--grey); max-width: 400px; line-height: 1.6; }
+    .sl-error-back    { margin-top: .5em; }
+  </style>
+</head>
+<body>
+
+<header class="sl-header">
+  <div class="sl-header-inner">
+    <div class="sl-brand">
+      <span class="sl-brand-icon">📊</span>
+      <div>
+        <h1 class="sl-brand-name">Sheet<span class="accent-green">Lab</span></h1>
+        <p class="sl-brand-sub">PDF <span class="accent-green">↔</span> Excel Converter</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="sl-main">
+  <div class="sl-error-page">
+    <div class="sl-error-code"><%= locals.statusCode || 500 %></div>
+    <p class="sl-error-title"><%= locals.title || 'Something went wrong' %></p>
+    <p class="sl-error-message"><%= locals.message || 'An unexpected error occurred. Please try again.' %></p>
+    <div class="sl-error-back">
+      <a href="/tools/sheetlab<%= locals.token ? '?token=' + encodeURIComponent(locals.token) : '' %>" class="sl-btn sl-btn-primary">← Back to SheetLab</a>
+    </div>
+  </div>
+</main>
+
+<footer class="sl-footer">
+  <p>SheetLab &mdash; PDF ↔ Excel Studio &copy; 2025.</p>
+</footer>
+
+</body>
+</html>

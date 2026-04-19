@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SheetLab — PDF ↔ Excel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/sheetlab.css"/>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="sl-header">
+  <div class="sl-header-inner">
+
+    <!-- Brand -->
+    <div class="sl-brand">
+      <span class="sl-brand-icon">📊</span>
+      <div>
+        <h1 class="sl-brand-name">Sheet<span class="accent-green">Lab</span> <span class="accent-orange">Studio</span></h1>
+        <p class="sl-brand-sub">PDF <span class="accent-green">↔</span> Excel Converter</p>
+      </div>
+    </div>
+
+    <!-- Tools nav — switch to other services -->
+    <nav class="sl-tools-nav">
+      <button type="button" id="switchToPdfToWord"   class="sl-tool-btn">📝 PDF to Word</button>
+      <button type="button" id="switchToWordToPdf"   class="sl-tool-btn">📕 Word to PDF</button>
+      <button type="button" id="switchToCompressor"  class="sl-tool-btn">📦 Compressor</button>
+      <button type="button" id="switchToPdfToImage"  class="sl-tool-btn">🖼️ PDF to Image</button>
+      <button type="button" id="switchToImageToPdf"  class="sl-tool-btn">🖼️ Image to PDF</button>
+      <button type="button" id="switchToPdfToAudio"  class="sl-tool-btn">🔊 PDF to Audio</button>
+      <button type="button" id="switchToEditPdf"     class="sl-tool-btn">✏️ Edit PDF</button>
+    </nav>
+
+  </div>
+</header>
+
+<!-- ── Dashboard nav bar ──────────────────────────────────────────────── -->
+<section class="sl-dashboard">
+  <div class="sl-dashboard-inner">
+    <button type="button" id="toolsBtn"   class="sl-dash-btn">🛠 Tools</button>
+    <span class="sl-dash-sep" aria-hidden="true"></span>
+    <button type="button" id="profileBtn" class="sl-dash-btn">👤 Profile</button>
+    <span class="sl-dash-sep" aria-hidden="true"></span>
+    <button type="button" id="logoutBtn"  class="sl-dash-btn">🚪 Logout</button>
+  </div>
+</section>
+
+<main class="sl-main">
+
+  <!-- ── Operation picker ────────────────────────────────────────────── -->
+  <section class="sl-card sl-op-section">
+    <h2 class="sl-section-title">Choose Conversion</h2>
+
+    <div class="sl-op-cards">
+
+      <label class="sl-op-card selected" data-op="pdfToExcel">
+        <input type="radio" name="sl-operation" value="pdfToExcel" checked hidden/>
+        <div class="sl-op-icons">
+          <span class="sl-op-file pdf">PDF</span>
+          <span class="sl-op-arrow">→</span>
+          <span class="sl-op-file xls">XLS</span>
+        </div>
+        <span class="sl-op-label">PDF to Excel</span>
+        <span class="sl-op-desc">Extract tables &amp; data from PDF into an editable spreadsheet</span>
+      </label>
+
+      <label class="sl-op-card" data-op="excelToPdf">
+        <input type="radio" name="sl-operation" value="excelToPdf" hidden/>
+        <div class="sl-op-icons">
+          <span class="sl-op-file xls">XLS</span>
+          <span class="sl-op-arrow">→</span>
+          <span class="sl-op-file pdf">PDF</span>
+        </div>
+        <span class="sl-op-label">Excel to PDF</span>
+        <span class="sl-op-desc">Convert .xlsx or .xls spreadsheets into a shareable PDF document</span>
+      </label>
+
+    </div>
+  </section>
+
+  <!-- ── Conversion form ─────────────────────────────────────────────── -->
+  <section class="sl-card sl-form-section">
+
+    <form
+      id="sl-form"
+      action="/tools/sheetlab?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return slHandleSubmit(event)"
+    >
+      <input type="hidden" name="operation" id="sl-operation-input" value="pdfToExcel"/>
+
+      <!-- ── PDF → Excel options ── -->
+      <div class="sl-params active" data-op="pdfToExcel">
+        <div class="sl-info-banner green">
+          <span>📄</span>
+          <span>Upload a <strong>PDF file</strong> — tables, numbers and text will be extracted into an Excel spreadsheet.</span>
+        </div>
+      </div>
+
+      <!-- ── Excel → PDF options ── -->
+      <div class="sl-params" data-op="excelToPdf">
+        <div class="sl-info-banner blue">
+          <span>📊</span>
+          <span>Upload an <strong>.xlsx or .xls file</strong> — it will be converted into a PDF document.</span>
+        </div>
+
+        <div class="sl-options-grid">
+
+          <div class="sl-field">
+            <label for="pageOrientation">Page Orientation</label>
+            <select id="pageOrientation" name="pageOrientation">
+              <option value="portrait"  selected>Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+          </div>
+
+          <div class="sl-field">
+            <label for="pageSize">Page Size</label>
+            <select id="pageSize" name="pageSize">
+              <option value="a4"     selected>A4</option>
+              <option value="letter">Letter</option>
+              <option value="a3">A3</option>
+              <option value="legal">Legal</option>
+            </select>
+          </div>
+
+          <div class="sl-field sl-field-full">
+            <label class="sl-toggle-label">
+              <input type="checkbox" id="autoFit" name="autoFit" value="true" class="sl-checkbox"/>
+              <span class="sl-toggle-track"><span class="sl-toggle-thumb"></span></span>
+              <span>Auto-fit columns to page width</span>
+            </label>
+            <span class="helper-text">Shrinks wide columns to fit within the page margins.</span>
+          </div>
+
+          <div class="sl-field sl-field-full">
+            <label class="sl-toggle-label">
+              <input type="checkbox" id="fitToPage" name="fitToPage" value="true" class="sl-checkbox" checked/>
+              <span class="sl-toggle-track"><span class="sl-toggle-thumb"></span></span>
+              <span>Fit entire sheet to one page <span class="sl-badge-recommended">Recommended</span></span>
+            </label>
+            <span class="helper-text">Forces all sheet content onto exactly 1 page — prevents a single-page spreadsheet from spilling onto 2 pages in the PDF.</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Drop zone ── -->
+      <div id="sl-dropzone" class="sl-dropzone">
+        <div class="sl-dz-inner">
+          <span class="sl-dz-icon" id="sl-dz-icon">📄</span>
+          <p class="sl-dz-title">Drag &amp; Drop your file here</p>
+          <p class="sl-dz-sub" id="sl-dz-sub">or click to browse &bull; PDF only &bull; Max 100 MB</p>
+          <input type="file" id="sl-file-input" name="sheetFile" accept="application/pdf,.pdf" required hidden/>
+          <button type="button" class="sl-btn sl-btn-outline" id="sl-choose-btn">Choose File</button>
+        </div>
+        <div id="sl-selected-file" class="sl-selected-file"></div>
+      </div>
+
+      <!-- Progress -->
+      <div id="sl-progress-wrap" class="sl-progress-wrap" style="display:none;">
+        <div class="sl-progress-msg">
+          <span class="sl-spinner"></span>
+          <span id="sl-progress-text">Converting your file&hellip; Please wait.</span>
+        </div>
+        <div class="sl-progress-track">
+          <div class="sl-progress-bar" id="sl-progress-bar" style="width:0%"></div>
+        </div>
+        <span class="sl-progress-label" id="sl-progress-label">0%</span>
+      </div>
+
+      <div class="sl-submit-row">
+        <button type="submit" class="sl-btn sl-btn-primary" id="sl-submit-btn">
+          ⚡ Convert Now
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- ── SheetLab Conversions ────────────────────────────────────────── -->
+  <section class="sl-card sl-history-section">
+    <h2 class="sl-section-title">
+      📂 SheetLab Conversions
+    </h2>
+
+    <% if (locals.convertedFiles && locals.convertedFiles.length > 0) { %>
+      <div class="sl-files-grid" id="sl-files-grid">
+        <% locals.convertedFiles.forEach(function(file) { %>
+          <div class="sl-file-card" data-file-id="<%= file.fileId %>">
+            <button type="button" class="sl-delete-btn" title="Delete">&times;</button>
+
+            <div class="sl-file-icon-wrap">
+              <span class="sl-file-icon"><%= file.operation === 'pdfToExcel' ? '📊' : '📄' %></span>
+            </div>
+
+            <p class="sl-file-name" title="<%= file.originalName %>"><%= file.originalName %></p>
+
+            <span class="sl-op-badge <%= file.operation === 'pdfToExcel' ? 'green' : 'blue' %>">
+              <%= file.operationLabel || file.operation %>
+            </span>
+
+            <div class="sl-stats">
+              <div class="sl-stat-row">
+                <span class="sl-stat-label">Original</span>
+                <span class="sl-stat-value"><%= locals.formatBytes(file.originalSize) %></span>
+              </div>
+              <div class="sl-stat-row">
+                <span class="sl-stat-label">Converted</span>
+                <span class="sl-stat-value"><%= locals.formatBytes(file.convertedSize) %></span>
+              </div>
+            </div>
+
+            <a href="<%= file.downloadUrl %>" class="sl-btn sl-btn-download" download>
+              ⬇ Download <%= file.operation === 'pdfToExcel' ? '.xlsx' : '.pdf' %>
+            </a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="sl-no-files" id="sl-no-files">
+        📂 No conversions yet.<br/>
+        Upload a file above to get started.
+      </p>
+    <% } %>
+  </section>
+
+</main>
+
+<!-- Delete confirm modal -->
+<div id="sl-modal" class="sl-modal-overlay" role="dialog" aria-modal="true">
+  <div class="sl-modal-box">
+    <p>Delete this file?<br/><span class="sl-modal-sub">This cannot be undone.</span></p>
+    <div class="sl-modal-btns">
+      <button type="button" id="sl-modal-confirm" class="sl-modal-btn confirm">Delete</button>
+      <button type="button" id="sl-modal-cancel"  class="sl-modal-btn cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="sl-toast-container" class="sl-toast-container" aria-live="polite"></div>
+
+<footer class="sl-footer">
+  <p>SheetLab &mdash; PDF ↔ Excel Studio &copy; 2025. Developed by Godfrey &mdash; Powered by ConvertAPI.</p>
+</footer>
+
+<script src="/js/sheetlab.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>

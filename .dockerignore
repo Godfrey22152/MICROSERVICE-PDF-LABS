@@ -1,0 +1,93 @@
+# =============================================================
+# .dockerignore — sheetlab-service
+# Excludes files that must NOT be copied into the Docker build
+# context. Keeping the context small = faster builds & no leaks.
+# =============================================================
+
+# ── Dependencies (rebuilt inside the image) ──────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ── Environment & Secrets ─────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+
+# ── Runtime directories (created on first run, must not ship) ─
+# The Dockerfile pre-creates these with RUN mkdir -p uploads outputs
+# but we still exclude them here to prevent any cached/test data
+# from entering the build context.
+uploads/
+outputs/
+
+# ── Version Control ───────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# ── Documentation & Project Files ────────────────────────────
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+docs/
+*.md
+
+# ── Docker Files (not needed inside the image) ────────────────
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# ── Test Files ────────────────────────────────────────────────
+test/
+tests/
+__tests__/
+*.test.js
+*.spec.js
+coverage/
+.nyc_output/
+
+# ── Editor & IDE Files ────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.editorconfig
+
+# ── OS Artifacts ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ── Logs & Temporary Files ────────────────────────────────────
+logs/
+*.log
+tmp/
+temp/
+.cache/
+
+# ── Build Artifacts ───────────────────────────────────────────
+dist/
+build/
+out/
+
+# ── Linting & Formatting ──────────────────────────────────────
+.eslintrc*
+.eslintignore
+.prettierrc*
+.prettierignore
+.stylelintrc*
+
+# ── CI/CD ─────────────────────────────────────────────────────
+.travis.yml
+.circleci/
+.github/
+Jenkinsfile
