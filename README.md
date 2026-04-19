@@ -88,9 +88,15 @@ The logout service issues its own short-lived JWT at the point of logout confirm
 
 ### Section 2 — Star Rating with Countdown Bar
 ![Rating with Countdown](images/rating-countdown.png)
+![Rating with Countdown](images/rating-countdown2.png)
 
 ### Section 3 — Final Logout
 ![Final Logout](images/final-logout.png)
+![Final Logout](images/final-logout2.png)
+
+### Section 4 — Session Expiration before exiting the logout page
+![Session Expiration](images/session-expiration.png)
+
 
 ---
 
