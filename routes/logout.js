@@ -12,7 +12,9 @@ const logoutController = require('../controllers/logoutController');
 // ── GET /logout/ ───────────────────────────────────────────────────────────
 // Every other service redirects to http://localhost:4500/logout?token=...
 // Express matches this to GET /logout/ via the mount prefix.
-router.get('/', auth, logoutController.logoutPage);
+// We DO NOT use the auth middleware here because we want the page to always load
+// so that our client-side history trap and session checks can execute.
+router.get('/', logoutController.logoutPage);
 
 // ── POST /logout/begin-logout ──────────────────────────────────────────────
 // Called when the user clicks "Proceed to logout".

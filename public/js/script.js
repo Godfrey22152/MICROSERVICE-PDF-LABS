@@ -3,24 +3,27 @@
 // =====================================================================
 
 // ── Toast ─────────────────────────────────────────────────────────────────
-function showToast(message, type, duration) {
-    type     = type     || 'info';
-    duration = duration || 5000;
-    var container = document.getElementById('toast-container');
-    if (!container) return;
-    var toast = document.createElement('div');
-    toast.className   = 'toast ' + type;
-    toast.textContent = message;
-    container.appendChild(toast);
-    requestAnimationFrame(function () {
-        requestAnimationFrame(function () { toast.classList.add('show'); });
-    });
-    setTimeout(function () {
-        toast.classList.remove('show');
+// We check if showToast is already defined (inline in logout.ejs) to avoid duplicates
+if (typeof window.showToast !== 'function') {
+    window.showToast = function(message, type, duration) {
+        type     = type     || 'info';
+        duration = duration || 5000;
+        var container = document.getElementById('toast-container');
+        if (!container) return;
+        var toast = document.createElement('div');
+        toast.className   = 'toast ' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () { toast.classList.add('show'); });
+        });
         setTimeout(function () {
-            if (container.contains(toast)) container.removeChild(toast);
-        }, 350);
-    }, duration);
+            toast.classList.remove('show');
+            setTimeout(function () {
+                if (container.contains(toast)) container.removeChild(toast);
+            }, 350);
+        }, duration);
+    };
 }
 
 // ── Decode JWT exp claim client-side ──────────────────────────────────────
@@ -91,13 +94,13 @@ function handleSessionExpired() {
     clearInterval(countdownInterval);
     localStorage.removeItem('token');
     sessionStorage.removeItem('logoutPageActive');
-    showToast(
+    window.showToast(
         'Session expired — logged out automatically. Please log in again.',
         'warning',
         4000
     );
     setTimeout(function () {
-        window.location.replace('http://localhost:3000');
+        window.location.replace('http://localhost:3000/?loggedOut=true');
     }, 4000);
 }
 
@@ -107,7 +110,7 @@ function doLogout() {
     clearTimeout(sessionTimeout);
     localStorage.removeItem('token');
     sessionStorage.removeItem('logoutPageActive');
-    showToast(
+    window.showToast(
         'Logged out successfully — please log in again to access the app.',
         'success',
         4000
@@ -115,7 +118,7 @@ function doLogout() {
     // location.replace() removes the logout page from browser history so
     // the back button from localhost:3000 cannot return here.
     setTimeout(function () {
-        window.location.replace('http://localhost:3000');
+        window.location.replace('http://localhost:3000/?loggedOut=true');
     }, 4000);
 }
 
@@ -123,42 +126,18 @@ function doLogout() {
 document.addEventListener('DOMContentLoaded', function () {
 
     // ── sessionStorage back-navigation guard ──────────────────────────────
-    // sessionStorage is NOT restored when the browser serves a cached page
-    // via the back button. So the flag is only present on a live session.
-    //
-    // Genuine first load:   flag absent → read URL token, set flag, continue
-    // Back-nav after logout: flag absent AND token gone → redirect instantly
-    var alreadyActive = sessionStorage.getItem('logoutPageActive');
-    var params        = new URLSearchParams(window.location.search);
-    var urlToken      = params.get('token');
+    // The history trap and token cleanup are handled aggressively in the
+    // inline script within logout.ejs to ensure they execute as early as possible.
+    // This DOMContentLoaded block handles secondary initialization.
 
-    if (!alreadyActive) {
-        var storedToken = localStorage.getItem('token');
-
-        if (!storedToken && !urlToken) {
-            // No token anywhere — redirect immediately
-            window.location.replace('http://localhost:3000');
-            return;
-        }
-
-        if (!storedToken && urlToken) {
-            // First genuine load — store the URL token and set the flag
-            localStorage.setItem('token', urlToken);
-            sessionStorage.setItem('logoutPageActive', '1');
-        } else {
-            // Token already in localStorage — just set the flag
-            sessionStorage.setItem('logoutPageActive', '1');
-        }
-    }
-    // Once alreadyActive is set we never re-read the URL token.
-    // Back-navigation cannot restore the token through the URL.
-
-    // Final check
     var token = localStorage.getItem('token');
     if (!token) {
-        window.location.replace('http://localhost:3000');
+        // This is a fallback in case the inline script's redirect hasn't fired yet
+        window.location.replace('http://localhost:3000/?loggedOut=true');
         return;
     }
+
+    sessionStorage.setItem('logoutPageActive', '1');
 
     // Start the session expiry watcher against the current (1-hour) token
     checkSession();
@@ -204,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (data) {
             if (!data.success) {
-                showToast(data.msg || 'Could not begin logout. Please try again.', 'error');
+                window.showToast(data.msg || 'Could not begin logout. Please try again.', 'error');
                 proceedBtn.disabled    = false;
                 proceedBtn.textContent = 'Proceed to logout';
                 return;
@@ -226,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(function (err) {
             var msg = (err && err.msg) ? err.msg : 'Network error. Please try again.';
-            showToast(msg, 'error');
+            window.showToast(msg, 'error');
             proceedBtn.disabled    = false;
             proceedBtn.textContent = 'Proceed to logout';
         });

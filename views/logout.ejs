@@ -47,6 +47,85 @@
     <!-- Toast container — used by script.js showToast() -->
     <div id="toast-container"></div>
 
+    <script>
+        /**
+         * ── Aggressive History Trap & Logout Guard ──────────────────────────────
+         * This script ensures that once a user is on the logout page, they
+         * cannot navigate away via the back button. If they return here
+         * after being logged out, they are instantly redirected.
+         */
+        (function() {
+            // Inline showToast for immediate use
+            window.showToast = function(message, type, duration) {
+                type = type || 'info';
+                duration = duration || 5000;
+                var container = document.getElementById('toast-container');
+                if (!container) return;
+                var toast = document.createElement('div');
+                toast.className = 'toast ' + type;
+                toast.textContent = message;
+                container.appendChild(toast);
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() { toast.classList.add('show'); });
+                });
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                    setTimeout(function() {
+                        if (container.contains(toast)) container.removeChild(toast);
+                    }, 350);
+                }, duration);
+            };
+
+            function trapHistory() {
+                // Push a new entry so that a 'back' click merely triggers 'popstate'
+                // rather than actually navigating away to a previous page.
+                history.pushState(null, "", window.location.href);
+            }
+
+            function checkSessionAndTrap() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var urlToken = urlParams.get('token');
+
+                // If a token is in the URL, store it and clean the URL immediately
+                if (urlToken) {
+                    localStorage.setItem('token', urlToken);
+                    history.replaceState(null, '', window.location.pathname);
+                }
+
+                var token = localStorage.getItem('token');
+
+                // If no token exists (user logged out), show toast and redirect
+                if (!token) {
+                    window.showToast('Kindly log in again to access the app', 'info', 3000);
+
+                    // Maintain the trap entry even while we wait for the redirect
+                    trapHistory();
+
+                    setTimeout(function() {
+                        window.location.replace('http://localhost:3000');
+                    }, 2000);
+                    return;
+                }
+
+                // If session is active, keep trapping to prevent back-navigation to previous app pages
+                trapHistory();
+            }
+
+            // Handle back-button / forward-button
+            window.addEventListener('popstate', function() {
+                checkSessionAndTrap();
+            });
+
+            // Handle page loads from cache
+            window.addEventListener('pageshow', function() {
+                checkSessionAndTrap();
+            });
+
+            // Initial execution
+            checkSessionAndTrap();
+        })();
+    </script>
+
     <header>
         <h1>Logout Page - PDF Labs</h1>
         <p>So sad to see you go!</p>
