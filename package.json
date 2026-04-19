@@ -1,0 +1,25 @@
+{
+  "name": "logout-service",
+  "version": "1.0.0",
+  "description": "PDF Labs Logout Page Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.2",
+    "config": "^3.3.12",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.4"
+  },
+  "engines": {
+    "node": ">=15.0.0"
+  },
+  "keywords": [],
+  "author": "Godfrey Ifeanyi",
+  "license": "ISC"
+}

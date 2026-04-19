@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - PDF Labs</title>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma"        content="no-cache">
+    <meta http-equiv="Expires"       content="0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        #countdown-section {
+            margin: 1.25rem 0 0.5rem;
+            text-align: center;
+        }
+        .countdown-label {
+            font-size: 0.88rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        .countdown-track {
+            background: #f0edf6;
+            border-radius: 99px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        #countdown-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #833ab4, #38EF7D);
+            border-radius: 99px;
+            transition: width 1s linear;
+        }
+        #countdown-display {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #833ab4;
+            transition: color 0.5s ease;
+        }
+        #countdown-display.urgent { color: #ff3860; }
+        .countdown-suffix { font-size: 0.82rem; color: #999; margin-top: 0.1rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Toast container — used by script.js showToast() -->
+    <div id="toast-container"></div>
+
+    <header>
+        <h1>Logout Page - PDF Labs</h1>
+        <p>So sad to see you go!</p>
+    </header>
+
+    <!-- Section 1: Confirmation -->
+    <section id="confirmationSection">
+        <h2>Are you sure you want to logout?</h2>
+        <button id="continueBtn">Continue with the app</button>
+        <button id="proceedBtn">Proceed to logout</button>
+    </section>
+
+    <!-- Section 2: Rating -->
+    <section id="ratingSection" style="display: none;">
+        <h2>Please rate your experience with PDF Labs</h2>
+
+        <div id="countdown-section" style="display: none;">
+            <p class="countdown-label">Your session will expire automatically in:</p>
+            <div class="countdown-track">
+                <div id="countdown-bar"></div>
+            </div>
+            <div id="countdown-display">60</div>
+            <p class="countdown-suffix">seconds</p>
+        </div>
+
+        <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <button id="rateUsNowBtn">Rate Us Now</button>
+        <button id="maybeLaterBtn">Maybe Later</button>
+    </section>
+
+    <!-- Section 3: Final logout -->
+    <section id="finalLogoutSection" style="display: none;">
+        <h2>Thank you for rating us!</h2>
+        <button id="finalLogoutBtn">Logout</button>
+    </section>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
