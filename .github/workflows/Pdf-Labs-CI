@@ -1,0 +1,25 @@
+name: Pdf-Labs CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches-ignore:
+      - main
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Code Compilation (Syntax error check)
+        run: find . -name "*.js" -not -path "*/node_modules/*" -exec node --check {} \;
