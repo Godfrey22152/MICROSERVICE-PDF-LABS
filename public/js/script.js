@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(sessionTimeout);
         clearInterval(countdownInterval);
         if (currentToken) {
-            window.location.href = 'http://localhost:3500/?token=' + currentToken;
+            window.location.href = 'http://localhost:5000/?token=' + currentToken;
         } else {
             window.location.replace('http://localhost:3000');
         }
