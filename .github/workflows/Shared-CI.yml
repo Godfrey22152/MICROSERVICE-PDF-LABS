@@ -76,3 +76,23 @@ jobs:
           exit-code: 1
           # On a subsequent call to the action we know trivy is already installed so can skip this
           skip-setup-trivy: true
+
+  Sonarqube-scans:
+    runs-on: ubuntu-latest
+    needs: trivy-fs-scan
+    steps:
+    
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          args: >
+            -Dsonar.projectName=PDF-Labs-Project
+            -Dsonar.projectKey=PDF-Labs-Key
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/.github/**,**/.gitignore,**/.dockerignore
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
