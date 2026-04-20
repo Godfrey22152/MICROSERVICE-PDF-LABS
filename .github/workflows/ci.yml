@@ -1,0 +1,9 @@
+name: Branch CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  run-ci:
+    uses: Godfrey22152/MICROSERVICE-PDF-LABS/.github/workflows/Shared-CI.yml@main
