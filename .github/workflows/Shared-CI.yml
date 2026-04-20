@@ -89,8 +89,9 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@master
         with:
           args: >
+            -Dsonar.organization=GODFREY-PROJECTS
             -Dsonar.projectName=PDF-Labs-Project
-            -Dsonar.projectKey=PDF-Labs-Key
+            -Dsonar.projectKey=godfrey-projects
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/.github/**,**/.gitignore,**/.dockerignore
         env:
