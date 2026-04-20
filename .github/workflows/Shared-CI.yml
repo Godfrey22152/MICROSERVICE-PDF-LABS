@@ -83,15 +83,17 @@ jobs:
     steps:
     
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@master
+        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
         with:
           args: >
+            -Dsonar.projectKey=Godfrey22152_MICROSERVICE-PDF-LABS
             -Dsonar.organization=godfrey-projects
             -Dsonar.projectName=PDF-Labs-Project
-            -Dsonar.projectKey=godfrey-projects
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/.github/**,**/.gitignore,**/.dockerignore
         env:
