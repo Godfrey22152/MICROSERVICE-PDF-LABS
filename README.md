@@ -156,7 +156,7 @@ sheetlab-service/
 
 ---
 
-## Supported Operations
+## Supported Operations.
 
 | Operation | Input | ConvertAPI Endpoint | Output | Notes |
 |---|---|---|---|---|
