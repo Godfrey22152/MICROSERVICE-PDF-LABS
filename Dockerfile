@@ -1,4 +1,4 @@
-# ---------- Stage 1: Build the app ----------
+# ---------- Stage 1: Build the app ---------
 FROM node:22-alpine AS builder
 
 # Set working directory
