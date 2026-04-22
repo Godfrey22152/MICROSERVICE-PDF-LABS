@@ -1,4 +1,4 @@
-# Conversion is handled by the ConvertAPI (free tier available)
+# Conversion is handled by the ConvertAPI
 # which returns a DOCX file we stream directly to the user.
 
 # ---------- Stage 1: Build ----------
