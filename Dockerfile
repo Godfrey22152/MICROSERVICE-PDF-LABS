@@ -1,4 +1,4 @@
-# PDF editing handled by ConvertAPI. 
+# PDF editing handled by ConvertAPI
 
 # ---------- Stage 1: Build ----------
 FROM node:22-alpine AS builder
