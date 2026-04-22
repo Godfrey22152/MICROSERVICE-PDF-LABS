@@ -7,3 +7,4 @@ on:
 jobs:
   run-ci:
     uses: Godfrey22152/MICROSERVICE-PDF-LABS/.github/workflows/Shared-CI.yml@main
+    secrets: inherit
