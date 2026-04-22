@@ -88,11 +88,10 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
+        uses: SonarSource/sonarqube-scan-action@master
         with:
           args: >
-            -Dsonar.projectKey=Godfrey22152_MICROSERVICE-PDF-LABS
-            -Dsonar.organization=godfrey-projects
+            -Dsonar.projectKey=PDF-Labs-Project-key
             -Dsonar.projectName=PDF-Labs-Project
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/.github/**,**/.gitignore,**/.dockerignore
