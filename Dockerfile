@@ -1,4 +1,4 @@
-# PDF ↔ Excel conversion handled by ConvertAPI (free tier: 250 conversions/month)
+# PDF ↔ Excel conversion handled by ConvertAPI 
 # ---------- Stage 1: Build ----------
 FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
