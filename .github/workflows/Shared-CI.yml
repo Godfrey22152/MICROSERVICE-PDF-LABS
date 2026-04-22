@@ -78,7 +78,7 @@ jobs:
           skip-setup-trivy: true
 
   Sonarqube-scans:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-runner
     needs: trivy-fs-scan
     steps:
     
