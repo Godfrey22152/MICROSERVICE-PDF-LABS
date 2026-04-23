@@ -6,7 +6,7 @@ on:
   
 permissions:
   contents: read
-  packages: write        # needed for GHCR push
+  packages: write   # needed for GHCR push
 
 jobs:
   run-ci:
