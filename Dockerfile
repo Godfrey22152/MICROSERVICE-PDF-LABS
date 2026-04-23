@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # Only copy dependency manifest files for faster caching
 COPY package*.json ./
 
-# Install production dependencies and clean cache to reduce size
+# Install production dependencies and clean cache to reduce size.
 RUN npm ci --omit=dev \
  && npm cache clean --force
 
