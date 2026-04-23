@@ -7,8 +7,6 @@ on:
 permissions:
   contents: read
   packages: write        # needed for GHCR push
-  checks: write          # needed for Allure
-  pull-requests: write   # needed for PR comments
 
 jobs:
   run-ci:
