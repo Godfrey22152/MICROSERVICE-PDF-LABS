@@ -207,7 +207,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/pdf-labs-deployment-${{ github.ref_name }}:${{ github.sha }}
+          tags: ghcr.io/pdf-labs-deployment-${{ github.ref_name }}:${{ github.sha }}
 
   # ── Docker Image Vulnerability Scan ──────────────────────────────────
   trivy-image-scan:
@@ -222,7 +222,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
-          image-ref: ghcr.io/${{ github.repository_owner }}/pdf-labs-deployment-${{ github.ref_name }}:${{ github.sha }}
+          image-ref: ghcr.io/pdf-labs-deployment-${{ github.ref_name }}:${{ github.sha }}
           format: json
           output: trivy-image-report.json
           exit-code: 0
@@ -238,7 +238,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
-          image-ref: ghcr.io/${{ github.repository_owner }}/pdf-labs-deployment-${{ github.ref_name }}:${{ github.sha }}
+          image-ref: ghcr.io/pdf-labs-deployment-${{ github.ref_name }}:${{ github.sha }}
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
