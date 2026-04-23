@@ -1,6 +1,6 @@
 # PDF Labs — SheetLab Service
 
-> The PDF ↔ Excel conversion microservice for the PDF Labs platform. Converts PDF documents into editable Excel spreadsheets and Excel files (.xlsx, .xls) into PDF documents — both via **ConvertAPI v2** raw HTTPS. SheetLab is the most distinctively styled service in the platform, with its own bespoke CSS design system, a dedicated `error.ejs` page with token-aware back navigation, and the most comprehensive Express server setup of any service (session, flash, morgan, method-override, cookie-parser, and a dual notFound/errorHandler middleware pair).
+> The PDF ↔ Excel conversion microservice for the PDF Labs platform. Converts PDF documents into editable Excel spreadsheets and Excel files (.xlsx, .xls) into PDF documents — both via **ConvertAPI v2** raw HTTPS. SheetLab is the most distinctively styled service in the platform, with its own bespoke CSS design system, a dedicated `error.ejs` page with token-aware back navigation, and the most comprehensive Express server setup of any service (session, flash, morgan, method-override, cookie-parser, and a dual notFound/errorHandler middleware pair.)
 
 ---
 
