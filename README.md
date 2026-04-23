@@ -73,7 +73,7 @@ The home service is the first authenticated page a user sees after login. It sit
 
 ---
 
-## Screenshots
+## Screenshots.
 
 > Dashboard application screenshots.
 
