@@ -4,7 +4,9 @@ on:
   workflow_call:
 
 jobs:
+  # ── Syntax Check ──────────────────────────────────────────────────────
   compile:
+    name: Syntax Check
     runs-on: ubuntu-latest
 
     steps:
@@ -27,9 +29,32 @@ jobs:
             node --check "$file"
           done
           
-  gitleaks-scan:
+  # ── Dependency Audit ───────────────────────────────────────────────────
+  dependency-audit:
+    name: Dependency Audit
     runs-on: ubuntu-latest
     needs: compile
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high  # Fails the build if any high or critical vulnerabilities are found in the declared dependencies
+        
+  # ── Secret Scanning ───────────────────────────────────────────────────
+  gitleaks-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    needs: dependency-audit
     steps: 
     
       - name: Check out Git repository
@@ -41,11 +66,36 @@ jobs:
       - name: Run GitLeaks Scan
         run: gitleaks detect --source . --exit-code 1
 
-  trivy-fs-scan:
+  # ── Dockerfile Lint ───────────────────────────────────────────────────
+  dockerfile-lint:
+    name: Dockerfile Lint
     runs-on: ubuntu-latest
     needs: gitleaks-scan
     steps:
-    
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: warning   # Fails on any warning or error level finding
+          format: json
+          output-file: hadolint-report.json
+          no-color: false
+
+      - name: Upload Hadolint Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hadolint-report
+          path: hadolint-report.json
+          retention-days: 7
+        
+  # ── Filesystem Vulnerability Scan ────────────────────────────────────
+  trivy-fs-scan:
+    runs-on: ubuntu-latest
+    needs: dockerfile-lint
+    steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
         
@@ -63,7 +113,7 @@ jobs:
         with:
           name: trivy-report
           path: trivy-report.json
-          retention-days: 30
+          retention-days: 7
 
       - name: Fail build on High/Criticial Vulnerabilities
         uses: aquasecurity/trivy-action@master
@@ -77,11 +127,41 @@ jobs:
           # On a subsequent call to the action we know trivy is already installed so can skip this
           skip-setup-trivy: true
 
-  Sonarqube-scans:
-    runs-on: self-hosted-runner
+  # ── OWASP Dependency Check ────────────────────────────────────────────
+  owasp-dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
     needs: trivy-fs-scan
     steps:
-    
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "PDF-Labs"
+          path: "."
+          format: "HTML"
+          out: "owasp-report"
+          args: >
+            --enableRetired
+            --failOnCVSS 7
+            --exclude "**/node_modules/**"  
+        # Fails if any dependency has a CVSS score of 7 or higher (high/critical)
+        # Cross-references the NVD database directly — more thorough than npm audit
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-report
+          path: owasp-report/
+          retention-days: 7
+
+  # ── SonarQube Static Analysis ────────────────────────────────────────
+  Sonarqube-scans:
+    name: SonarQube Static Analysis
+    runs-on: self-hosted-runner
+    needs: owasp-dependency-check
+    steps:
       - name: Check out Git repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
@@ -98,3 +178,54 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # ── Docker Image Build ────────────────────────────────────────────────
+  docker-build:
+    name: Docker Image Build
+    runs-on: ubuntu-latest
+    needs: Sonarqube-scans
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t pdf-labs-${{ github.ref_name }}:${{ github.sha }} .
+        # Verifies the Dockerfile builds successfully on every push
+        # Uses branch name + commit SHA as the image tag
+
+  # ── Docker Image Vulnerability Scan ──────────────────────────────────
+  trivy-image-scan:
+    name: Docker Image Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Generate Image Scan Report
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: pdf-labs-${{ github.ref_name }}:${{ github.sha }}
+          format: json
+          output: trivy-image-report.json
+          exit-code: 0
+
+      - name: Upload Image Scan Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-image-report
+          path: trivy-image-report.json
+          retention-days: 7
+
+      - name: Fail on High/Critical Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: pdf-labs-${{ github.ref_name }}:${{ github.sha }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
+          skip-setup-trivy: true
