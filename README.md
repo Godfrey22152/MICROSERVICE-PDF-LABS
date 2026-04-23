@@ -91,7 +91,7 @@ The home service is the first authenticated page a user sees after login. It sit
 
 ---
 
-## Tech Stack
+## Tech Stack:
 
 | Layer | Technology |
 |---|---|
