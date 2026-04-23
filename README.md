@@ -36,7 +36,7 @@ This service is responsible for:
 - Displaying an auto-advancing educational animation carousel highlighting all PDF tools
 - Displaying a user testimonials carousel
 - Serving as the primary navigation hub linking to Tools, Profile, Settings, and Logout services
-- Client-side JWT session management: reading the token from the URL, persisting it to `localStorage`, and scheduling a precise expiry redirect
+- Client-side JWT session management: reading the token from the URL, persisting it to `localStorage`, and scheduling a precise expiry redirect.
 
 ---
 
