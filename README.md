@@ -33,8 +33,8 @@ The **SheetLab Service** is a Node.js/Express microservice that converts between
 
 This service is responsible for:
 
-- Rendering the SheetLab Studio page (EJS) with its own bespoke design system (`sheetlab.css`), dual operation cards, Excel-to-PDF page layout options, and per-user conversion history
-- Accepting uploads for PDF and Excel files (PDF, XLSX, XLS — up to 100 MB) validated by both MIME type and extension via a custom multer `diskStorage` config (with timestamped filenames to prevent collisions)
+- Rendering the SheetLab Studio page (EJS) with its own bespoke design system (`sheetlab.css`), dual operation cards, Excel-to-PDF page layout options, and per-user conversion history.
+- Accepting uploads for PDF and Excel files (PDF, XLSX, XLS — up to 100 MB) validated by both MIME type and extension via a custom multer `diskStorage` config (with timestamped filenames to prevent collisions.)
 - Routing between two ConvertAPI v2 endpoints: `pdf/to/xlsx` for PDF → Excel, and `xlsx/to/pdf` or `xls/to/pdf` for Excel → PDF — each selected based on the uploaded file's extension
 - Applying Excel → PDF layout options: page orientation (portrait/landscape), page size (A4/Letter/A3/Legal), auto-fit columns, and fit-to-page (which sets `FitToPage=true`, `FitToWidth=1`, `FitToHeight=1` to prevent a single-page sheet from spilling onto two PDF pages)
 - Persisting `ConvertedFile` records to MongoDB with `operation` and `operationLabel` fields
