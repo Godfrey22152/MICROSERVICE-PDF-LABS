@@ -42,7 +42,7 @@ This service is responsible for:
 
 ## Architecture
 
-The home service is the first authenticated page a user sees after login. It sits between the account service and the wider tool ecosystem, acting as the dashboard and navigation anchor for the entire platform.
+The home service is the first authenticated page a user sees after login. It sits between the **`account-service`** and the wider tool ecosystem, acting as the dashboard and navigation anchor for the entire platform.
 
 ```
                   ┌─────────────────────────────────────┐
