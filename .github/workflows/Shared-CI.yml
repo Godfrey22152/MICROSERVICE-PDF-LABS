@@ -491,16 +491,17 @@ jobs:
         continue-on-error: true
         with:
           ref: gh-pages
-          path: gh-pages
-
+          path: .allure-gh-pages
+          
       - name: Generate Allure Report with History
         uses: simple-elf/allure-report-action@master
         if: always()
         with:
           allure_results: allure-results
+          gh_pages: .allure-gh-pages        # ← tell action where history lives
           allure_history: allure-history
           keep_reports: 5
-
+      
       # Assemble everything into one folder before the single push
       - name: Assemble Final Publish Directory
         if: always()
@@ -511,7 +512,7 @@ jobs:
           # Copy OWASP HTML into the allure-history folder so it goes up in one push
           mkdir -p allure-history/owasp
           cp raw-reports/owasp/dependency-check-report.html allure-history/owasp/dependency-check-report.html
-
+      
       # Deploy Allure report first as the root
       - name: Deploy Allure Report to GitHub Pages
         if: always()
@@ -521,16 +522,5 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
           keep_files: true
-
-      - name: Verify gh-pages contents after push
-        if: always()
-        run: |
-          git fetch origin gh-pages
-          git checkout gh-pages
-          echo "=== Root of gh-pages ==="
-          ls -la
-          echo ""
-          echo "=== /owasp/ folder ==="
-          ls -la owasp/ 2>/dev/null || echo "owasp/ folder DOES NOT EXIST on gh-pages"     
       
      
