@@ -140,7 +140,7 @@ jobs:
         with:
           project: "PDF-Labs"
           path: "."
-          format: "JSON" 
+          format: "HTML" 
           out: "owasp-report"
           args: >
             --enableRetired
