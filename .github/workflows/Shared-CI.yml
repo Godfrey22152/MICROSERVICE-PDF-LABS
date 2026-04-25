@@ -446,7 +446,7 @@ jobs:
               {
                 "name": "Full OWASP HTML Report",
                 "url": "$OWASP_HTML_URL",
-                "type": "link"
+                "type": "tms"
               }
             ],
             "steps": [
