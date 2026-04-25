@@ -633,13 +633,17 @@ jobs:
         with:
           ref: gh-pages
           path: .allure-gh-pages
-          
+
+      - name: Prepare Branch History
+        run: |
+          mkdir -p .allure-gh-pages/${{ github.ref_name }}
+
       - name: Generate Allure Report with History
         uses: simple-elf/allure-report-action@master
         if: always()
         with:
           allure_results: allure-results
-          gh_pages: .allure-gh-pages        # ← tell action where history lives
+          gh_pages: .allure-gh-pages/${{ github.ref_name }}
           allure_history: allure-history
           keep_reports: 5
       
@@ -662,6 +666,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+          destination_dir: ${{ github.ref_name }}
           keep_files: true
-      
+          
      
