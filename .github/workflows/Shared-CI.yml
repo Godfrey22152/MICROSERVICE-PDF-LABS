@@ -492,6 +492,12 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      - name: Prepare OWASP HTML for Publishing
+        if: always()
+        run: |
+          mkdir -p allure-results/owasp
+          cp raw-reports/owasp/dependency-check-report.html allure-results/owasp/dependency-check-report.html
+
       - name: Generate Allure Report with History
         uses: simple-elf/allure-report-action@master
         if: always()
@@ -499,15 +505,14 @@ jobs:
           allure_results: allure-results
           allure_history: allure-history
           keep_reports: 5
-
-      - name: Prepare OWASP HTML for Publishing
+          
+      - name: Extract OWASP HTML from Allure output
         if: always()
         run: |
-          # Copy OWASP HTML report into allure-history so it's published in one push
-          mkdir -p allure-history/owasp-dependency-check-report
-          cp raw-reports/owasp/dependency-check-report.html allure-history/owasp-dependency-check-report/dependency-check-report.html
+          sudo mkdir -p allure-history/owasp
+          sudo cp allure-results/owasp/dependency-check-report.html allure-history/owasp/dependency-check-report.html
+          sudo chown -R $USER:$USER allure-history
 
-      # Publish Deploy Report to allure-history directly as gh-pages root
       - name: Deploy Report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
