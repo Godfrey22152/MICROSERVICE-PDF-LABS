@@ -1,7 +1,0 @@
-"BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
-"0","","0","Docker Image Vulnerability Scan","1","0","","0"
-"0","","1","Dockerfile Lint","0","0","","0"
-"0","","0","OWASP Dependency Check","1","0","","0"
-"0","","0","Dependency Audit","1","0","","0"
-"0","","0","Secret Scanning","1","0","","0"
-"0","","0","Filesystem Vulnerability Scan","1","0","","0"
