@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd
+                              https://dependency-check.github.io/DependencyCheck/dependency-check.4.1.xsd">
+    <scanInfo>
+        <engineVersion>12.2.1</engineVersion>
+        <dataSource>
+            <name>NVD API Last Checked</name>
+            <timestamp>2026-04-25T12:00:57Z</timestamp>
+        </dataSource>
+        <dataSource>
+            <name>NVD API Last Modified</name>
+            <timestamp>2026-04-25T11:16:19Z</timestamp>
+        </dataSource>
+        <dataSource>
+            <name>NVD Cache Last Checked</name>
+            <timestamp>2026-04-25T12:00:57Z</timestamp>
+        </dataSource>
+        <dataSource>
+            <name>NVD Cache Last Modified</name>
+            <timestamp>2026-04-25T11:16:19Z</timestamp>
+        </dataSource>
+    </scanInfo>
+    <projectInfo>
+        <name>PDF-Labs</name>
+        <reportDate>2026-04-25T12:57:34.455381444Z</reportDate>
+        <credits>This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov, Github Advisory Database (via NPM Audit API): https://github.com/advisories/, and the RetireJS community.</credits>
+    </projectInfo>
+    <dependencies>
+        <dependency isVirtual="false">
+            <fileName>app.js</fileName>
+            <filePath>/github/workspace/app.js</filePath>
+            <md5>aeffc01d56a959ba093521e27878568c</md5>
+            <sha1>7cb8123ea0e76b8bcc32a9069d75ae1cb93d1c50</sha1>
+            <sha256>60d692fb2d3ffdf6ad8ceba606867eb125b9a6221c63ae2ccda23e2b71ff58e5</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>auth.js</fileName>
+            <filePath>/github/workspace/middleware/auth.js</filePath>
+            <md5>033a50f901ad606ad9ebaeccf22a0041</md5>
+            <sha1>6d94479eab8fa5d6629ceb466bfd4000da2f2fdb</sha1>
+            <sha256>d5e1753c9eecd4569aeb933bba9e5c9c4364752fc535c59574beafeeecf1bf42</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>db.js</fileName>
+            <filePath>/github/workspace/config/db.js</filePath>
+            <md5>e4d4b9b9fa627684ee19b86302d7c4e2</md5>
+            <sha1>3e43afac262d77d5d5752e1589a5fb7e8ec66464</sha1>
+            <sha256>8e78591d28ade7e2477318bd5dca8b4fbc0229ed05200798fd71fc38e4110fb8</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>educational-animation.js</fileName>
+            <filePath>/github/workspace/public/js/educational-animation.js</filePath>
+            <md5>2635dea50d096ce46278f890632cb3a0</md5>
+            <sha1>377e0cf772ddc0b01fb4669a0f04385532cb472c</sha1>
+            <sha256>66dbde5cc50cebc730f539d91e6c87f2562723c6907cc90ada1e7046a762d552</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>home.js</fileName>
+            <filePath>/github/workspace/routes/home.js</filePath>
+            <md5>b95a7cd98b6d9e23d7a437d11ef77024</md5>
+            <sha1>21330e45d45422e330f2707274915b7a80428d70</sha1>
+            <sha256>77ac22135da34d0473baff42e5eceb0660aef127a4f87955a40b57b1ccfcf2c2</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>homeController.js</fileName>
+            <filePath>/github/workspace/controllers/homeController.js</filePath>
+            <md5>f15309e529add7c6639ac92213a23d1b</md5>
+            <sha1>fff42a9cf3fe5d3a44fe4d4ec6c79d0d9f4b6476</sha1>
+            <sha256>e6b8a9206fe630533e95cdbc2951ac9ad2ce7a87404f4c741444ddc9a56ba6c5</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>script.js</fileName>
+            <filePath>/github/workspace/public/js/script.js</filePath>
+            <md5>497e96b2cd7359d6ae6e9c40f557e0b0</md5>
+            <sha1>ae1f79a99706a5923bf833b943801d3ae8c50cc6</sha1>
+            <sha256>eba76d98d4101445dd29649f2621f09a3b9df1b9135e71dc5ac1a658128eec5e</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>testimonial_Carousel.js</fileName>
+            <filePath>/github/workspace/public/js/testimonial_Carousel.js</filePath>
+            <md5>cb2daca640c2a6fdff1e88d5157fecdc</md5>
+            <sha1>366afaca88d8157484ae5d428c8d9304756698a9</sha1>
+            <sha256>00573f920ed66eb70e41b9f84a2c3283bca7f74fa1a8bcdb04a6c26ea99855de</sha256>
+            <evidenceCollected>
+            </evidenceCollected>
+        </dependency>
+    </dependencies>
+</analysis>
