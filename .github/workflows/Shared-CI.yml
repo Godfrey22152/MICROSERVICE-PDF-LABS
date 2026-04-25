@@ -140,7 +140,7 @@ jobs:
         with:
           project: "PDF-Labs"
           path: "."
-          format: "HTML JSON" 
+          format: "JSON" 
           out: "owasp-report"
           args: >
             --enableRetired
@@ -408,19 +408,30 @@ jobs:
           EOF
 
           # ── OWASP Dependency Check ─────────────────────────────────────
-          OWASP_JSON=$(find raw-reports/owasp -name "dependency-check-report.json" 2>/dev/null | head -1)
-          if [ -n "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
-            VULN_COUNT=$(jq '[.dependencies[]?.vulnerabilities[]? | select(.cvssv3.baseScore >= 7 or .cvssv2.score >= 7)] | length' "$OWASP_JSON" 2>/dev/null || echo 0)
-            if [ "$VULN_COUNT" -eq 0 ]; then
-              STATUS="passed"
-              DETAIL="No dependencies with CVSS >= 7 found."
+          OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
+          if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
+            # Verify it is valid JSON before parsing
+            if ! jq empty "$OWASP_JSON" 2>/dev/null; then
+              STATUS="skipped"
+              DETAIL="OWASP JSON file exists but is not valid JSON."
             else
-              STATUS="failed"
-              DETAIL=$(jq -r '[.dependencies[]? | . as $dep | .vulnerabilities[]? | select(.cvssv3.baseScore >= 7 or .cvssv2.score >= 7) | "[\(if .cvssv3 then "CVSS3:\(.cvssv3.baseScore)" else "CVSS2:\(.cvssv2.score)" end)] \(.name) in \($dep.fileName) — \(.description | .[0:120])"] | join("\n")' "$OWASP_JSON")
+              VULN_COUNT=$(jq '[.dependencies[]?.vulnerabilities // [] | .[]] | length' "$OWASP_JSON" 2>/dev/null || echo 0)
+              if [ "$VULN_COUNT" -eq 0 ]; then
+                STATUS="passed"
+                DETAIL="No vulnerable dependencies found."
+              else
+                STATUS="failed"
+                DETAIL=$(jq -r '
+                  [.dependencies[]?
+                    | . as $dep
+                    | (.vulnerabilities // [])[]
+                    | "[\(.severity // "UNKNOWN")] \(.name) in \($dep.fileName // "unknown") — \((.description // "") | .[0:100])"]
+                  | join("\n")' "$OWASP_JSON" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found. See artifact for details.")
+              fi
             fi
           else
             STATUS="skipped"
-            DETAIL="OWASP JSON report not found in artifact. Ensure format includes JSON in the OWASP job."
+            DETAIL="OWASP JSON report not found. Expected: dependency-check-report.json"
           fi
           cat > allure-results/owasp-result.json <<EOF
           {
@@ -443,7 +454,7 @@ jobs:
             ]
           }
           EOF
-
+          
       - name: Debug OWASP Artifact Contents
         run: |
           echo "=== Full directory tree of raw-reports ==="
