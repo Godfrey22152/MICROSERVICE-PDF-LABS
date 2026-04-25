@@ -140,10 +140,10 @@ jobs:
         with:
           project: "PDF-Labs"
           path: "."
-          format: "HTML" 
           out: "owasp-report"
           args: >
-            --format HTML,JSON
+            --format HTML
+            --format JSON
             --enableRetired
             --failOnCVSS 7
             --exclude "**/node_modules/**"  
