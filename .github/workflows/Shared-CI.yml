@@ -259,4 +259,210 @@ jobs:
           exit-code: 1
           skip-setup-trivy: true
 
-  
+  # ── Allure Security Report ────────────────────────────────────────────
+  allure-report:
+    name: Generate Allure Security Report
+    runs-on: ubuntu-latest
+    needs: trivy-image-scan
+    if: always()
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Download Hadolint Report
+        uses: actions/download-artifact@v4
+        with:
+          name: hadolint-report
+          path: raw-reports/hadolint
+        continue-on-error: true
+
+      - name: Download Trivy FS Report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-report
+          path: raw-reports/trivy-fs
+        continue-on-error: true
+
+      - name: Download OWASP Report
+        uses: actions/download-artifact@v4
+        with:
+          name: owasp-dependency-report
+          path: raw-reports/owasp
+        continue-on-error: true
+
+      - name: Download Trivy Image Report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-image-report
+          path: raw-reports/trivy-image
+        continue-on-error: true
+
+      - name: Convert Reports to Allure Results
+        run: |
+          mkdir -p allure-results
+
+          # ── Hadolint ───────────────────────────────────────────────────
+          HADOLINT_FILE="raw-reports/hadolint/hadolint-report.json"
+          if [ -f "$HADOLINT_FILE" ] && [ -s "$HADOLINT_FILE" ]; then
+            COUNT=$(jq 'length' "$HADOLINT_FILE")
+            if [ "$COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No Dockerfile issues found."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.[] | "[\(.level | ascii_upcase)] \(.code): \(.message) (line \(.line))"] | join("\n")' "$HADOLINT_FILE")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Hadolint report not available."
+          fi
+          cat > allure-results/hadolint-result.json <<EOF
+          {
+            "name": "Dockerfile Lint (Hadolint)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Hadolint static analysis of the project Dockerfile.",
+            "steps": [
+              {
+                "name": "Hadolint Findings",
+                "status": "$STATUS",
+                "stage": "finished",
+                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
+              }
+            ],
+            "labels": [
+              { "name": "suite",    "value": "Security Scans" },
+              { "name": "feature",  "value": "Dockerfile Lint" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Trivy FS ───────────────────────────────────────────────────
+          TRIVY_FS_FILE="raw-reports/trivy-fs/trivy-report.json"
+          if [ -f "$TRIVY_FS_FILE" ] && [ -s "$TRIVY_FS_FILE" ]; then
+            VULN_COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_FS_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No HIGH/CRITICAL filesystem vulnerabilities found."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL") | "[\(.Severity)] \(.VulnerabilityID) in \(.PkgName) \(.InstalledVersion) → \(.Title // "N/A")"] | unique | join("\n")' "$TRIVY_FS_FILE")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Trivy FS report not available."
+          fi
+          cat > allure-results/trivy-fs-result.json <<EOF
+          {
+            "name": "Filesystem Vulnerability Scan (Trivy)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.",
+            "steps": [
+              {
+                "name": "HIGH/CRITICAL CVEs Found",
+                "status": "$STATUS",
+                "stage": "finished",
+                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
+              }
+            ],
+            "labels": [
+              { "name": "suite",    "value": "Security Scans" },
+              { "name": "feature",  "value": "Filesystem Vulnerability Scan" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Trivy Image ────────────────────────────────────────────────
+          TRIVY_IMG_FILE="raw-reports/trivy-image/trivy-image-report.json"
+          if [ -f "$TRIVY_IMG_FILE" ] && [ -s "$TRIVY_IMG_FILE" ]; then
+            VULN_COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_IMG_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No HIGH/CRITICAL image vulnerabilities found."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL") | "[\(.Severity)] \(.VulnerabilityID) in \(.PkgName) \(.InstalledVersion) → \(.Title // "N/A")"] | unique | join("\n")' "$TRIVY_IMG_FILE")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Trivy image report not available."
+          fi
+          cat > allure-results/trivy-image-result.json <<EOF
+          {
+            "name": "Docker Image Vulnerability Scan (Trivy)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.",
+            "steps": [
+              {
+                "name": "HIGH/CRITICAL CVEs in Image",
+                "status": "$STATUS",
+                "stage": "finished",
+                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
+              }
+            ],
+            "labels": [
+              { "name": "suite",    "value": "Security Scans" },
+              { "name": "feature",  "value": "Docker Image Vulnerability Scan" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── OWASP ──────────────────────────────────────────────────────
+          OWASP_XML=$(find raw-reports/owasp -name "dependency-check-report.xml" 2>/dev/null | head -1)
+          if [ -n "$OWASP_XML" ] && [ -s "$OWASP_XML" ]; then
+            VULN_COUNT=$(grep -c '<vulnerability>' "$OWASP_XML" || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No vulnerabilities found by OWASP Dependency Check."
+            else
+              STATUS="failed"; DETAIL="$VULN_COUNT vulnerability entries detected. See the OWASP HTML report artifact for full details."
+            fi
+          else
+            STATUS="skipped"; DETAIL="OWASP report not available."
+          fi
+          cat > allure-results/owasp-result.json <<EOF
+          {
+            "name": "OWASP Dependency Check",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.",
+            "steps": [
+              {
+                "name": "Vulnerable Dependencies Detected",
+                "status": "$STATUS",
+                "stage": "finished",
+                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
+              }
+            ],
+            "labels": [
+              { "name": "suite",    "value": "Security Scans" },
+              { "name": "feature",  "value": "OWASP Dependency Check" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+      # Pull existing gh-pages history before generating the new report
+      - name: Get Allure History
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Allure Report with History
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 5
+
+      # Publish allure-history directly as gh-pages root — this is what fixes the 404
+      - name: Deploy Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
