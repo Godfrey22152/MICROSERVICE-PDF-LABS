@@ -499,6 +499,17 @@ jobs:
           allure_history: allure-history
           keep_reports: 5
 
+      # Assemble everything into one folder before the single push
+      - name: Assemble Final Publish Directory
+        if: always()
+        run: |
+          # allure-history is owned by root (created by Docker action), take ownership
+          sudo chown -R $USER:$USER allure-history
+
+          # Copy OWASP HTML into the allure-history folder so it goes up in one push
+          mkdir -p allure-history/owasp
+          cp raw-reports/owasp/dependency-check-report.html allure-history/owasp/dependency-check-report.html
+
       # Deploy Allure report first as the root
       - name: Deploy Allure Report to GitHub Pages
         if: always()
@@ -509,14 +520,5 @@ jobs:
           publish_dir: allure-history
           keep_files: true
 
-      # Deploy OWASP HTML into /owasp/ subdirectory separately
-      - name: Deploy OWASP HTML Report to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: raw-reports/owasp
-          destination_dir: owasp
-          keep_files: true
+      
      
