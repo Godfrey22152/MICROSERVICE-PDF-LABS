@@ -1,13 +1,13 @@
 {
-  "name": "account-service",
+  "name": "tools-service",
   "version": "1.0.0",
-  "description": "PDF Labs Landing Page Application",
+  "description": "PDF Labs Landing Tools Page",
   "main": "index.js",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^6.0.0",
     "body-parser": "^1.20.2",
     "config": "^3.3.12",
     "cookie-parser": "^1.4.6",
