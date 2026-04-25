@@ -5,7 +5,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write   # Permission
+  contents: write   
   packages: write   # needed for GHCR Image push
 
 jobs:
