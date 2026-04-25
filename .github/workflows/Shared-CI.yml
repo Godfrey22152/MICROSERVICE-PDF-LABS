@@ -141,6 +141,7 @@ jobs:
           project: "PDF-Labs"
           path: "."
           out: "owasp-report"
+          format: ""
           args: >
             --format HTML
             --format JSON
