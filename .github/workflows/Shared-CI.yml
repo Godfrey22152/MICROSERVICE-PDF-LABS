@@ -140,7 +140,7 @@ jobs:
         with:
           project: "PDF-Labs"
           path: "."
-          format: "HTML" 
+          format: "HTML JSON" 
           out: "owasp-report"
           args: >
             --enableRetired
@@ -408,9 +408,13 @@ jobs:
           EOF
 
           # ── OWASP Dependency Check ─────────────────────────────────────
+          # ── OWASP Dependency Check ─────────────────────────────────────
           OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          OWASP_HTML_URL="https://${OWNER}.github.io/${REPO}/owasp/dependency-check-report.html"
+
           if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
-            # Verify it is valid JSON before parsing
             if ! jq empty "$OWASP_JSON" 2>/dev/null; then
               STATUS="skipped"
               DETAIL="OWASP JSON file exists but is not valid JSON."
@@ -426,19 +430,27 @@ jobs:
                     | . as $dep
                     | (.vulnerabilities // [])[]
                     | "[\(.severity // "UNKNOWN")] \(.name) in \($dep.fileName // "unknown") — \((.description // "") | .[0:100])"]
-                  | join("\n")' "$OWASP_JSON" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found. See artifact for details.")
+                  | join("\n")' "$OWASP_JSON" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found.")
               fi
             fi
           else
             STATUS="skipped"
-            DETAIL="OWASP JSON report not found. Expected: dependency-check-report.json"
+            DETAIL="OWASP JSON report not found."
           fi
+
           cat > allure-results/owasp-result.json <<EOF
           {
             "name": "OWASP Dependency Check",
             "status": "$STATUS",
             "stage": "finished",
             "description": "OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.",
+            "links": [
+              {
+                "name": "Full OWASP HTML Report",
+                "url": "$OWASP_HTML_URL",
+                "type": "tms"
+              }
+            ],
             "steps": [
               {
                 "name": "Vulnerable Dependencies Detected",
@@ -454,7 +466,6 @@ jobs:
             ]
           }
           EOF
-          
       - name: Debug OWASP Artifact Contents
         run: |
           echo "=== Full directory tree of raw-reports ==="
@@ -488,6 +499,16 @@ jobs:
           allure_results: allure-results
           allure_history: allure-history
           keep_reports: 5
+
+      - name: Publish OWASP HTML Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: raw-reports/owasp
+          destination_dir: owasp
+          keep_files: true        # ← critical: prevents wiping the Allure report
 
       # Publish allure-history directly as gh-pages root — this is what fixes the 404
       - name: Deploy Report to GitHub Pages
