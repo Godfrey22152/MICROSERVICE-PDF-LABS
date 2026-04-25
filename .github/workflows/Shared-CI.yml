@@ -522,5 +522,15 @@ jobs:
           publish_dir: allure-history
           keep_files: true
 
+      - name: Verify gh-pages contents after push
+        if: always()
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          echo "=== Root of gh-pages ==="
+          ls -la
+          echo ""
+          echo "=== /owasp/ folder ==="
+          ls -la owasp/ 2>/dev/null || echo "owasp/ folder DOES NOT EXIST on gh-pages"     
       
      
