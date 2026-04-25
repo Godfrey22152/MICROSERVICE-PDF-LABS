@@ -141,10 +141,8 @@ jobs:
           project: "PDF-Labs"
           path: "."
           out: "owasp-report"
-          format: 'HTML'
+          format: 'HTML, JSON'
           args: >
-            --format HTML 
-            --format JSON
             --enableRetired
             --failOnCVSS 7
             --exclude "**/node_modules/**"  
@@ -410,10 +408,7 @@ jobs:
           EOF
           
           # ── OWASP Dependency Check ─────────────────────────────────────
-          OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          OWASP_HTML_URL="https://${OWNER}.github.io/${REPO}/owasp/dependency-check-report.html"
+          OWASP_HTML_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/owasp/dependency-check-report.html"
 
           if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
             if ! jq empty "$OWASP_JSON" 2>/dev/null; then
@@ -449,7 +444,7 @@ jobs:
               {
                 "name": "Full OWASP HTML Report",
                 "url": "$OWASP_HTML_URL",
-                "type": "tms"
+                "type": "link"
               }
             ],
             "steps": [
