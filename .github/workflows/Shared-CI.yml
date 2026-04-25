@@ -141,10 +141,8 @@ jobs:
           project: "PDF-Labs"
           path: "."
           out: "owasp-report"
-          format: ""
+          format: "ALL"
           args: >
-            --format HTML
-            --format JSON
             --enableRetired
             --failOnCVSS 7
             --exclude "**/node_modules/**"  
@@ -408,8 +406,7 @@ jobs:
             ]
           }
           EOF
-
-          # ── OWASP Dependency Check ─────────────────────────────────────
+          
           # ── OWASP Dependency Check ─────────────────────────────────────
           OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
