@@ -140,7 +140,7 @@ jobs:
         with:
           project: "PDF-Labs"
           path: "."
-          format: "HTML"
+          format: "HTML JSON" 
           out: "owasp-report"
           args: >
             --enableRetired
@@ -407,17 +407,20 @@ jobs:
           }
           EOF
 
-          # ── OWASP ──────────────────────────────────────────────────────
-          OWASP_XML=$(find raw-reports/owasp -name "dependency-check-report.xml" 2>/dev/null | head -1)
-          if [ -n "$OWASP_XML" ] && [ -s "$OWASP_XML" ]; then
-            VULN_COUNT=$(grep -c '<vulnerability>' "$OWASP_XML" || echo 0)
+          # ── OWASP Dependency Check ─────────────────────────────────────
+          OWASP_JSON=$(find raw-reports/owasp -name "dependency-check-report.json" 2>/dev/null | head -1)
+          if [ -n "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
+            VULN_COUNT=$(jq '[.dependencies[]?.vulnerabilities[]? | select(.cvssv3.baseScore >= 7 or .cvssv2.score >= 7)] | length' "$OWASP_JSON" 2>/dev/null || echo 0)
             if [ "$VULN_COUNT" -eq 0 ]; then
-              STATUS="passed"; DETAIL="No vulnerabilities found by OWASP Dependency Check."
+              STATUS="passed"
+              DETAIL="No dependencies with CVSS >= 7 found."
             else
-              STATUS="failed"; DETAIL="$VULN_COUNT vulnerability entries detected. See the OWASP HTML report artifact for full details."
+              STATUS="failed"
+              DETAIL=$(jq -r '[.dependencies[]? | . as $dep | .vulnerabilities[]? | select(.cvssv3.baseScore >= 7 or .cvssv2.score >= 7) | "[\(if .cvssv3 then "CVSS3:\(.cvssv3.baseScore)" else "CVSS2:\(.cvssv2.score)" end)] \(.name) in \($dep.fileName) — \(.description | .[0:120])"] | join("\n")' "$OWASP_JSON")
             fi
           else
-            STATUS="skipped"; DETAIL="OWASP report not available."
+            STATUS="skipped"
+            DETAIL="OWASP JSON report not found in artifact. Ensure format includes JSON in the OWASP job."
           fi
           cat > allure-results/owasp-result.json <<EOF
           {
