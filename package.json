@@ -1,7 +1,7 @@
 {
   "name": "tools-service",
   "version": "1.0.0",
-  "description": "PDF Labs Landing Tools Page",
+  "description": "PDF Labs Application Landing Tools Page",
   "main": "index.js",
   "scripts": {
     "start": "node app.js"
