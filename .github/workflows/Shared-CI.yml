@@ -47,8 +47,20 @@ jobs:
         run: npm install
 
       - name: Run npm audit
-        run: npm audit --audit-level=high  # Fails the build if any high or critical vulnerabilities are found in the declared dependencies
-        
+        run: npm audit --json > npm-audit-report.json || true
+      
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: npm-audit-report.json
+          retention-days: 7
+      
+      # Fails the build if any high or critical vulnerabilities are found in the declared dependencies
+      - name: Fail on high/critical vulnerabilities
+        run: |
+          npm audit --audit-level=high
+          
   # ── Secret Scanning ───────────────────────────────────────────────────
   gitleaks-scan:
     name: Secret Scanning
@@ -61,8 +73,19 @@ jobs:
         
       - name: GitLeaks Setup
         uses: gitleaks/gitleaks-action@v2
-        
-      - name: Run GitLeaks Scan
+
+      - name: Run GitLeaks Scan 
+        run: gitleaks detect --source . --report-format json --report-path gitleaks-report.json || true
+      
+      - name: Upload Gitleaks Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+          retention-days: 7
+      
+      # Fail separately
+      - name: Fail on leaks
         run: gitleaks detect --source . --exit-code 1
 
   # ── Dockerfile Lint ───────────────────────────────────────────────────
@@ -272,6 +295,20 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Download npm audit report
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-audit-report
+          path: raw-reports/npm-audit
+        continue-on-error: true
+      
+      - name: Download Gitleaks report
+        uses: actions/download-artifact@v4
+        with:
+          name: gitleaks-report
+          path: raw-reports/gitleaks
+        continue-on-error: true
+        
       - name: Download Hadolint Report
         uses: actions/download-artifact@v4
         with:
@@ -304,6 +341,91 @@ jobs:
         run: |
           mkdir -p allure-results
 
+          # ── NPM Audit → Allure ───────────────────────────────────────────────────
+          NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
+
+          if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
+            VULN_COUNT=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
+          
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"
+              DETAIL="No high or critical vulnerabilities found in npm dependencies."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '
+                .advisories? // {} 
+                | to_entries[] 
+                | "[\(.value.severity | ascii_upcase)] \(.value.module_name) → \(.value.title)"' "$NPM_FILE" 2>/dev/null | head -20)
+            fi
+          else
+            STATUS="skipped"
+            DETAIL="npm audit report not available."
+          fi
+          
+          cat > allure-results/npm-audit-result.json <<EOF
+          {
+            "name": "Dependency Audit (npm audit)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "npm audit scan for known vulnerabilities in project dependencies.",
+            "steps": [
+              {
+                "name": "High/Critical Vulnerabilities",
+                "status": "$STATUS",
+                "stage": "finished",
+                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
+              }
+            ],
+            "labels": [
+              { "name": "suite",    "value": "Security Scans" },
+              { "name": "feature",  "value": "Dependency Audit" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Gitleaks → Allure ──────────────────────────────────────────
+          GITLEAKS_FILE="raw-reports/gitleaks/gitleaks-report.json"
+
+          if [ -f "$GITLEAKS_FILE" ] && [ -s "$GITLEAKS_FILE" ]; then
+            COUNT=$(jq 'length' "$GITLEAKS_FILE" 2>/dev/null || echo 0)
+          
+            if [ "$COUNT" -eq 0 ]; then
+              STATUS="passed"
+              DETAIL="No secrets detected."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '
+                .[] 
+                | "[\(.RuleID)] \(.Description) in \(.File):\(.StartLine)"' "$GITLEAKS_FILE" | head -20)
+            fi
+          else
+            STATUS="skipped"
+            DETAIL="Gitleaks report not available."
+          fi
+          
+          cat > allure-results/gitleaks-result.json <<EOF
+          {
+            "name": "Secret Scanning (Gitleaks)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Scan for hardcoded secrets and credentials in the repository.",
+            "steps": [
+              {
+                "name": "Detected Secrets",
+                "status": "$STATUS",
+                "stage": "finished",
+                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
+              }
+            ],
+            "labels": [
+              { "name": "suite",    "value": "Security Scans" },
+              { "name": "feature",  "value": "Secret Scanning" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+          
           # ── Hadolint ───────────────────────────────────────────────────
           HADOLINT_FILE="raw-reports/hadolint/hadolint-report.json"
           if [ -f "$HADOLINT_FILE" ] && [ -s "$HADOLINT_FILE" ]; then
