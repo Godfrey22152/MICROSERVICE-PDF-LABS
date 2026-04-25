@@ -1,5 +1,5 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.","","OWASP Dependency Check","","","skipped","","","Security Scans","",""
-"Hadolint static analysis of the project Dockerfile.","","Dockerfile Lint (Hadolint)","","","failed","","","Security Scans","",""
 "Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.","","Filesystem Vulnerability Scan (Trivy)","","","passed","","","Security Scans","",""
-"Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.","","Docker Image Vulnerability Scan (Trivy)","","","skipped","","","Security Scans","",""
+"Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.","","Docker Image Vulnerability Scan (Trivy)","","","passed","","","Security Scans","",""
+"Hadolint static analysis of the project Dockerfile.","","Dockerfile Lint (Hadolint)","","","failed","","","Security Scans","",""
+"OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.","","OWASP Dependency Check","","","passed","","","Security Scans","",""
