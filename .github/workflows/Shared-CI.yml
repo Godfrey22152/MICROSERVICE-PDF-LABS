@@ -704,8 +704,11 @@ jobs:
           cat >> gh-pages-dir/index.html <<HTMLEOF
             </div>
 
-            <h2 class="section">📄 OWASP Dependency Check Reports</h2>
-            <div class="owasp-section">
+            <h2 class="section" style="display:flex;align-items:center;justify-content:space-between;max-width:1100px;cursor:pointer" onclick="toggleDropdown('owasp-master-section', this)">
+              <span>📄 OWASP Dependency Check Reports</span>
+              <span class="chevron" style="font-size:1rem;color:#58a6ff">▾</span>
+            </h2>
+            <div class="owasp-section dropdown open" id="owasp-master-section">
           HTMLEOF
 
           # ── OWASP dropdowns per branch ──────────────────────────────────
@@ -722,7 +725,6 @@ jobs:
           OWASPEOF
 
             if [ -d "$OWASP_BRANCH_DIR" ]; then
-              # List run folders newest first
               OWASP_RUNS=$(find "$OWASP_BRANCH_DIR" -mindepth 1 -maxdepth 1 -type d \
                            2>/dev/null | xargs -I{} basename {} | sort -rn)
 
