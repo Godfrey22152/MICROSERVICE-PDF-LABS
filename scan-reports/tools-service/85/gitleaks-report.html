@@ -4,15 +4,16 @@
   body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
   h1{color:#58a6ff;margin-bottom:4px}
   .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
-  table{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}
-  th{background:#21262d;padding:10px 14px;text-align:left;font-size:.82rem;color:#8b949e;border-bottom:1px solid #30363d}
-  td{padding:10px 14px;border-bottom:1px solid #21262d;font-size:.85rem;word-break:break-all}
-  tr:last-child td{border-bottom:none}
-  .ok{color:#3fb950}
+  pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
 </style>
 </head><body>
 <h1>🔑 Gitleaks Secret Scan Report</h1>
-<div class="meta">Branch: tools-service &nbsp;|&nbsp; Run: #85 &nbsp;|&nbsp; Secrets Found: 0</div>
-<table><thead><tr><th>Rule ID</th><th>Description</th><th>File</th><th>Line</th><th>Commit</th></tr></thead>
-<tbody><tr><td colspan='5'>No secrets detected</td></tr></tbody></table>
+<div class="meta">Branch: tools-service &nbsp;|&nbsp; Run: #85</div>
+<pre id="json"></pre>
+<script>
+  const data = [];
+  function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\u[a-zA-Z0-9]{4}|\[^u]|[^\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+  document.getElementById('json').innerHTML=highlight(data);
+</script>
 </body></html>
