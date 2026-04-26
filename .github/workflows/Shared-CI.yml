@@ -567,7 +567,7 @@ jobs:
             ]
           }
           EOF
-
+          
       - name: Generate HTML Reports for All Scans
         run: |
           BRANCH="${{ github.ref_name }}"
@@ -578,52 +578,52 @@ jobs:
           # ── npm Audit HTML ─────────────────────────────────────────────
           NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
           if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
-            HIGHS=$(jq '.metadata.vulnerabilities.high // 0' "$NPM_FILE" 2>/dev/null || echo 0)
-            CRITS=$(jq '.metadata.vulnerabilities.critical // 0' "$NPM_FILE" 2>/dev/null || echo 0)
-            ROWS=$(jq -r '.advisories? // {} | to_entries[] |
-              "<tr><td>\(.value.module_name)</td><td class=\"sev-\(.value.severity)\">\(.value.severity | ascii_upcase)</td><td>\(.value.title)</td><td><a href=\"\(.value.url)\" target=\"_blank\">Advisory</a></td></tr>"' \
-              "$NPM_FILE" 2>/dev/null || echo "<tr><td colspan='4'>No advisories found</td></tr>")
+            NPM_CONTENT=$(jq '.' "$NPM_FILE")
           else
-            HIGHS=0; CRITS=0
-            ROWS="<tr><td colspan='4'>Report not available</td></tr>"
+            NPM_CONTENT='{"error": "Report not available"}'
           fi
           cat > scan-html-reports/npm-audit-report.html <<NPMEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
           <title>npm Audit Report — ${BRANCH} #${RUN_NUMBER}</title>
-          $(cat <<'STYLE'
           <style>
             body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
             h1{color:#58a6ff;margin-bottom:4px}
             .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
-            table{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}
-            th{background:#21262d;padding:10px 14px;text-align:left;font-size:.82rem;color:#8b949e;border-bottom:1px solid #30363d}
-            td{padding:10px 14px;border-bottom:1px solid #21262d;font-size:.85rem}
-            tr:last-child td{border-bottom:none}
-            .sev-critical{color:#f85149;font-weight:600}
-            .sev-high{color:#e3b341;font-weight:600}
-            .sev-moderate{color:#d29922}
-            a{color:#58a6ff}
+            pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+            .string{color:#79c0ff}
+            .number{color:#79c0ff}
+            .boolean{color:#56d364}
+            .null{color:#f85149}
+            .key{color:#e3b341}
           </style>
-          STYLE
-          )
           </head><body>
           <h1>📦 npm Audit Report</h1>
-          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER} &nbsp;|&nbsp; High: ${HIGHS} &nbsp;|&nbsp; Critical: ${CRITS}</div>
-          <table><thead><tr><th>Package</th><th>Severity</th><th>Title</th><th>Link</th></tr></thead>
-          <tbody>${ROWS}</tbody></table>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <pre id="json"></pre>
+          <script>
+            const data = $(echo "$NPM_CONTENT");
+            function highlight(json) {
+              return JSON.stringify(json, null, 2)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(m){
+                  let cls='number';
+                  if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}
+                  else if(/true|false/.test(m)){cls='boolean';}
+                  else if(/null/.test(m)){cls='null';}
+                  return '<span class="'+cls+'">'+m+'</span>';
+                });
+            }
+            document.getElementById('json').innerHTML = highlight(data);
+          </script>
           </body></html>
           NPMEOF
 
           # ── Gitleaks HTML ──────────────────────────────────────────────
           GITLEAKS_FILE="raw-reports/gitleaks/gitleaks-report.json"
           if [ -f "$GITLEAKS_FILE" ] && [ -s "$GITLEAKS_FILE" ]; then
-            COUNT=$(jq 'length' "$GITLEAKS_FILE" 2>/dev/null || echo 0)
-            ROWS=$(jq -r '.[] | "<tr><td>\(.RuleID)</td><td>\(.Description)</td><td>\(.File)</td><td>\(.StartLine)</td><td>\(.Commit // "N/A")</td></tr>"' \
-              "$GITLEAKS_FILE" 2>/dev/null || echo "<tr><td colspan='5'>No leaks found</td></tr>")
-            [ "$COUNT" -eq 0 ] && ROWS="<tr><td colspan='5'>No secrets detected</td></tr>"
+            GITLEAKS_CONTENT=$(jq '.' "$GITLEAKS_FILE")
           else
-            COUNT=0
-            ROWS="<tr><td colspan='5'>Report not available</td></tr>"
+            GITLEAKS_CONTENT='{"error": "Report not available"}'
           fi
           cat > scan-html-reports/gitleaks-report.html <<GLEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -632,30 +632,27 @@ jobs:
             body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
             h1{color:#58a6ff;margin-bottom:4px}
             .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
-            table{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}
-            th{background:#21262d;padding:10px 14px;text-align:left;font-size:.82rem;color:#8b949e;border-bottom:1px solid #30363d}
-            td{padding:10px 14px;border-bottom:1px solid #21262d;font-size:.85rem;word-break:break-all}
-            tr:last-child td{border-bottom:none}
-            .ok{color:#3fb950}
+            pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+            .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
           </style>
           </head><body>
           <h1>🔑 Gitleaks Secret Scan Report</h1>
-          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER} &nbsp;|&nbsp; Secrets Found: ${COUNT}</div>
-          <table><thead><tr><th>Rule ID</th><th>Description</th><th>File</th><th>Line</th><th>Commit</th></tr></thead>
-          <tbody>${ROWS}</tbody></table>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <pre id="json"></pre>
+          <script>
+            const data = $(echo "$GITLEAKS_CONTENT");
+            function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+            document.getElementById('json').innerHTML=highlight(data);
+          </script>
           </body></html>
           GLEOF
 
           # ── Hadolint HTML ──────────────────────────────────────────────
           HADOLINT_FILE="raw-reports/hadolint/hadolint-report.json"
           if [ -f "$HADOLINT_FILE" ] && [ -s "$HADOLINT_FILE" ]; then
-            COUNT=$(jq 'length' "$HADOLINT_FILE" 2>/dev/null || echo 0)
-            ROWS=$(jq -r '.[] | "<tr><td>\(.code)</td><td class=\"lev-\(.level)\">\(.level | ascii_upcase)</td><td>\(.message)</td><td>\(.file // "Dockerfile"):\(.line)</td></tr>"' \
-              "$HADOLINT_FILE" 2>/dev/null || echo "<tr><td colspan='4'>No issues found</td></tr>")
-            [ "$COUNT" -eq 0 ] && ROWS="<tr><td colspan='4' style='color:#3fb950'>No Dockerfile issues found</td></tr>"
+            HADOLINT_CONTENT=$(jq '.' "$HADOLINT_FILE")
           else
-            COUNT=0
-            ROWS="<tr><td colspan='4'>Report not available</td></tr>"
+            HADOLINT_CONTENT='{"error": "Report not available"}'
           fi
           cat > scan-html-reports/hadolint-report.html <<HDEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -664,35 +661,27 @@ jobs:
             body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
             h1{color:#58a6ff;margin-bottom:4px}
             .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
-            table{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}
-            th{background:#21262d;padding:10px 14px;text-align:left;font-size:.82rem;color:#8b949e;border-bottom:1px solid #30363d}
-            td{padding:10px 14px;border-bottom:1px solid #21262d;font-size:.85rem}
-            tr:last-child td{border-bottom:none}
-            .lev-error{color:#f85149;font-weight:600}
-            .lev-warning{color:#e3b341;font-weight:600}
-            .lev-info{color:#58a6ff}
-            .lev-style{color:#8b949e}
+            pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+            .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
           </style>
           </head><body>
           <h1>🐳 Hadolint Dockerfile Lint Report</h1>
-          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER} &nbsp;|&nbsp; Issues: ${COUNT}</div>
-          <table><thead><tr><th>Code</th><th>Level</th><th>Message</th><th>Location</th></tr></thead>
-          <tbody>${ROWS}</tbody></table>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <pre id="json"></pre>
+          <script>
+            const data = $(echo "$HADOLINT_CONTENT");
+            function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+            document.getElementById('json').innerHTML=highlight(data);
+          </script>
           </body></html>
           HDEOF
 
           # ── Trivy FS HTML ──────────────────────────────────────────────
           TRIVY_FS_FILE="raw-reports/trivy-fs/trivy-report.json"
           if [ -f "$TRIVY_FS_FILE" ] && [ -s "$TRIVY_FS_FILE" ]; then
-            COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_FS_FILE" 2>/dev/null || echo 0)
-            ROWS=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] |
-              unique_by(.VulnerabilityID) |
-              .[] | "<tr><td>\(.VulnerabilityID)</td><td>\(.PkgName)</td><td>\(.InstalledVersion)</td><td class=\"sev-\(.Severity | ascii_downcase)\">\(.Severity)</td><td>\(.Title // "N/A")</td></tr>"' \
-              "$TRIVY_FS_FILE" 2>/dev/null || echo "<tr><td colspan='5'>No vulnerabilities found</td></tr>")
-            [ "$COUNT" -eq 0 ] && ROWS="<tr><td colspan='5' style='color:#3fb950'>No HIGH/CRITICAL vulnerabilities found</td></tr>"
+            TRIVY_FS_CONTENT=$(jq '.' "$TRIVY_FS_FILE")
           else
-            COUNT=0
-            ROWS="<tr><td colspan='5'>Report not available</td></tr>"
+            TRIVY_FS_CONTENT='{"error": "Report not available"}'
           fi
           cat > scan-html-reports/trivy-fs-report.html <<TFSEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -701,33 +690,27 @@ jobs:
             body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
             h1{color:#58a6ff;margin-bottom:4px}
             .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
-            table{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}
-            th{background:#21262d;padding:10px 14px;text-align:left;font-size:.82rem;color:#8b949e;border-bottom:1px solid #30363d}
-            td{padding:10px 14px;border-bottom:1px solid #21262d;font-size:.85rem}
-            tr:last-child td{border-bottom:none}
-            .sev-critical{color:#f85149;font-weight:600}
-            .sev-high{color:#e3b341;font-weight:600}
+            pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+            .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
           </style>
           </head><body>
           <h1>🔍 Trivy Filesystem Scan Report</h1>
-          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER} &nbsp;|&nbsp; HIGH/CRITICAL: ${COUNT}</div>
-          <table><thead><tr><th>CVE ID</th><th>Package</th><th>Version</th><th>Severity</th><th>Title</th></tr></thead>
-          <tbody>${ROWS}</tbody></table>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <pre id="json"></pre>
+          <script>
+            const data = $(echo "$TRIVY_FS_CONTENT");
+            function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+            document.getElementById('json').innerHTML=highlight(data);
+          </script>
           </body></html>
           TFSEOF
 
           # ── Trivy Image HTML ───────────────────────────────────────────
           TRIVY_IMG_FILE="raw-reports/trivy-image/trivy-image-report.json"
           if [ -f "$TRIVY_IMG_FILE" ] && [ -s "$TRIVY_IMG_FILE" ]; then
-            COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_IMG_FILE" 2>/dev/null || echo 0)
-            ROWS=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] |
-              unique_by(.VulnerabilityID) |
-              .[] | "<tr><td>\(.VulnerabilityID)</td><td>\(.PkgName)</td><td>\(.InstalledVersion)</td><td class=\"sev-\(.Severity | ascii_downcase)\">\(.Severity)</td><td>\(.Title // "N/A")</td></tr>"' \
-              "$TRIVY_IMG_FILE" 2>/dev/null || echo "<tr><td colspan='5'>No vulnerabilities found</td></tr>")
-            [ "$COUNT" -eq 0 ] && ROWS="<tr><td colspan='5' style='color:#3fb950'>No HIGH/CRITICAL vulnerabilities found</td></tr>"
+            TRIVY_IMG_CONTENT=$(jq '.' "$TRIVY_IMG_FILE")
           else
-            COUNT=0
-            ROWS="<tr><td colspan='5'>Report not available</td></tr>"
+            TRIVY_IMG_CONTENT='{"error": "Report not available"}'
           fi
           cat > scan-html-reports/trivy-image-report.html <<TIMGEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -736,18 +719,18 @@ jobs:
             body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
             h1{color:#58a6ff;margin-bottom:4px}
             .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
-            table{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}
-            th{background:#21262d;padding:10px 14px;text-align:left;font-size:.82rem;color:#8b949e;border-bottom:1px solid #30363d}
-            td{padding:10px 14px;border-bottom:1px solid #21262d;font-size:.85rem}
-            tr:last-child td{border-bottom:none}
-            .sev-critical{color:#f85149;font-weight:600}
-            .sev-high{color:#e3b341;font-weight:600}
+            pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+            .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
           </style>
           </head><body>
           <h1>🐋 Trivy Docker Image Scan Report</h1>
-          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER} &nbsp;|&nbsp; HIGH/CRITICAL: ${COUNT}</div>
-          <table><thead><tr><th>CVE ID</th><th>Package</th><th>Version</th><th>Severity</th><th>Title</th></tr></thead>
-          <tbody>${ROWS}</tbody></table>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <pre id="json"></pre>
+          <script>
+            const data = $(echo "$TRIVY_IMG_CONTENT");
+            function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+            document.getElementById('json').innerHTML=highlight(data);
+          </script>
           </body></html>
           TIMGEOF
 
