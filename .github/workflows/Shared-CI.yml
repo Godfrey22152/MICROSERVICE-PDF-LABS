@@ -283,7 +283,7 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
           skip-setup-trivy: true
-
+          
   # ── Allure Security Report ────────────────────────────────────────────
   allure-report:
     name: Generate Allure Security Report
@@ -301,14 +301,14 @@ jobs:
           name: npm-audit-report
           path: raw-reports/npm-audit
         continue-on-error: true
-      
+
       - name: Download Gitleaks report
         uses: actions/download-artifact@v4
         with:
           name: gitleaks-report
           path: raw-reports/gitleaks
         continue-on-error: true
-        
+
       - name: Download Hadolint Report
         uses: actions/download-artifact@v4
         with:
@@ -342,8 +342,7 @@ jobs:
           mkdir -p allure-results
 
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-          
+
           cat > allure-results/environment.properties <<EOF
           Branch=${{ github.ref_name }}
           Commit=${{ github.sha }}
@@ -352,7 +351,7 @@ jobs:
           Run_Number=${{ github.run_number }}
           Actor=${{ github.actor }}
           EOF
-      
+
           cat > allure-results/executor.json <<EOF
           {
             "name": "GitHub Actions",
@@ -361,100 +360,72 @@ jobs:
             "buildOrder": ${{ github.run_number }},
             "buildName": "${{ github.ref_name }} #${{ github.run_number }}",
             "buildUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-            "reportUrl": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/",
+            "reportUrl": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.ref_name }}/",
             "reportName": "Security Report - ${{ github.ref_name }} - ${{ github.sha }}"
           }
           EOF
 
-          # ── NPM Audit → Allure ───────────────────────────────────────────────────
+          # ── NPM Audit ──────────────────────────────────────────────────
           NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
-
           if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
             VULN_COUNT=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
-          
             if [ "$VULN_COUNT" -eq 0 ]; then
               STATUS="passed"
               DETAIL="No high or critical vulnerabilities found in npm dependencies."
             else
               STATUS="failed"
-              DETAIL=$(jq -r '
-                .advisories? // {} 
-                | to_entries[] 
-                | "[\(.value.severity | ascii_upcase)] \(.value.module_name) → \(.value.title)"' "$NPM_FILE" 2>/dev/null | head -20)
+              DETAIL=$(jq -r '.advisories? // {} | to_entries[] | "[\(.value.severity | ascii_upcase)] \(.value.module_name) → \(.value.title)"' "$NPM_FILE" 2>/dev/null | head -20)
             fi
           else
-            STATUS="skipped"
-            DETAIL="npm audit report not available."
+            STATUS="skipped"; DETAIL="npm audit report not available."
           fi
-          
           cat > allure-results/npm-audit-result.json <<EOF
           {
             "name": "Dependency Audit (npm audit)",
             "status": "$STATUS",
             "stage": "finished",
             "description": "npm audit scan for known vulnerabilities in project dependencies.",
-            "steps": [
-              {
-                "name": "High/Critical Vulnerabilities",
-                "status": "$STATUS",
-                "stage": "finished",
-                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
-              }
-            ],
+            "steps": [{ "name": "High/Critical Vulnerabilities", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
             "labels": [
               { "name": "parentSuite", "value": "${{ github.ref_name }}" },
               { "name": "suite", "value": "Security Scans" },
-              { "name": "subSuite", "value": "${{ env.SHORT_SHA }}" }, 
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
               { "name": "feature", "value": "Dependency Audit" },
               { "name": "severity", "value": "critical" }
             ]
           }
           EOF
 
-          # ── Gitleaks → Allure ──────────────────────────────────────────
+          # ── Gitleaks ───────────────────────────────────────────────────
           GITLEAKS_FILE="raw-reports/gitleaks/gitleaks-report.json"
-
           if [ -f "$GITLEAKS_FILE" ] && [ -s "$GITLEAKS_FILE" ]; then
             COUNT=$(jq 'length' "$GITLEAKS_FILE" 2>/dev/null || echo 0)
-          
             if [ "$COUNT" -eq 0 ]; then
-              STATUS="passed"
-              DETAIL="No secrets detected."
+              STATUS="passed"; DETAIL="No secrets detected."
             else
               STATUS="failed"
-              DETAIL=$(jq -r '
-                .[] 
-                | "[\(.RuleID)] \(.Description) in \(.File):\(.StartLine)"' "$GITLEAKS_FILE" | head -20)
+              DETAIL=$(jq -r '.[] | "[\(.RuleID)] \(.Description) in \(.File):\(.StartLine)"' "$GITLEAKS_FILE" | head -20)
             fi
           else
-            STATUS="skipped"
-            DETAIL="Gitleaks report not available."
+            STATUS="skipped"; DETAIL="Gitleaks report not available."
           fi
-          
           cat > allure-results/gitleaks-result.json <<EOF
           {
             "name": "Secret Scanning (Gitleaks)",
             "status": "$STATUS",
             "stage": "finished",
             "description": "Scan for hardcoded secrets and credentials in the repository.",
-            "steps": [
-              {
-                "name": "Detected Secrets",
-                "status": "$STATUS",
-                "stage": "finished",
-                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
-              }
-            ],
+            "steps": [{ "name": "Detected Secrets", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
             "labels": [
               { "name": "parentSuite", "value": "${{ github.ref_name }}" },
               { "name": "suite", "value": "Security Scans" },
-              { "name": "subSuite", "value": "${{ env.SHORT_SHA }}" }, 
-              { "name": "feature",  "value": "Secret Scanning" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Secret Scanning" },
               { "name": "severity", "value": "critical" }
             ]
           }
           EOF
-          
+
           # ── Hadolint ───────────────────────────────────────────────────
           HADOLINT_FILE="raw-reports/hadolint/hadolint-report.json"
           if [ -f "$HADOLINT_FILE" ] && [ -s "$HADOLINT_FILE" ]; then
@@ -474,19 +445,12 @@ jobs:
             "status": "$STATUS",
             "stage": "finished",
             "description": "Hadolint static analysis of the project Dockerfile.",
-            "steps": [
-              {
-                "name": "Hadolint Findings",
-                "status": "$STATUS",
-                "stage": "finished",
-                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
-              }
-            ],
+            "steps": [{ "name": "Hadolint Findings", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
             "labels": [
               { "name": "parentSuite", "value": "${{ github.ref_name }}" },
               { "name": "suite", "value": "Security Scans" },
-              { "name": "subSuite", "value": "${{ env.SHORT_SHA }}" }, 
-              { "name": "feature",  "value": "Dockerfile Lint" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Dockerfile Lint" },
               { "name": "severity", "value": "critical" }
             ]
           }
@@ -511,19 +475,12 @@ jobs:
             "status": "$STATUS",
             "stage": "finished",
             "description": "Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.",
-            "steps": [
-              {
-                "name": "HIGH/CRITICAL CVEs Found",
-                "status": "$STATUS",
-                "stage": "finished",
-                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
-              }
-            ],
+            "steps": [{ "name": "HIGH/CRITICAL CVEs Found", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
             "labels": [
               { "name": "parentSuite", "value": "${{ github.ref_name }}" },
               { "name": "suite", "value": "Security Scans" },
-              { "name": "subSuite", "value": "${{ env.SHORT_SHA }}" }, 
-              { "name": "feature",  "value": "Filesystem Vulnerability Scan" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Filesystem Vulnerability Scan" },
               { "name": "severity", "value": "critical" }
             ]
           }
@@ -548,121 +505,88 @@ jobs:
             "status": "$STATUS",
             "stage": "finished",
             "description": "Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.",
-            "steps": [
-              {
-                "name": "HIGH/CRITICAL CVEs in Image",
-                "status": "$STATUS",
-                "stage": "finished",
-                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
-              }
-            ],
+            "steps": [{ "name": "HIGH/CRITICAL CVEs in Image", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
             "labels": [
               { "name": "parentSuite", "value": "${{ github.ref_name }}" },
               { "name": "suite", "value": "Security Scans" },
-              { "name": "subSuite", "value": "${{ env.SHORT_SHA }}" }, 
-              { "name": "feature",  "value": "Docker Image Vulnerability Scan" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Docker Image Vulnerability Scan" },
               { "name": "severity", "value": "critical" }
             ]
           }
           EOF
-          
-          # ── OWASP Dependency Check ─────────────────────────────────────
-          OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
-          OWASP_HTML_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/owasp/dependency-check-report.html"
 
+          # ── OWASP ──────────────────────────────────────────────────────
+          OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          OWASP_HTML_URL="https://${OWNER}.github.io/${REPO}/owasp/dependency-check-report.html"
           if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
             if ! jq empty "$OWASP_JSON" 2>/dev/null; then
-              STATUS="skipped"
-              DETAIL="OWASP JSON file exists but is not valid JSON."
+              STATUS="skipped"; DETAIL="OWASP JSON file exists but is not valid JSON."
             else
               VULN_COUNT=$(jq '[.dependencies[]?.vulnerabilities // [] | .[]] | length' "$OWASP_JSON" 2>/dev/null || echo 0)
               if [ "$VULN_COUNT" -eq 0 ]; then
-                STATUS="passed"
-                DETAIL="No vulnerable dependencies found."
+                STATUS="passed"; DETAIL="No vulnerable dependencies found."
               else
                 STATUS="failed"
-                DETAIL=$(jq -r '
-                  [.dependencies[]?
-                    | . as $dep
-                    | (.vulnerabilities // [])[]
-                    | "[\(.severity // "UNKNOWN")] \(.name) in \($dep.fileName // "unknown") — \((.description // "") | .[0:100])"]
-                  | join("\n")' "$OWASP_JSON" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found.")
+                DETAIL=$(jq -r '[.dependencies[]? | . as $dep | (.vulnerabilities // [])[] | "[\(.severity // "UNKNOWN")] \(.name) in \($dep.fileName // "unknown") — \((.description // "") | .[0:100])"] | join("\n")' "$OWASP_JSON" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found.")
               fi
             fi
           else
-            STATUS="skipped"
-            DETAIL="OWASP JSON report not found."
+            STATUS="skipped"; DETAIL="OWASP JSON report not found."
           fi
-
           cat > allure-results/owasp-result.json <<EOF
           {
             "name": "OWASP Dependency Check",
             "status": "$STATUS",
             "stage": "finished",
             "description": "OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.",
-            "links": [
-              {
-                "name": "Full OWASP HTML Report",
-                "url": "$OWASP_HTML_URL",
-                "type": "tms"
-              }
-            ],
-            "steps": [
-              {
-                "name": "Vulnerable Dependencies Detected",
-                "status": "$STATUS",
-                "stage": "finished",
-                "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) }
-              }
-            ],
+            "links": [{ "name": "Full OWASP HTML Report", "url": "$OWASP_HTML_URL", "type": "tms" }],
+            "steps": [{ "name": "Vulnerable Dependencies Detected", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
             "labels": [
               { "name": "parentSuite", "value": "${{ github.ref_name }}" },
               { "name": "suite", "value": "Security Scans" },
-              { "name": "subSuite", "value": "${{ env.SHORT_SHA }}" }, 
-              { "name": "feature",  "value": "OWASP Dependency Check" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "OWASP Dependency Check" },
               { "name": "severity", "value": "critical" }
             ]
           }
           EOF
-          
-      # Pull existing gh-pages history before generating the new report
-      - name: Get Allure History
+
+      # ── Checkout gh-pages for history ──────────────────────────────────
+      - name: Checkout gh-pages branch
         uses: actions/checkout@v4
         if: always()
         continue-on-error: true
         with:
           ref: gh-pages
-          path: .allure-gh-pages
+          path: gh-pages-dir
 
-      - name: Generate Allure Report with History
-        uses: simple-elf/allure-report-action@master
+      # ── Generate per-branch Allure report ──────────────────────────────
+      - name: Generate Allure Report per Branch
+        uses: mgrybyk-org/allure-report-branch-action@v1
         if: always()
+        continue-on-error: true
+        id: allure
         with:
-          allure_results: allure-results
-          gh_pages: .allure-gh-pages
-          allure_history: allure-history
-          keep_reports: 5
-      
-      # Assemble everything into one folder before the single push
-      - name: Assemble Final Publish Directory
+          report_id: ${{ github.ref_name }}    # one isolated report + history per branch
+          gh_pages: gh-pages-dir
+          report_dir: allure-results
+
+      # ── Copy OWASP HTML into gh-pages dir before push ──────────────────
+      - name: Add OWASP HTML to publish directory
         if: always()
         run: |
-          # allure-history is owned by root (created by Docker action), take ownership
-          sudo chown -R $USER:$USER allure-history
+          sudo chown -R $USER:$USER gh-pages-dir
+          mkdir -p gh-pages-dir/owasp
+          cp raw-reports/owasp/dependency-check-report.html gh-pages-dir/owasp/dependency-check-report.html
 
-          # Copy OWASP HTML into the allure-history folder so it goes up in one push
-          mkdir -p allure-history/owasp
-          cp raw-reports/owasp/dependency-check-report.html allure-history/owasp/dependency-check-report.html
-      
-      # Deploy Allure report first as the root
-      - name: Deploy Allure Report to GitHub Pages
+      # ── Single push of everything to gh-pages ──────────────────────────
+      - name: Push to gh-pages
+        uses: mgrybyk-org/git-commit-pull-push-action@v1
         if: always()
-        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-          destination_dir: ""
-          keep_files: true
-          
-     
+          repository: gh-pages-dir
+          branch: gh-pages
+          pull_args: --rebase -X ours
