@@ -518,9 +518,8 @@ jobs:
 
           # ── OWASP ──────────────────────────────────────────────────────
           OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          OWASP_HTML_URL="https://${OWNER}.github.io/${REPO}/owasp/dependency-check-report.html"
+          OWASP_HTML_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/owasp/dependency-check-report.html"
+          
           if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
             if ! jq empty "$OWASP_JSON" 2>/dev/null; then
               STATUS="skipped"; DETAIL="OWASP JSON file exists but is not valid JSON."
@@ -573,7 +572,7 @@ jobs:
           report_id: ${{ github.ref_name }}
           gh_pages: gh-pages-dir
           report_dir: allure-results
-
+          
       # ── Clean up and assemble gh-pages dir ─────────────────────────────
       - name: Assemble gh-pages directory
         if: always()
@@ -587,19 +586,20 @@ jobs:
           find gh-pages-dir -maxdepth 1 -name "*.yml" -delete
           find gh-pages-dir -maxdepth 1 -name "Dockerfile" -delete
 
-          # Add OWASP HTML report
-          mkdir -p gh-pages-dir/owasp
+          # Store this run's OWASP HTML under owasp/<branch>/<run_number>/
+          BRANCH="${{ github.ref_name }}"
+          RUN_NUMBER="${{ github.run_number }}"
+          mkdir -p "gh-pages-dir/owasp/${BRANCH}/${RUN_NUMBER}"
           cp raw-reports/owasp/dependency-check-report.html \
-             gh-pages-dir/owasp/dependency-check-report.html
+             "gh-pages-dir/owasp/${BRANCH}/${RUN_NUMBER}/dependency-check-report.html"
 
-          # Base URL — preserve case exactly as GitHub Pages serves it
           BASE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
 
-          # Build root index — cards link to latest.html for instant report access
-          # Branch folders live at allure-action/<branch>/<branch>/
+          # Collect all branches that have Allure reports
           BRANCHES=$(find gh-pages-dir/allure-action -mindepth 1 -maxdepth 1 -type d \
                      2>/dev/null | xargs -I{} basename {} | sort)
 
+          # ── Build dashboard index.html ──────────────────────────────────
           cat > gh-pages-dir/index.html <<HTMLEOF
           <!DOCTYPE html>
           <html lang="en">
@@ -612,51 +612,161 @@ jobs:
               body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;padding:40px 20px}
               h1{color:#58a6ff;font-size:1.8rem;margin-bottom:8px}
               .sub{color:#8b949e;margin-bottom:40px;font-size:.95rem}
-              .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;max-width:1100px;margin-bottom:40px}
-              .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;color:inherit;transition:border-color .2s,transform .2s}
-              .card:hover{border-color:#58a6ff;transform:translateY(-2px)}
-              .card h2{font-size:1rem;color:#58a6ff;margin-bottom:12px;word-break:break-all}
-              .btn{display:inline-block;text-decoration:none;padding:6px 14px;border-radius:6px;font-size:.82rem;margin-top:4px;margin-right:6px}
+              h2.section{color:#8b949e;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;margin-top:40px}
+              .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;max-width:1100px}
+              .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;color:inherit;transition:border-color .2s}
+              .card:hover{border-color:#58a6ff}
+              .card-title{font-size:1rem;color:#58a6ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+              .btn{display:inline-block;text-decoration:none;padding:6px 14px;border-radius:6px;font-size:.82rem;margin-right:6px;margin-bottom:6px;cursor:pointer;border:none;font-family:inherit}
               .btn-primary{background:#238636;color:#fff;border:1px solid #2ea043}
               .btn-primary:hover{background:#2ea043}
-              .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+              .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d;cursor:pointer}
               .btn-secondary:hover{border-color:#58a6ff;color:#58a6ff}
-              .shared{max-width:1100px;padding:20px;background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:40px}
-              .shared h2{color:#58a6ff;font-size:1rem;margin-bottom:12px}
-              .shared a{color:#58a6ff;font-size:.88rem;text-decoration:none}
-              .shared a:hover{text-decoration:underline}
-              footer{color:#484f58;font-size:.8rem;margin-top:20px}
+              .dropdown{display:none;margin-top:12px;border-top:1px solid #30363d;padding-top:12px}
+              .dropdown.open{display:block}
+              .dropdown-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #21262d;font-size:.82rem;gap:8px}
+              .dropdown-item:last-child{border-bottom:none}
+              .dropdown-item span{color:#8b949e;flex:1}
+              .dropdown-item a{color:#58a6ff;text-decoration:none;white-space:nowrap;font-size:.8rem;padding:3px 8px;border:1px solid #30363d;border-radius:4px}
+              .dropdown-item a:hover{border-color:#58a6ff;background:#161b22}
+              .commit-sha{font-family:monospace;color:#e3b341;font-size:.78rem}
+              .owasp-section{max-width:1100px;margin-top:8px}
+              .owasp-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;margin-bottom:12px}
+              .owasp-card-title{font-size:.95rem;color:#58a6ff;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+              .owasp-card-title:hover{color:#79c0ff}
+              .chevron{transition:transform .2s;display:inline-block;margin-left:8px}
+              .chevron.open{transform:rotate(180deg)}
+              footer{color:#484f58;font-size:.8rem;margin-top:50px}
+              .badge-pass{background:#1a4731;color:#3fb950;border-radius:4px;padding:2px 7px;font-size:.75rem}
+              .badge-none{background:#21262d;color:#8b949e;border-radius:4px;padding:2px 7px;font-size:.75rem}
             </style>
           </head>
           <body>
             <h1>🔐 PDF-Labs CI Security Reports</h1>
-            <p class="sub">Per-branch Allure security scan results. Click <strong>Latest Report</strong> for the most recent run, or <strong>History</strong> for all runs on that branch.</p>
+            <p class="sub">Per-branch security scan results powered by Allure. Use the buttons to view the latest report or expand history for past commits.</p>
+
+            <h2 class="section">Branch Reports</h2>
             <div class="grid">
           HTMLEOF
 
+          # ── Branch cards ───────────────────────────────────────────────
           for BRANCH in $BRANCHES; do
             LATEST_URL="${BASE_URL}/allure-action/${BRANCH}/${BRANCH}/latest.html"
-            HISTORY_URL="${BASE_URL}/allure-action/${BRANCH}/${BRANCH}/"
+            BRANCH_DIR="gh-pages-dir/allure-action/${BRANCH}/${BRANCH}"
+
+            # Collect past run folders (numeric dirs sorted descending = newest first)
+            RUN_DIRS=$(find "$BRANCH_DIR" -mindepth 1 -maxdepth 1 -type d \
+                       2>/dev/null | grep -E '/[0-9_]+$' | sort -t_ -k1 -rn)
+
             cat >> gh-pages-dir/index.html <<CARDEOF
               <div class="card">
-                <h2>🌿 ${BRANCH}</h2>
-                <a class="btn btn-primary" href="${LATEST_URL}">Latest Report</a>
-                <a class="btn btn-secondary" href="${HISTORY_URL}">History</a>
+                <div class="card-title">🌿 ${BRANCH}</div>
+                <a class="btn btn-primary" href="${LATEST_URL}" target="_blank">Latest Report</a>
+                <button class="btn btn-secondary" onclick="toggleDropdown('hist-${BRANCH}', this)">▾ History</button>
+                <div class="dropdown" id="hist-${BRANCH}">
+          CARDEOF
+
+            if [ -z "$RUN_DIRS" ]; then
+              echo "        <div style='color:#8b949e;font-size:.82rem;padding:8px 0'>No history yet.</div>" >> gh-pages-dir/index.html
+            else
+              for RUN_DIR in $RUN_DIRS; do
+                RUN_ID=$(basename "$RUN_DIR")
+                # run_id format from the action: <run_number>_<timestamp> or just a number
+                # extract just the run number part (before underscore if present)
+                RUN_NUM=$(echo "$RUN_ID" | cut -d_ -f1)
+                REPORT_URL="${BASE_URL}/allure-action/${BRANCH}/${BRANCH}/${RUN_ID}/index.html"
+
+                # Try to get date from the report's summary.json if it exists
+                SUMMARY_FILE="${RUN_DIR}/summary.json"
+                if [ -f "$SUMMARY_FILE" ]; then
+                  RUN_DATE=$(jq -r '.time.stop // empty' "$SUMMARY_FILE" 2>/dev/null | \
+                             xargs -I{} date -d "@{}" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "")
+                fi
+                [ -z "$RUN_DATE" ] && RUN_DATE="Run #${RUN_NUM}"
+
+                cat >> gh-pages-dir/index.html <<ROWEOF
+                  <div class="dropdown-item">
+                    <span>${RUN_DATE}</span>
+                    <span class="commit-sha">#${RUN_NUM}</span>
+                    <a href="${REPORT_URL}" target="_blank">View Report</a>
+                  </div>
+          ROWEOF
+              done
+            fi
+
+            cat >> gh-pages-dir/index.html <<CARDEOF
+                </div>
               </div>
           CARDEOF
           done
 
+          # ── Close grid, open OWASP section ─────────────────────────────
           cat >> gh-pages-dir/index.html <<HTMLEOF
             </div>
-            <div class="shared">
-              <h2>📄 Shared Reports</h2>
-              <a href="${BASE_URL}/owasp/dependency-check-report.html">OWASP Dependency Check HTML Report</a>
+
+            <h2 class="section">📄 OWASP Dependency Check Reports</h2>
+            <div class="owasp-section">
+          HTMLEOF
+
+          # ── OWASP dropdowns per branch ──────────────────────────────────
+          for BRANCH in $BRANCHES; do
+            OWASP_BRANCH_DIR="gh-pages-dir/owasp/${BRANCH}"
+
+            cat >> gh-pages-dir/index.html <<OWASPEOF
+              <div class="owasp-card">
+                <div class="owasp-card-title" onclick="toggleDropdown('owasp-${BRANCH}', this)">
+                  🌿 ${BRANCH} <span class="chevron">▾</span>
+                </div>
+                <div class="dropdown" id="owasp-${BRANCH}">
+                  <div style="height:10px"></div>
+          OWASPEOF
+
+            if [ -d "$OWASP_BRANCH_DIR" ]; then
+              # List run folders newest first
+              OWASP_RUNS=$(find "$OWASP_BRANCH_DIR" -mindepth 1 -maxdepth 1 -type d \
+                           2>/dev/null | xargs -I{} basename {} | sort -rn)
+
+              if [ -z "$OWASP_RUNS" ]; then
+                echo "          <div style='color:#8b949e;font-size:.82rem'>No OWASP reports yet.</div>" >> gh-pages-dir/index.html
+              else
+                for RUN_NUM in $OWASP_RUNS; do
+                  OWASP_URL="${BASE_URL}/owasp/${BRANCH}/${RUN_NUM}/dependency-check-report.html"
+                  cat >> gh-pages-dir/index.html <<OWASPROWEOF
+                  <div class="dropdown-item">
+                    <span>Run #${RUN_NUM}</span>
+                    <a href="${OWASP_URL}" target="_blank">View OWASP Report</a>
+                  </div>
+          OWASPROWEOF
+                done
+              fi
+            else
+              echo "          <div style='color:#8b949e;font-size:.82rem'>No OWASP reports yet.</div>" >> gh-pages-dir/index.html
+            fi
+
+            cat >> gh-pages-dir/index.html <<OWASPEOF
+                </div>
+              </div>
+          OWASPEOF
+          done
+
+          # ── Close page ─────────────────────────────────────────────────
+          cat >> gh-pages-dir/index.html <<HTMLEOF
             </div>
-            <footer>Generated by GitHub Actions · PDF-Labs CI Pipeline</footer>
+            <footer>Generated by GitHub Actions · PDF-Labs CI Pipeline · Run #${{ github.run_number }}</footer>
+
+            <script>
+              function toggleDropdown(id, btn) {
+                const el = document.getElementById(id);
+                const isOpen = el.classList.toggle('open');
+                // update chevron if inside owasp card title
+                const chevron = btn.querySelector('.chevron');
+                if (chevron) chevron.classList.toggle('open', isOpen);
+              }
+            </script>
           </body>
           </html>
           HTMLEOF
-          
+
       # ── Single push of everything to gh-pages ──────────────────────────
       - name: Push to gh-pages
         uses: mgrybyk-org/git-commit-pull-push-action@v1
