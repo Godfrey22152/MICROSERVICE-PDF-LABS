@@ -9,46 +9,157 @@
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;padding:40px 20px}
     h1{color:#58a6ff;font-size:1.8rem;margin-bottom:8px}
     .sub{color:#8b949e;margin-bottom:40px;font-size:.95rem}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;max-width:1100px;margin-bottom:40px}
-    .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;color:inherit;transition:border-color .2s,transform .2s}
-    .card:hover{border-color:#58a6ff;transform:translateY(-2px)}
-    .card h2{font-size:1rem;color:#58a6ff;margin-bottom:12px;word-break:break-all}
-    .btn{display:inline-block;text-decoration:none;padding:6px 14px;border-radius:6px;font-size:.82rem;margin-top:4px;margin-right:6px}
+    h2.section{color:#8b949e;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;margin-top:40px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;max-width:1100px}
+    .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;color:inherit;transition:border-color .2s}
+    .card:hover{border-color:#58a6ff}
+    .card-title{font-size:1rem;color:#58a6ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .btn{display:inline-block;text-decoration:none;padding:6px 14px;border-radius:6px;font-size:.82rem;margin-right:6px;margin-bottom:6px;cursor:pointer;border:none;font-family:inherit}
     .btn-primary{background:#238636;color:#fff;border:1px solid #2ea043}
     .btn-primary:hover{background:#2ea043}
-    .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+    .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d;cursor:pointer}
     .btn-secondary:hover{border-color:#58a6ff;color:#58a6ff}
-    .shared{max-width:1100px;padding:20px;background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:40px}
-    .shared h2{color:#58a6ff;font-size:1rem;margin-bottom:12px}
-    .shared a{color:#58a6ff;font-size:.88rem;text-decoration:none}
-    .shared a:hover{text-decoration:underline}
-    footer{color:#484f58;font-size:.8rem;margin-top:20px}
+    .dropdown{display:none;margin-top:12px;border-top:1px solid #30363d;padding-top:12px}
+    .dropdown.open{display:block}
+    .dropdown-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #21262d;font-size:.82rem;gap:8px}
+    .dropdown-item:last-child{border-bottom:none}
+    .dropdown-item span{color:#8b949e;flex:1}
+    .dropdown-item a{color:#58a6ff;text-decoration:none;white-space:nowrap;font-size:.8rem;padding:3px 8px;border:1px solid #30363d;border-radius:4px}
+    .dropdown-item a:hover{border-color:#58a6ff;background:#161b22}
+    .commit-sha{font-family:monospace;color:#e3b341;font-size:.78rem}
+    .owasp-section{max-width:1100px;margin-top:8px}
+    .owasp-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;margin-bottom:12px}
+    .owasp-card-title{font-size:.95rem;color:#58a6ff;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .owasp-card-title:hover{color:#79c0ff}
+    .chevron{transition:transform .2s;display:inline-block;margin-left:8px}
+    .chevron.open{transform:rotate(180deg)}
+    footer{color:#484f58;font-size:.8rem;margin-top:50px}
+    .badge-pass{background:#1a4731;color:#3fb950;border-radius:4px;padding:2px 7px;font-size:.75rem}
+    .badge-none{background:#21262d;color:#8b949e;border-radius:4px;padding:2px 7px;font-size:.75rem}
   </style>
 </head>
 <body>
   <h1>🔐 PDF-Labs CI Security Reports</h1>
-  <p class="sub">Per-branch Allure security scan results. Click <strong>Latest Report</strong> for the most recent run, or <strong>History</strong> for all runs on that branch.</p>
+  <p class="sub">Per-branch security scan results powered by Allure. Use the buttons to view the latest report or expand history for past commits.</p>
+
+  <h2 class="section">Branch Reports</h2>
   <div class="grid">
     <div class="card">
-      <h2>🌿 home-service</h2>
-      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/latest.html">Latest Report</a>
-      <a class="btn btn-secondary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/">History</a>
+      <div class="card-title">🌿 home-service</div>
+      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/latest.html" target="_blank">Latest Report</a>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-home-service', this)">▾ History</button>
+      <div class="dropdown" id="hist-home-service">
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24928729886</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/24928729886_1777221282796/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24928729886</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/24928729886_1777215221864/index.html" target="_blank">View Report</a>
+        </div>
+      </div>
     </div>
     <div class="card">
-      <h2>🌿 profile-service</h2>
-      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/latest.html">Latest Report</a>
-      <a class="btn btn-secondary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/">History</a>
+      <div class="card-title">🌿 profile-service</div>
+      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/latest.html" target="_blank">Latest Report</a>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-profile-service', this)">▾ History</button>
+      <div class="dropdown" id="hist-profile-service">
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24937432172</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/24937432172_1777221261161/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24937432172</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/24937432172_1777218375165/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24937432172</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/24937432172_1777215211646/index.html" target="_blank">View Report</a>
+        </div>
+      </div>
     </div>
     <div class="card">
-      <h2>🌿 tools-service</h2>
-      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/latest.html">Latest Report</a>
-      <a class="btn btn-secondary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/">History</a>
+      <div class="card-title">🌿 tools-service</div>
+      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/latest.html" target="_blank">Latest Report</a>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-tools-service', this)">▾ History</button>
+      <div class="dropdown" id="hist-tools-service">
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24939063189</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/24939063189_1777224238412/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24939063189</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/24939063189_1777221219171/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24939063189</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/24939063189_1777218341216/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24939063189</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/24939063189_1777215586619/index.html" target="_blank">View Report</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #24928729886</span>
+          <span class="commit-sha">#24939063189</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/24939063189_1777215183424/index.html" target="_blank">View Report</a>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="shared">
-    <h2>📄 Shared Reports</h2>
-    <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/owasp/dependency-check-report.html">OWASP Dependency Check HTML Report</a>
+
+  <h2 class="section">📄 OWASP Dependency Check Reports</h2>
+  <div class="owasp-section">
+    <div class="owasp-card">
+      <div class="owasp-card-title" onclick="toggleDropdown('owasp-home-service', this)">
+        🌿 home-service <span class="chevron">▾</span>
+      </div>
+      <div class="dropdown" id="owasp-home-service">
+        <div style="height:10px"></div>
+          <div style='color:#8b949e;font-size:.82rem'>No OWASP reports yet.</div>
+      </div>
+    </div>
+    <div class="owasp-card">
+      <div class="owasp-card-title" onclick="toggleDropdown('owasp-profile-service', this)">
+        🌿 profile-service <span class="chevron">▾</span>
+      </div>
+      <div class="dropdown" id="owasp-profile-service">
+        <div style="height:10px"></div>
+          <div style='color:#8b949e;font-size:.82rem'>No OWASP reports yet.</div>
+      </div>
+    </div>
+    <div class="owasp-card">
+      <div class="owasp-card-title" onclick="toggleDropdown('owasp-tools-service', this)">
+        🌿 tools-service <span class="chevron">▾</span>
+      </div>
+      <div class="dropdown" id="owasp-tools-service">
+        <div style="height:10px"></div>
+        <div class="dropdown-item">
+          <span>Run #85</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/owasp/tools-service/85/dependency-check-report.html" target="_blank">View OWASP Report</a>
+        </div>
+      </div>
+    </div>
   </div>
-  <footer>Generated by GitHub Actions · PDF-Labs CI Pipeline</footer>
+  <footer>Generated by GitHub Actions · PDF-Labs CI Pipeline · Run #85</footer>
+
+  <script>
+    function toggleDropdown(id, btn) {
+      const el = document.getElementById(id);
+      const isOpen = el.classList.toggle('open');
+      // update chevron if inside owasp card title
+      const chevron = btn.querySelector('.chevron');
+      if (chevron) chevron.classList.toggle('open', isOpen);
+    }
+  </script>
 </body>
 </html>
