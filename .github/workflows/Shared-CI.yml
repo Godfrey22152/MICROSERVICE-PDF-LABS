@@ -245,7 +245,7 @@ jobs:
   trivy-image-scan:
     name: Docker Image Vulnerability Scan
     runs-on: ubuntu-latest
-    #needs: docker-build-push
+    needs: docker-build-push
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
