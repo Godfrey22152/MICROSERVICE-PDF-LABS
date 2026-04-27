@@ -533,7 +533,7 @@ jobs:
 
           # ── OWASP ──────────────────────────────────────────────────────
           OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
-          OWASP_HTML_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/owasp/dependency-check-report.html"
+          OWASP_HTML_URL="${BASE_URL}/owasp/${BRANCH}/${RUN_NUMBER}/dependency-check-report.html"
           
           if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
             if ! jq empty "$OWASP_JSON" 2>/dev/null; then
@@ -579,9 +579,23 @@ jobs:
           NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
           if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
             NPM_CONTENT=$(jq '.' "$NPM_FILE")
+            VULN_COUNT=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              NPM_STATUS="✅ Passed"
+              NPM_STATUS_COLOR="#3fb950"
+              NPM_DETAIL="No high or critical vulnerabilities found in npm dependencies."
+            else
+              NPM_STATUS="❌ Failed"
+              NPM_STATUS_COLOR="#f85149"
+              NPM_DETAIL="Found ${VULN_COUNT} high/critical vulnerabilities."
+            fi
           else
             NPM_CONTENT='{"error": "Report not available"}'
+            NPM_STATUS="⚠️ Skipped"
+            NPM_STATUS_COLOR="#e3b341"
+            NPM_DETAIL="npm audit report not available."
           fi
+          
           cat > scan-html-reports/npm-audit-report.html <<NPMEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
           <title>npm Audit Report — ${BRANCH} #${RUN_NUMBER}</title>
@@ -599,6 +613,8 @@ jobs:
           </head><body>
           <h1>📦 npm Audit Report</h1>
           <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:${NPM_STATUS_COLOR}">Status: ${NPM_STATUS}</div>
+          <div class="detail">Details: ${NPM_DETAIL}</div>
           <pre id="json"></pre>
           <script>
             const data = $(echo "$NPM_CONTENT");
@@ -620,10 +636,25 @@ jobs:
 
           # ── Gitleaks HTML ──────────────────────────────────────────────
           GITLEAKS_FILE="raw-reports/gitleaks/gitleaks-report.json"
+
           if [ -f "$GITLEAKS_FILE" ] && [ -s "$GITLEAKS_FILE" ]; then
             GITLEAKS_CONTENT=$(jq '.' "$GITLEAKS_FILE")
+            COUNT=$(jq 'length' "$GITLEAKS_FILE" 2>/dev/null || echo 0)
+          
+            if [ "$COUNT" -eq 0 ]; then
+              GITLEAKS_STATUS="✅ Passed"
+              GITLEAKS_STATUS_COLOR="#3fb950"
+              GITLEAKS_DETAIL="No secrets detected."
+            else
+              GITLEAKS_STATUS="❌ Failed"
+              GITLEAKS_STATUS_COLOR="#f85149"
+              GITLEAKS_DETAIL="Found ${COUNT} potential secrets."
+            fi
           else
             GITLEAKS_CONTENT='{"error": "Report not available"}'
+            GITLEAKS_STATUS="⚠️ Skipped"
+            GITLEAKS_STATUS_COLOR="#e3b341"
+            GITLEAKS_DETAIL="Gitleaks report not available."
           fi
           cat > scan-html-reports/gitleaks-report.html <<GLEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -638,6 +669,8 @@ jobs:
           </head><body>
           <h1>🔑 Gitleaks Secret Scan Report</h1>
           <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:${GITLEAKS_STATUS_COLOR}">Status: ${GITLEAKS_STATUS}</div>
+          <div class="detail">Details: ${GITLEAKS_DETAIL}</div>
           <pre id="json"></pre>
           <script>
             const data = $(echo "$GITLEAKS_CONTENT");
@@ -646,13 +679,27 @@ jobs:
           </script>
           </body></html>
           GLEOF
-
+          
           # ── Hadolint HTML ──────────────────────────────────────────────
           HADOLINT_FILE="raw-reports/hadolint/hadolint-report.json"
           if [ -f "$HADOLINT_FILE" ] && [ -s "$HADOLINT_FILE" ]; then
             HADOLINT_CONTENT=$(jq '.' "$HADOLINT_FILE")
+            COUNT=$(jq 'length' "$HADOLINT_FILE")
+          
+            if [ "$COUNT" -eq 0 ]; then
+              HADOLINT_STATUS="✅ Passed"
+              HADOLINT_STATUS_COLOR="#3fb950"
+              HADOLINT_DETAIL="No Dockerfile issues found."
+            else
+              HADOLINT_STATUS="❌ Failed"
+              HADOLINT_STATUS_COLOR="#f85149"
+              HADOLINT_DETAIL="Found ${COUNT} Dockerfile issues."
+            fi
           else
             HADOLINT_CONTENT='{"error": "Report not available"}'
+            HADOLINT_STATUS="⚠️ Skipped"
+            HADOLINT_STATUS_COLOR="#e3b341"
+            HADOLINT_DETAIL="Hadolint report not available."
           fi
           cat > scan-html-reports/hadolint-report.html <<HDEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -667,6 +714,8 @@ jobs:
           </head><body>
           <h1>🐳 Hadolint Dockerfile Lint Report</h1>
           <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:${HADOLINT_STATUS_COLOR}">Status: ${HADOLINT_STATUS}</div>
+          <div class="detail">Details: ${HADOLINT_DETAIL}</div>
           <pre id="json"></pre>
           <script>
             const data = $(echo "$HADOLINT_CONTENT");
@@ -680,8 +729,23 @@ jobs:
           TRIVY_FS_FILE="raw-reports/trivy-fs/trivy-report.json"
           if [ -f "$TRIVY_FS_FILE" ] && [ -s "$TRIVY_FS_FILE" ]; then
             TRIVY_FS_CONTENT=$(jq '.' "$TRIVY_FS_FILE")
+          
+            VULN_COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_FS_FILE" 2>/dev/null || echo 0)
+          
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              TRIVY_FS_STATUS="✅ Passed"
+              TRIVY_FS_STATUS_COLOR="#3fb950"
+              TRIVY_FS_DETAIL="No HIGH or CRITICAL filesystem vulnerabilities found."
+            else
+              TRIVY_FS_STATUS="❌ Failed"
+              TRIVY_FS_STATUS_COLOR="#f85149"
+              TRIVY_FS_DETAIL="Found ${VULN_COUNT} HIGH or CRITICAL vulnerabilities."
+            fi
           else
             TRIVY_FS_CONTENT='{"error": "Report not available"}'
+            TRIVY_FS_STATUS="⚠️ Skipped"
+            TRIVY_FS_STATUS_COLOR="#e3b341"
+            TRIVY_FS_DETAIL="Trivy filesystem report not available."
           fi
           cat > scan-html-reports/trivy-fs-report.html <<TFSEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -696,6 +760,8 @@ jobs:
           </head><body>
           <h1>🔍 Trivy Filesystem Scan Report</h1>
           <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:${TRIVY_FS_STATUS_COLOR}">Status: ${TRIVY_FS_STATUS}</div>
+          <div class="detail">Details: ${TRIVY_FS_DETAIL}</div>
           <pre id="json"></pre>
           <script>
             const data = $(echo "$TRIVY_FS_CONTENT");
@@ -709,8 +775,23 @@ jobs:
           TRIVY_IMG_FILE="raw-reports/trivy-image/trivy-image-report.json"
           if [ -f "$TRIVY_IMG_FILE" ] && [ -s "$TRIVY_IMG_FILE" ]; then
             TRIVY_IMG_CONTENT=$(jq '.' "$TRIVY_IMG_FILE")
+          
+            VULN_COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_IMG_FILE" 2>/dev/null || echo 0)
+          
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              TRIVY_IMG_STATUS="✅ Passed"
+              TRIVY_IMG_STATUS_COLOR="#3fb950"
+              TRIVY_IMG_DETAIL="No HIGH or CRITICAL image vulnerabilities found."
+            else
+              TRIVY_IMG_STATUS="❌ Failed"
+              TRIVY_IMG_STATUS_COLOR="#f85149"
+              TRIVY_IMG_DETAIL="Found ${VULN_COUNT} HIGH or CRITICAL vulnerabilities."
+            fi
           else
             TRIVY_IMG_CONTENT='{"error": "Report not available"}'
+            TRIVY_IMG_STATUS="⚠️ Skipped"
+            TRIVY_IMG_STATUS_COLOR="#e3b341"
+            TRIVY_IMG_DETAIL="Trivy image report not available."
           fi
           cat > scan-html-reports/trivy-image-report.html <<TIMGEOF
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
@@ -725,6 +806,8 @@ jobs:
           </head><body>
           <h1>🐋 Trivy Docker Image Scan Report</h1>
           <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:${TRIVY_IMG_STATUS_COLOR}">Status: ${TRIVY_IMG_STATUS}</div>
+          <div class="detail">Details: ${TRIVY_IMG_DETAIL}</div>
           <pre id="json"></pre>
           <script>
             const data = $(echo "$TRIVY_IMG_CONTENT");
