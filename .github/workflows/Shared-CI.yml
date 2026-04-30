@@ -290,7 +290,42 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
           skip-setup-trivy: true
-          
+
+  # ── Grype Image Vulnerability Scan (Anchore) ──────────────────────────
+  grype-image-scan:
+    name: Docker Image Vulnerability Scan (Grype - Anchore)
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+  
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+  
+      - name: Set lowercase image name
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          BRANCH=$(echo "${{ github.ref_name }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE=ghcr.io/$OWNER/$REPO/pdf-labs-deployment-$BRANCH:${{ github.sha }}" >> $GITHUB_ENV
+
+      # Run Anchore scan (this uses Grype internally)
+      - name: Run Anchore Container Scan
+        uses: anchore/scan-action@v7
+        with:
+          image: ${{ env.IMAGE }}
+          fail-build: false      # To avoid failing the build regardless of severity
+          severity-cutoff: high
+          output-format: json
+          output-file: grype-image-report.json
+
+      - name: Upload Grype Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: grype-image-report
+          path: grype-image-report.json
+          retention-days: 7
+
+  
   # ── Allure Security Report ────────────────────────────────────────────
   allure-report:
     name: Generate Allure Security Report
@@ -304,6 +339,7 @@ jobs:
       - owasp-dependency-check
       - docker-build-push
       - trivy-image-scan
+      - grype-image-scan
     if: always()
 
     steps:
@@ -352,6 +388,13 @@ jobs:
           path: raw-reports/trivy-image
         continue-on-error: true
 
+      - name: Download Grype Image Report
+        uses: actions/download-artifact@v4
+        with:
+          name: grype-image-report
+          path: raw-reports/grype-image
+        continue-on-error: true
+        
       - name: Convert Reports to Allure Results
         run: |
           mkdir -p allure-results
@@ -366,6 +409,7 @@ jobs:
           HADOLINT_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/hadolint-report.html"
           TRIVY_FS_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/trivy-fs-report.html"
           TRIVY_IMG_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/trivy-image-report.html"
+          GRYPE_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/grype-image-report.html"
           OWASP_HTML_URL="${BASE_URL}/owasp/${BRANCH}/${RUN_NUMBER}/dependency-check-report.html"
 
           cat > allure-results/environment.properties <<EOF
@@ -541,6 +585,37 @@ jobs:
               { "name": "suite", "value": "Security Scans" },
               { "name": "subSuite", "value": "${SHORT_SHA}" },
               { "name": "feature", "value": "Docker Image Vulnerability Scan" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Grype Image Scan ───────────────────────────────────────────
+          GRYPE_FILE="raw-reports/grype-image/grype-image-report.json"
+          if [ -f "$GRYPE_FILE" ] && [ -s "$GRYPE_FILE" ]; then
+            VULN_COUNT=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' "$GRYPE_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No HIGH/CRITICAL image vulnerabilities found by Grype."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical") | "[\(.vulnerability.severity | ascii_upcase)] \(.vulnerability.id) in \(.artifact.name) \(.artifact.version) — \(.vulnerability.description // "N/A" | .[0:100])"] | unique | join("\n")' "$GRYPE_FILE" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found.")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Grype image report not available."
+          fi
+          cat > allure-results/grype-image-result.json <<EOF
+          {
+            "name": "Grype Docker Image Vulnerability Scan",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Grype scan of the built Docker image for HIGH and CRITICAL CVEs.",
+            "links": [{ "name": "Full Grype Image Scan HTML Report", "url": "${GRYPE_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "HIGH/CRITICAL CVEs in Image", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Grype Image Scan" },
               { "name": "severity", "value": "critical" }
             ]
           }
@@ -832,6 +907,52 @@ jobs:
           </body></html>
           TIMGEOF
 
+          # ── Grype Image HTML ───────────────────────────────────────────
+          GRYPE_FILE="raw-reports/grype-image/grype-image-report.json"
+          if [ -f "$GRYPE_FILE" ] && [ -s "$GRYPE_FILE" ]; then
+            GRYPE_CONTENT=$(jq '.' "$GRYPE_FILE")
+            VULN_COUNT=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' "$GRYPE_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              GRYPE_STATUS="✅ Passed"
+              GRYPE_STATUS_COLOR="#3fb950"
+              GRYPE_DETAIL="No HIGH or CRITICAL image vulnerabilities found."
+            else
+              GRYPE_STATUS="❌ Failed"
+              GRYPE_STATUS_COLOR="#f85149"
+              GRYPE_DETAIL="Found ${VULN_COUNT} HIGH or CRITICAL vulnerabilities."
+            fi
+          else
+            GRYPE_CONTENT='{"error": "Report not available"}'
+            GRYPE_STATUS="⚠️ Skipped"
+            GRYPE_STATUS_COLOR="#e3b341"
+            GRYPE_DETAIL="Grype image report not available."
+          fi
+          cat > scan-html-reports/grype-image-report.html <<GRYPEEOF
+          <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+          <title>Grype Docker Image Scan Report — ${BRANCH} #${RUN_NUMBER}</title>
+          <style>
+            body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
+            h1{color:#58a6ff;margin-bottom:4px}
+            .meta{color:#8b949e;font-size:.85rem;margin-bottom:8px}
+            .status{font-size:.9rem;font-weight:600;margin-bottom:4px}
+            .detail{color:#8b949e;font-size:.85rem;margin-bottom:24px}
+            pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+            .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
+          </style>
+          </head><body>
+          <h1>🔬 Grype Docker Image Scan Report</h1>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:${GRYPE_STATUS_COLOR}">Status: ${GRYPE_STATUS}</div>
+          <div class="detail">Details: ${GRYPE_DETAIL}</div>
+          <pre id="json"></pre>
+          <script>
+            const data = $(echo "$GRYPE_CONTENT");
+            function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+            document.getElementById('json').innerHTML=highlight(data);
+          </script>
+          </body></html>
+          GRYPEEOF
+ 
       # ── Checkout gh-pages for history ──────────────────────────────────
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
@@ -865,7 +986,7 @@ jobs:
           find gh-pages-dir -maxdepth 1 -name "*.yml" -delete
           find gh-pages-dir -maxdepth 1 -name "Dockerfile" -delete
 
-          # Store this run's OWASP HTML under owasp/<branch>/<run_number>/
+          # Store OWASP HTML report under owasp/<branch>/<run_number>/
           BRANCH="${{ github.ref_name }}"
           RUN_NUMBER="${{ github.run_number }}"
           mkdir -p "gh-pages-dir/owasp/${BRANCH}/${RUN_NUMBER}"
@@ -884,6 +1005,8 @@ jobs:
              "gh-pages-dir/scan-reports/${BRANCH}/${RUN_NUMBER}/trivy-fs-report.html"
           cp scan-html-reports/trivy-image-report.html \
              "gh-pages-dir/scan-reports/${BRANCH}/${RUN_NUMBER}/trivy-image-report.html"
+          cp scan-html-reports/grype-image-report.html \
+             "gh-pages-dir/scan-reports/${BRANCH}/${RUN_NUMBER}/grype-image-report.html"
              
           BASE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
 
