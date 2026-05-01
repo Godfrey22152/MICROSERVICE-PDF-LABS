@@ -379,11 +379,12 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-
+        
     - name: Verify signature
       run: |
         cosign verify \
           --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+          --certificate-identity-regexp="https://github.com/${{ github.repository }}/.github/workflows/.*" \
           ${{ needs.docker-build-push.outputs.image }}@${{ needs.docker-build-push.outputs.digest }}
     
   # ── Allure Security Report ────────────────────────────────────────────
