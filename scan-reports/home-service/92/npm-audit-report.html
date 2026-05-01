@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>npm Audit Report — home-service #92</title>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
+  h1{color:#58a6ff;margin-bottom:4px}
+  .meta{color:#8b949e;font-size:.85rem;margin-bottom:24px}
+  pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .string{color:#79c0ff}
+  .number{color:#79c0ff}
+  .boolean{color:#56d364}
+  .null{color:#f85149}
+  .key{color:#e3b341}
+</style>
+</head><body>
+<h1>📦 npm Audit Report</h1>
+<div class="meta">Branch: home-service &nbsp;|&nbsp; Run: #92</div>
+<div class="status" style="color:#3fb950">Status: ✅ Passed</div>
+<div class="detail">Details: No high or critical vulnerabilities found in npm dependencies.</div>
+<pre id="json"></pre>
+<script>
+  const data = {
+  "auditReportVersion": 2,
+  "vulnerabilities": {},
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 117,
+      "dev": 0,
+      "optional": 0,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 116
+    }
+  }
+};
+  function highlight(json) {
+    return JSON.stringify(json, null, 2)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/("(\u[a-zA-Z0-9]{4}|\[^u]|[^\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(m){
+        let cls='number';
+        if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}
+        else if(/true|false/.test(m)){cls='boolean';}
+        else if(/null/.test(m)){cls='null';}
+        return '<span class="'+cls+'">'+m+'</span>';
+      });
+  }
+  document.getElementById('json').innerHTML = highlight(data);
+</script>
+</body></html>
