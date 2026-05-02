@@ -205,8 +205,8 @@ jobs:
           #SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   # ── Docker Image Build ────────────────────────────────────────────────
-  docker-build-push:
-    name: Build and Push to GHCR
+  docker-build:
+    name: Build Image (No Push)
     runs-on: ubuntu-latest
     needs: 
       - compile
@@ -218,13 +218,10 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write
-      packages: write   # required for GHCR push
       
     outputs:
       image: ${{ steps.meta.outputs.image }}
       tag: ${{ steps.meta.outputs.tag }}
-      digest: ${{ steps.build_push.outputs.digest }}
   
     steps:
       - name: Check out Git repository
@@ -243,39 +240,50 @@ jobs:
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
   
-      - name: Log in to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-  
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
-        
-      - name: Build and push image
-        id: build_push
+
+      - name: Build image (no push, export as tar)
+        id: build
         uses: docker/build-push-action@v7
         with:
           context: .
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          push: false
+          tags: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          outputs: type=docker,dest=/tmp/image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+        
+      - name: Upload image tar
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp/image.tar
+          retention-days: 1
           
   # ── Docker Image Vulnerability Scan ──────────────────────────────────
   trivy-image-scan:
-    name: Docker Image Vulnerability Scan
+    name: Docker Image Vulnerability Scan (Trivy)
     runs-on: ubuntu-latest
-    needs: docker-build-push
+    needs: docker-build
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
+
+      - name: Download image tar
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp
+  
+      - name: Load image into Docker
+        run: docker load --input /tmp/image.tar
 
       - name: Generate Image Scan Report
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
-          image-ref: ${{ needs.docker-build-push.outputs.image }}@${{ needs.docker-build-push.outputs.digest }}
+          image-ref: ${{ needs.docker-build.outputs.image }}:${{ needs.docker-build.outputs.tag }}
           format: json
           output: trivy-image-report.json
           exit-code: 0
@@ -291,7 +299,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
-          image-ref: ${{ needs.docker-build-push.outputs.image }}@${{ needs.docker-build-push.outputs.digest }}
+          image-ref: ${{ needs.docker-build.outputs.image }}:${{ needs.docker-build.outputs.tag }}
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
@@ -302,18 +310,27 @@ jobs:
   grype-image-scan:
     name: Docker Image Vulnerability Scan (Grype - Anchore)
     runs-on: ubuntu-latest
-    needs: docker-build-push
+    needs: docker-build
   
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
+
+      - name: Download image tar
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp
+  
+      - name: Load image into Docker
+        run: docker load --input /tmp/image.tar
   
       # Run Anchore scan (this uses Grype internally)
       - name: Run Anchore Container Scan
         uses: anchore/scan-action@v7
         with:
-          image: ${{ needs.docker-build-push.outputs.image }}@${{ needs.docker-build-push.outputs.digest }}
-          fail-build: false      # To avoid failing the build regardless of severity
+          image: ${{ needs.docker-build.outputs.image }}:${{ needs.docker-build.outputs.tag }}
+          fail-build: false      # To avoid failing the job regardless of severity found.
           severity-cutoff: high
           output-format: json
           output-file: grype-image-report.json
@@ -325,15 +342,100 @@ jobs:
           path: grype-image-report.json
           retention-days: 7
 
+  # ── Security Gate ─────────────────────────────────────────────────────
+  security-gate:
+    name: Security Gate
+    runs-on: ubuntu-latest
+    needs:
+      - trivy-image-scan
+      - grype-image-scan
+
+    outputs:
+      allow_push: ${{ steps.check.outputs.allow_push }}
+  
+    steps:
+      - name: Download Trivy image report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-image-report
+
+      - name: Download Grype image report
+        uses: actions/download-artifact@v4
+        with:
+          name: grype-image-report
+
+      - name: Evaluate vulnerabilities
+        id: check
+        run: |
+          TRIVY=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' trivy-image-report.json 2>/dev/null || echo 0)
+          GRYPE=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' grype-image-report.json 2>/dev/null || echo 0)
+  
+          echo "Trivy HIGH/CRITICAL count: $TRIVY"
+          echo "Grype HIGH/CRITICAL count: $GRYPE"
+  
+          if [ "$TRIVY" -eq 0 ] && [ "$GRYPE" -eq 0 ]; then
+            echo "✅ No HIGH or CRITICAL vulnerabilities found. Image is clear to push."
+            echo "allow_push=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Vulnerabilities found. Image will NOT be pushed."
+            echo "allow_push=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Docker Push ───────────────────────────────────────────────────────
+  docker-push:
+    name: Push Clean Image to GHCR
+    runs-on: ubuntu-latest
+    needs:
+      - docker-build
+      - security-gate
+    if: needs.security-gate.outputs.allow_push == 'true'
+  
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+  
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+  
+    steps:
+      - name: Download image tar
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp
+  
+      - name: Load image into Docker
+        run: docker load --input /tmp/image.tar
+  
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Push image to GHCR
+        id: push
+        run: |
+          IMAGE="${{ needs.docker-build.outputs.image }}"
+          TAG="${{ needs.docker-build.outputs.tag }}"
+  
+          docker push "$IMAGE:$TAG"
+  
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$TAG" | cut -d@ -f2)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+          
   # ── Cosign Sign ───────────────────────────────────────────────────────
   cosign-sign:
     name: Sign Container Image
     runs-on: ubuntu-latest
     needs:
-      - docker-build-push
-      - trivy-image-scan
-      - grype-image-scan
-  
+      - docker-build
+      - docker-push
+      - security-gate
+    if: needs.security-gate.outputs.allow_push == 'true'
+
     permissions:
       contents: read
       id-token: write
@@ -349,20 +451,22 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Sign image by digest
         run: |
           cosign sign --yes \
-          ${{ needs.docker-build-push.outputs.image }}@${{ needs.docker-build-push.outputs.digest }}
-        
+            ${{ needs.docker-build.outputs.image }}@${{ needs.docker-push.outputs.digest }}
+            
   # ── Cosign Verify ─────────────────────────────────────────────────────
   cosign-verify:
     name: Verify Cosign Signature
     runs-on: ubuntu-latest
-    needs: 
-      - docker-build-push
+    needs:
+      - docker-build
+      - docker-push
       - cosign-sign
-      
+      - security-gate
+    if: needs.security-gate.outputs.allow_push == 'true'
   
     permissions:
       contents: read
@@ -385,7 +489,7 @@ jobs:
         cosign verify \
           --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
           --certificate-identity-regexp="https://github.com/${{ github.repository }}/.github/workflows/.*" \
-          ${{ needs.docker-build-push.outputs.image }}@${{ needs.docker-build-push.outputs.digest }}
+          ${{ needs.docker-build.outputs.image }}@${{ needs.docker-push.outputs.digest }}
     
   # ── Allure Security Report ────────────────────────────────────────────
   allure-report:
@@ -398,7 +502,7 @@ jobs:
       - gitleaks-scan
       - trivy-fs-scan
       - owasp-dependency-check
-      - docker-build-push
+      - docker-build
       - trivy-image-scan
       - grype-image-scan
     if: always()
