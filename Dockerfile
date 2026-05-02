@@ -1,5 +1,5 @@
-# ---------- Stage 1: Build the app -----------
-FROM node:22-alpine AS builder
+# ---------- Stage 1: Build the app ----------
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # Only copy dependency manifest files for faster caching
 COPY package*.json ./
 
-# Install production dependencies and clean cache to reduce size.
+# Install production dependencies and clean cache to reduce size
 RUN npm ci --omit=dev \
  && npm cache clean --force
 
@@ -27,7 +27,7 @@ RUN mkdir -p /prod \
  && cp -r app.js routes controllers config middleware public views node_modules /prod
 
 # ---------- Stage 2: Runtime container ----------
-FROM alpine:3.18
+FROM alpine:3.20
 
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF Labs App" \
@@ -36,8 +36,8 @@ LABEL org.opencontainers.image.title="PDF Labs App" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/home-service"
 
-# Install Node.js runtime only
-RUN apk add --no-cache nodejs=18.20.1-r0 \
+# Alpine 3.20 ships nodejs 20.x — install runtime only, no npm
+RUN apk add --no-cache nodejs \
  && rm -rf /var/cache/apk/* /usr/share/man /usr/lib/node_modules
 
 # Use non-root user for enhanced security
