@@ -26,24 +26,8 @@ RUN find node_modules \
 RUN mkdir -p /prod \
  && cp -r app.js routes controllers config middleware public views node_modules /prod
 
-# Download Node.js 20.20.2 musl binary — correct URL and extension
-RUN apk add --no-cache --virtual .build-deps curl \
- && mkdir -p /node-bin \
- && curl -fsSLO --compressed \
-    "https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64-musl.tar.xz" \
- && tar -xf node-v20.20.2-linux-x64-musl.tar.xz -C /node-bin --strip-components=1 \
- && rm node-v20.20.2-linux-x64-musl.tar.xz \
- && rm -rf /node-bin/include \
-            /node-bin/share \
-            /node-bin/lib/node_modules/npm \
-            /node-bin/lib/node_modules/corepack \
-            /node-bin/bin/npm \
-            /node-bin/bin/npx \
-            /node-bin/bin/corepack \
- && apk del .build-deps
-
 # ---------- Stage 2: Runtime container ----------
-FROM alpine:3.21
+FROM alpine:3.20
 
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF Labs App" \
@@ -52,12 +36,11 @@ LABEL org.opencontainers.image.title="PDF Labs App" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/home-service"
 
-# Copy only the node binary from builder
-COPY --from=builder /node-bin/bin/node /usr/local/bin/node
-
-# libstdc++ is required by the Node.js binary on musl/Alpine
-RUN apk add --no-cache libstdc++ \
- && rm -rf /var/cache/apk/* /usr/share/man /tmp/*
+# Install Node.js runtime only
+# Pull nodejs20 from edge/community which has a newer patched version
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+ && apk add --no-cache nodejs \
+ && rm -rf /var/cache/apk/* /usr/share/man /usr/lib/node_modules
 
 # Use non-root user for enhanced security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
