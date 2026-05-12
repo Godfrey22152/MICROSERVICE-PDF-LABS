@@ -1,15 +1,19 @@
-# PDF editing handled by ConvertAPI
+# PDF editing handled by ConvertAPI (free tier: 250 conversions/month)
 
 # ---------- Stage 1: Build ----------
-FROM node:22-alpine AS builder
+FROM node:20.20.2-alpine AS builder
 
+# Set working directory
 WORKDIR /usr/src/app
 
+# Only copy dependency manifest files for faster caching
 COPY package*.json ./
 
 # npm install (not ci) to avoid lock-file sync errors when deps change
-RUN npm install --omit=dev && npm cache clean --force
+RUN npm install --omit=dev \
+ && npm cache clean --force
 
+# Copy only necessary app source
 COPY . .
 
 # Strip dev/docs noise from node_modules to shrink the layer
@@ -26,6 +30,21 @@ RUN mkdir -p /prod \
  && cp -r server.js routes config middleware public views \
          controllers models utils node_modules /prod
 
+# Extract ONLY the node binary from the musl tarball
+# strip it and remove debug symbols, then UPX-compress the binary
+RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
+ && curl -fsSLO --compressed \
+    "https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64-musl.tar.xz" \
+ && mkdir -p /node-bin \
+ && tar -xf node-v20.20.2-linux-x64-musl.tar.xz \
+    --strip-components=2 \
+    -C /node-bin \
+    node-v20.20.2-linux-x64-musl/bin/node \
+ && rm node-v20.20.2-linux-x64-musl.tar.xz \
+ && strip /node-bin/node \
+ && upx --best --lzma /node-bin/node \
+ && apk del .build-deps
+
 # ---------- Stage 2: Runtime ----------
 FROM alpine:3.21
 
@@ -35,17 +54,27 @@ LABEL org.opencontainers.image.title="EDIT PDF SERVICE" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/edit-pdf-service"
 
-RUN apk add --no-cache nodejs \
- && rm -rf /var/cache/apk/* /usr/share/man /usr/lib/node_modules
+# Copy the stripped and UPX-compressed node binary from builder
+COPY --from=builder /node-bin/node /usr/local/bin/node
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
- && mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
+# libstdc++ is the only runtime dependency the node binary needs on musl/Alpine
+RUN apk add --no-cache libstdc++ \
+ && rm -rf /var/cache/apk/* /usr/share/man /tmp/*
+
+# Create non-root user and working directory for enhanced security
+RUN addgroup -S appgroup \
+ && adduser -S appuser -G appgroup \
+ && mkdir -p /usr/src/app \
+ && chown -R appuser:appgroup /usr/src/app
 
 WORKDIR /usr/src/app
 USER appuser
 
+# Copy production artifact from builder
 COPY --from=builder /prod .
 
+# Expose only required port
 EXPOSE 5800
 
+# Run the application
 CMD ["node", "server.js"]
