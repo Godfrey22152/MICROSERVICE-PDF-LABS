@@ -1,5 +1,5 @@
-# ---------- Stage 1: Build the app -----------
-FROM node:22-alpine AS builder
+# ---------- Stage 1: Build the app ----------
+FROM node:20.20.2-alpine AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -26,8 +26,23 @@ RUN find node_modules \
 RUN mkdir -p /prod \
  && cp -r app.js routes config controllers middleware public views node_modules /prod
 
+# Extract ONLY the node binary from the musl tarball
+# strip it and remove debug symbols, then UPX-compress the binary
+RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
+ && curl -fsSLO --compressed \
+    "https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64-musl.tar.xz" \
+ && mkdir -p /node-bin \
+ && tar -xf node-v20.20.2-linux-x64-musl.tar.xz \
+    --strip-components=2 \
+    -C /node-bin \
+    node-v20.20.2-linux-x64-musl/bin/node \
+ && rm node-v20.20.2-linux-x64-musl.tar.xz \
+ && strip /node-bin/node \
+ && upx --best --lzma /node-bin/node \
+ && apk del .build-deps
+
 # ---------- Stage 2: Runtime container ----------
-FROM alpine:3.18
+FROM alpine:3.21
 
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF Labs App" \
@@ -36,13 +51,18 @@ LABEL org.opencontainers.image.title="PDF Labs App" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/logout-service"
 
-# Install Node.js runtime only
-RUN apk add --no-cache nodejs=18.20.1-r0 \
- && rm -rf /var/cache/apk/* /usr/share/man /usr/lib/node_modules
+# Copy the stripped and UPX-compressed node binary from builder
+COPY --from=builder /node-bin/node /usr/local/bin/node
 
-# Use non-root user for enhanced security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
- && mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
+# libstdc++ is the only runtime dependency the node binary needs on musl/Alpine
+RUN apk add --no-cache libstdc++ \
+ && rm -rf /var/cache/apk/* /usr/share/man /tmp/*
+
+# Create non-root user and working directory for enhanced security
+RUN addgroup -S appgroup \
+ && adduser -S appuser -G appgroup \
+ && mkdir -p /usr/src/app \
+ && chown -R appuser:appgroup /usr/src/app
 
 WORKDIR /usr/src/app
 USER appuser
