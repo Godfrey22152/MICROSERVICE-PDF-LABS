@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write   
+  packages: write   # needed for GHCR Image push.
+  id-token: write
+
 jobs:
   run-ci:
     uses: Godfrey22152/MICROSERVICE-PDF-LABS/.github/workflows/Shared-CI.yml@main
