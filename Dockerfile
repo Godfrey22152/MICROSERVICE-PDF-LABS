@@ -1,20 +1,15 @@
-# ---------- Stage 1: Build the app ----------
+# ---------- Stage 1: Build ----------
 FROM node:22-alpine AS builder
 
-# Set working directory
 WORKDIR /usr/src/app
-
-# Only copy dependency manifest files for faster caching
 COPY package*.json ./
 
-# Install production dependencies and clean cache to reduce size
 RUN npm ci --omit=dev \
  && npm cache clean --force
 
-# Copy only necessary app source
 COPY . .
 
-# Prune unnecessary files from node_modules
+# Strip test/doc artefacts from node_modules
 RUN find node_modules \
     -type f \( -name '*.md' -o -name '*.ts' -o -name '*.map' -o -name '*.tsbuildinfo' \
     -o -name '*.spec.*' -o -name '*.test.*' -o -name 'LICENSE' -o -name '*.txt' \) -delete \
@@ -22,31 +17,35 @@ RUN find node_modules \
     -type d \( -name 'test' -o -name 'tests' -o -name 'docs' -o -name 'example*' \
     -o -name '__*__' -o -name '.github' \) -exec rm -rf {} + || true
 
-# Copy only production essentials into /prod
 RUN mkdir -p /prod \
  && cp -r app.js routes controllers config middleware public views node_modules /prod
 
-# ---------- Stage 2: Runtime container ----------
-FROM alpine:3.22
+# ---------- Stage 2: Runtime ----------
+# alpine:3.21 ships nodejs 22.x (patched) and is actively maintained.
+# The bare alpine base is ~8 MB; nodejs adds ~50 MB installed.
+# Total before your app: ~58 MB — well inside the 85 MB budget.
+FROM alpine:3.21
 
-# Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF Labs App" \
       org.opencontainers.image.description="Lightweight and secure Home-page microservice for PDF Labs" \
       org.opencontainers.image.authors="Godfrey <godfreyifeanyi50@gmail.com>" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/home-service"
 
+# Install nodejs and clean up in ONE layer to avoid size bloat from layer stacking.
+# Do NOT pin a version number — let apk pull the latest patched build from the repo.
 RUN apk add --no-cache nodejs \
- && rm -rf /var/cache/apk/* /usr/share/man /usr/lib/node_modules
+ && rm -rf /var/cache/apk/* /usr/share/man /tmp/*
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
- && mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
+RUN addgroup -S appgroup \
+ && adduser -S appuser -G appgroup \
+ && mkdir -p /usr/src/app \
+ && chown -R appuser:appgroup /usr/src/app
 
 WORKDIR /usr/src/app
 USER appuser
 
-COPY --from=builder /prod .
+COPY --from=builder /prod ./
 
 EXPOSE 3500
-
-CMD ["node","app.js"]
+CMD ["node", "app.js"]
