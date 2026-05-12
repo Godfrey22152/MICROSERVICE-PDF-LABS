@@ -1,11 +1,20 @@
 # ---------- Stage 1: Build the app ----------
 FROM node:20.20.2-alpine AS builder
+
+# Set working directory
 WORKDIR /usr/src/app
+
+# Only copy dependency manifest files for faster caching
 COPY package*.json ./
+
+# Install production dependencies and clean cache to reduce size
 RUN npm ci --omit=dev \
  && npm cache clean --force
+
+# Copy only necessary app source
 COPY . .
 
+# Prune unnecessary files from node_modules (test/doc artefacts)
 RUN find node_modules \
     -type f \( -name '*.md' -o -name '*.ts' -o -name '*.map' -o -name '*.tsbuildinfo' \
     -o -name '*.spec.*' -o -name '*.test.*' -o -name 'LICENSE' -o -name '*.txt' \) -delete \
@@ -13,10 +22,12 @@ RUN find node_modules \
     -type d \( -name 'test' -o -name 'tests' -o -name 'docs' -o -name 'example*' \
     -o -name '__*__' -o -name '.github' \) -exec rm -rf {} + || true
 
+# Copy only production essentials into /prod
 RUN mkdir -p /prod \
  && cp -r app.js routes controllers config middleware public views node_modules /prod
 
-# FIX: added 'binutils' — that's the Alpine package that provides the 'strip' command
+# Extract ONLY the node binary from the musl tarball
+# strip it and remove debug symbols, then UPX-compress the binary
 RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && curl -fsSLO --compressed \
     "https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64-musl.tar.xz" \
@@ -32,22 +43,35 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
 
 # ---------- Stage 2: Runtime container ----------
 FROM alpine:3.21
+
+# Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF Labs App" \
       org.opencontainers.image.description="Lightweight and secure Home-page microservice for PDF Labs" \
       org.opencontainers.image.authors="Godfrey <godfreyifeanyi50@gmail.com>" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/home-service"
 
+# Copy the stripped and UPX-compressed node binary from builder
 COPY --from=builder /node-bin/node /usr/local/bin/node
 
+# libstdc++ is the only runtime dependency the node binary needs on musl/Alpine
 RUN apk add --no-cache libstdc++ \
  && rm -rf /var/cache/apk/* /usr/share/man /tmp/*
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
- && mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
+# Create non-root user and working directory for enhanced security
+RUN addgroup -S appgroup \
+ && adduser -S appuser -G appgroup \
+ && mkdir -p /usr/src/app \
+ && chown -R appuser:appgroup /usr/src/app
 
 WORKDIR /usr/src/app
 USER appuser
+
+# Copy production artifact from builder
 COPY --from=builder /prod .
+
+# Expose only required port
 EXPOSE 3500
+
+# Run the application
 CMD ["node", "app.js"]
