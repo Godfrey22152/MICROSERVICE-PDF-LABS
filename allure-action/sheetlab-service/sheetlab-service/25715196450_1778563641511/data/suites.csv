@@ -1,0 +1,8 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"Grype scan of the built Docker image for HIGH and CRITICAL CVEs.","","Grype Docker Image Vulnerability Scan","sheetlab-service","","passed","","3f6f78e","Security Scans","",""
+"Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.","","Filesystem Vulnerability Scan (Trivy)","sheetlab-service","","passed","","3f6f78e","Security Scans","",""
+"OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.","","OWASP Dependency Check","sheetlab-service","","failed","","3f6f78e","Security Scans","",""
+"Scan for hardcoded secrets and credentials in the repository.","","Secret Scanning (Gitleaks)","sheetlab-service","","passed","","3f6f78e","Security Scans","",""
+"Hadolint static analysis of the project Dockerfile.","","Dockerfile Lint (Hadolint)","sheetlab-service","","failed","","3f6f78e","Security Scans","",""
+"Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.","","Docker Image Vulnerability Scan (Trivy)","sheetlab-service","","passed","","3f6f78e","Security Scans","",""
+"npm audit scan for known vulnerabilities in project dependencies.","","Dependency Audit (npm audit)","sheetlab-service","","passed","","3f6f78e","Security Scans","",""
