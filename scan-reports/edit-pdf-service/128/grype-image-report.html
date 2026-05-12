@@ -1,0 +1,1061 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>Grype Docker Image Scan Report — edit-pdf-service #128</title>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
+  h1{color:#58a6ff;margin-bottom:4px}
+  .meta{color:#8b949e;font-size:.85rem;margin-bottom:8px}
+  .status{font-size:.9rem;font-weight:600;margin-bottom:4px}
+  .detail{color:#8b949e;font-size:.85rem;margin-bottom:24px}
+  pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
+</style>
+</head><body>
+<h1>🔬 Grype Docker Image Scan Report</h1>
+<div class="meta">Branch: edit-pdf-service &nbsp;|&nbsp; Run: #128</div>
+<div class="status" style="color:#f85149">Status: ❌ Failed</div>
+<div class="detail">Details: Found 1 HIGH or CRITICAL vulnerabilities.</div>
+<pre id="json"></pre>
+<script>
+  const data = {
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2024-9410",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2024-9410",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://www.tenable.com/security/research/tra-2024-41"
+        ],
+        "description": "Ada.cx's Sentry configuration allowed for blind server-side request forgeries (SSRF) through the use of a data scraping endpoint.",
+        "cvss": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Primary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          },
+          {
+            "source": "vulnreport@tenable.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2024-9410",
+            "epss": 0.00107,
+            "percentile": 0.2832,
+            "date": "2026-05-11"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2024-9410",
+            "cwe": "CWE-918",
+            "source": "vulnreport@tenable.com",
+            "type": "Secondary"
+          },
+          {
+            "cve": "CVE-2024-9410",
+            "cwe": "CWE-918",
+            "source": "nvd@nist.gov",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": "unknown"
+        },
+        "advisories": [],
+        "risk": 0.055105
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:ada:ada:2.9.2:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "ada",
+              "version": "2.9.2-r1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2024-9410",
+            "versionConstraint": "< 2024-10-01 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:ada:ada:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "969ef5995305f4b4",
+        "name": "ada-libs",
+        "version": "2.9.2-r1",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:52b3cf46849a569ade64f68596242dc09eb9bcc5c461a97d71f07d12678adc70",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "( Apache-2.0 OR MIT ) AND MPL-2.0"
+        ],
+        "cpes": [
+          "cpe:2.3:a:ada-libs:ada-libs:2.9.2-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ada-libs:ada_libs:2.9.2-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ada_libs:ada-libs:2.9.2-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ada_libs:ada_libs:2.9.2-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ada:ada-libs:2.9.2-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ada:ada_libs:2.9.2-r1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/ada-libs@2.9.2-r1?arch=x86_64&distro=alpine-3.21.7&upstream=ada",
+        "upstreams": [
+          {
+            "name": "ada"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libada.so.2"
+            },
+            {
+              "path": "/usr/lib/libada.so.2.9.2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-70873",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-70873",
+        "namespace": "nvd:cpe",
+        "severity": "High",
+        "urls": [
+          "https://gist.github.com/cnwangjihe/f496393f30f5ecec5b18c8f5ab072054",
+          "https://sqlite.org/forum/forumpost/761eac3c82",
+          "https://sqlite.org/src/info/3d459f1fb1bd1b5e"
+        ],
+        "description": "An information disclosure issue in the zipfileInflate function in the zipfile extension in SQLite v3.51.1 and earlier allows attackers to obtain heap memory via supplying a crafted ZIP file.",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "metrics": {
+              "baseScore": 7.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-70873",
+            "epss": 0.0005,
+            "percentile": 0.15401,
+            "date": "2026-05-11"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-70873",
+            "cwe": "CWE-244",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": "unknown"
+        },
+        "advisories": [],
+        "risk": 0.0375
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:sqlite:sqlite:3.48.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "sqlite",
+              "version": "3.48.0-r4"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-70873",
+            "versionConstraint": "< 3.51.1 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:sqlite:sqlite:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "677038d098c1d045",
+        "name": "sqlite-libs",
+        "version": "3.48.0-r4",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:52b3cf46849a569ade64f68596242dc09eb9bcc5c461a97d71f07d12678adc70",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "blessing"
+        ],
+        "cpes": [
+          "cpe:2.3:a:sqlite-libs:sqlite-libs:3.48.0-r4:*:*:*:*:*:*:*",
+          "cpe:2.3:a:sqlite-libs:sqlite_libs:3.48.0-r4:*:*:*:*:*:*:*",
+          "cpe:2.3:a:sqlite_libs:sqlite-libs:3.48.0-r4:*:*:*:*:*:*:*",
+          "cpe:2.3:a:sqlite_libs:sqlite_libs:3.48.0-r4:*:*:*:*:*:*:*",
+          "cpe:2.3:a:sqlite:sqlite-libs:3.48.0-r4:*:*:*:*:*:*:*",
+          "cpe:2.3:a:sqlite:sqlite_libs:3.48.0-r4:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/sqlite-libs@3.48.0-r4?arch=x86_64&distro=alpine-3.21.7&upstream=sqlite",
+        "upstreams": [
+          {
+            "name": "sqlite"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libsqlite3.so.0"
+            },
+            {
+              "path": "/usr/lib/libsqlite3.so.0.8.6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00051,
+            "percentile": 0.1593,
+            "date": "2026-05-11"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.029325
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r14"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "6ca5b246959782cd",
+        "name": "busybox",
+        "version": "1.37.0-r14",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:52b3cf46849a569ade64f68596242dc09eb9bcc5c461a97d71f07d12678adc70",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:busybox:busybox:1.37.0-r14:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/busybox@1.37.0-r14?arch=x86_64&distro=alpine-3.21.7",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/bin"
+            },
+            {
+              "path": "/bin/busybox"
+            },
+            {
+              "path": "/etc"
+            },
+            {
+              "path": "/etc/securetty"
+            },
+            {
+              "path": "/etc/busybox-paths.d"
+            },
+            {
+              "path": "/etc/busybox-paths.d/busybox"
+            },
+            {
+              "path": "/etc/logrotate.d"
+            },
+            {
+              "path": "/etc/logrotate.d/acpid"
+            },
+            {
+              "path": "/etc/network"
+            },
+            {
+              "path": "/etc/network/if-down.d"
+            },
+            {
+              "path": "/etc/network/if-post-down.d"
+            },
+            {
+              "path": "/etc/network/if-post-up.d"
+            },
+            {
+              "path": "/etc/network/if-pre-down.d"
+            },
+            {
+              "path": "/etc/network/if-pre-up.d"
+            },
+            {
+              "path": "/etc/network/if-up.d"
+            },
+            {
+              "path": "/etc/network/if-up.d/dad"
+            },
+            {
+              "path": "/etc/udhcpc"
+            },
+            {
+              "path": "/etc/udhcpc/udhcpc.conf"
+            },
+            {
+              "path": "/sbin"
+            },
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/sbin"
+            },
+            {
+              "path": "/usr/share"
+            },
+            {
+              "path": "/usr/share/udhcpc"
+            },
+            {
+              "path": "/usr/share/udhcpc/default.script"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00051,
+            "percentile": 0.1593,
+            "date": "2026-05-11"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.029325
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r14"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "647e208285fe9a62",
+        "name": "busybox-binsh",
+        "version": "1.37.0-r14",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:52b3cf46849a569ade64f68596242dc09eb9bcc5c461a97d71f07d12678adc70",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:busybox-binsh:busybox-binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox-binsh:busybox_binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox_binsh:busybox-binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox_binsh:busybox_binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox:busybox-binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox:busybox_binsh:1.37.0-r14:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/busybox-binsh@1.37.0-r14?arch=x86_64&distro=alpine-3.21.7&upstream=busybox",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/bin"
+            },
+            {
+              "path": "/bin/sh"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00051,
+            "percentile": 0.1593,
+            "date": "2026-05-11"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.029325
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r14"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "75b5ba1004bc765a",
+        "name": "ssl_client",
+        "version": "1.37.0-r14",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:52b3cf46849a569ade64f68596242dc09eb9bcc5c461a97d71f07d12678adc70",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:ssl-client:ssl-client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl-client:ssl_client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl_client:ssl-client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl_client:ssl_client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl:ssl-client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl:ssl_client:1.37.0-r14:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/ssl_client@1.37.0-r14?arch=x86_64&distro=alpine-3.21.7&upstream=busybox",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/bin"
+            },
+            {
+              "path": "/usr/bin/ssl_client"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "source": {
+    "type": "image",
+    "target": {
+      "userInput": "ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-edit-pdf-service:7c3d2768b47ad230971c358b7f799964309b9a92",
+      "imageID": "sha256:984d016b4c3c819985fa0c6caf0a580c1d2b51bf131cfd48df1a69fa923d6aaa",
+      "manifestDigest": "sha256:c78497af6bd830a038af64f1c4a1f1befe9b6c800182de7185a85a4a7a4287f1",
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "tags": [
+        "ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-edit-pdf-service:7c3d2768b47ad230971c358b7f799964309b9a92"
+      ],
+      "imageSize": 91696727,
+      "layers": [
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:7211d01aba8fa2e9eb71ad34395cd313df5fc51a6b69b92d2dfad32cc37759cb",
+          "size": 7828692
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:52b3cf46849a569ade64f68596242dc09eb9bcc5c461a97d71f07d12678adc70",
+          "size": 67760780
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:b9f5888c11f9de19d7e0610db31a1bde27dee1a530dcd3af8a424e6911fb4cd3",
+          "size": 3059
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "size": 0
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:38e7a93d60da572b57c01052f650aff1eab87786d0f8138bb658e2fcf8487342",
+          "size": 16104196
+        }
+      ],
+      "manifest": "eyJzY2hlbWFWZXJzaW9uIjoyLCJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmRpc3RyaWJ1dGlvbi5tYW5pZmVzdC52Mitqc29uIiwiY29uZmlnIjp7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuY29udGFpbmVyLmltYWdlLnYxK2pzb24iLCJzaXplIjozMDgwLCJkaWdlc3QiOiJzaGEyNTY6OTg0ZDAxNmI0YzNjODE5OTg1ZmEwYzZjYWYwYTU4MGMxZDJiNTFiZjEzMWNmZDQ4ZGYxYTY5ZmE5MjNkNmFhYSJ9LCJsYXllcnMiOlt7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLCJzaXplIjo4MTIwMzIwLCJkaWdlc3QiOiJzaGEyNTY6NzIxMWQwMWFiYThmYTJlOWViNzFhZDM0Mzk1Y2QzMTNkZjVmYzUxYTZiNjliOTJkMmRmYWQzMmNjMzc3NTljYiJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjY4MDU2NTc2LCJkaWdlc3QiOiJzaGEyNTY6NTJiM2NmNDY4NDlhNTY5YWRlNjRmNjg1OTYyNDJkYzA5ZWI5YmNjNWM0NjFhOTdkNzFmMDdkMTI2NzhhZGM3MCJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjEyMjg4LCJkaWdlc3QiOiJzaGEyNTY6YjlmNTg4OGMxMWY5ZGUxOWQ3ZTA2MTBkYjMxYTFiZGUyN2RlZTFhNTMwZGNkM2FmOGE0MjRlNjkxMWZiNGNkMyJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjEwMjQsImRpZ2VzdCI6InNoYTI1Njo1ZjcwYmYxOGEwODYwMDcwMTZlOTQ4YjA0YWVkM2I4MjEwM2EzNmJlYTQxNzU1YjZjZGRmYWYxMGFjZTNjNmVmIn0seyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwic2l6ZSI6MTg2MjE0NDAsImRpZ2VzdCI6InNoYTI1NjozOGU3YTkzZDYwZGE1NzJiNTdjMDEwNTJmNjUwYWZmMWVhYjg3Nzg2ZDBmODEzOGJiNjU4ZTJmY2Y4NDg3MzQyIn1dfQ==",
+      "config": "eyJhcmNoaXRlY3R1cmUiOiJhbWQ2NCIsImNvbmZpZyI6eyJVc2VyIjoiYXBwdXNlciIsIkV4cG9zZWRQb3J0cyI6eyI1ODAwL3RjcCI6e319LCJFbnYiOlsiUEFUSD0vdXNyL2xvY2FsL3NiaW46L3Vzci9sb2NhbC9iaW46L3Vzci9zYmluOi91c3IvYmluOi9zYmluOi9iaW4iXSwiQ21kIjpbIm5vZGUiLCJzZXJ2ZXIuanMiXSwiV29ya2luZ0RpciI6Ii91c3Ivc3JjL2FwcCIsIkxhYmVscyI6eyJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYXV0aG9ycyI6IkdvZGZyZXkgXHUwMDNjZ29kZnJleWlmZWFueWk1MEBnbWFpbC5jb21cdTAwM2UiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuZGVzY3JpcHRpb24iOiJQREYgZWRpdGluZyBtaWNyb3NlcnZpY2UgZm9yIFBERiBMYWJzIChyb3RhdGUsIHdhdGVybWFyaywgbWVyZ2UsIHNwbGl0LCBwcm90ZWN0LCB1bmxvY2spIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnNvdXJjZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Hb2RmcmV5MjIxNTIvTUlDUk9TRVJWSUNFLVBERi1MQUJTL3RyZWUvZWRpdC1wZGYtc2VydmljZSIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS50aXRsZSI6IkVESVQgUERGIFNFUlZJQ0UiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudmVyc2lvbiI6IjEuMC4wIn0sIkFyZ3NFc2NhcGVkIjp0cnVlfSwiY3JlYXRlZCI6IjIwMjYtMDUtMTJUMTg6MTg6NTguMDc0NDYzOTA3WiIsImhpc3RvcnkiOlt7ImNyZWF0ZWQiOiIyMDI2LTA0LTE2VDIzOjUzOjE1LjcwNDExMDQxNFoiLCJjcmVhdGVkX2J5IjoiQUREIGFscGluZS1taW5pcm9vdGZzLTMuMjEuNy14ODZfNjQudGFyLmd6IC8gIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNC0xNlQyMzo1MzoxNS43MDQxMTA0MTRaIiwiY3JlYXRlZF9ieSI6IkNNRCBbXCIvYmluL3NoXCJdIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0xMlQxODoxODo1NC42NzUxNDI5ODZaIiwiY3JlYXRlZF9ieSI6IkxBQkVMIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS50aXRsZT1FRElUIFBERiBTRVJWSUNFIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5kZXNjcmlwdGlvbj1QREYgZWRpdGluZyBtaWNyb3NlcnZpY2UgZm9yIFBERiBMYWJzIChyb3RhdGUsIHdhdGVybWFyaywgbWVyZ2UsIHNwbGl0LCBwcm90ZWN0LCB1bmxvY2spIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5hdXRob3JzPUdvZGZyZXkgXHUwMDNjZ29kZnJleWlmZWFueWk1MEBnbWFpbC5jb21cdTAwM2Ugb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnZlcnNpb249MS4wLjAgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnNvdXJjZT1odHRwczovL2dpdGh1Yi5jb20vR29kZnJleTIyMTUyL01JQ1JPU0VSVklDRS1QREYtTEFCUy90cmVlL2VkaXQtcGRmLXNlcnZpY2UiLCJjb21tZW50IjoiYnVpbGRraXQuZG9ja2VyZmlsZS52MCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTEyVDE4OjE4OjU0LjY3NTE0Mjk4NloiLCJjcmVhdGVkX2J5IjoiUlVOIC9iaW4vc2ggLWMgYXBrIGFkZCAtLW5vLWNhY2hlIG5vZGVqcyAgXHUwMDI2XHUwMDI2IHJtIC1yZiAvdmFyL2NhY2hlL2Fway8qIC91c3Ivc2hhcmUvbWFuIC91c3IvbGliL25vZGVfbW9kdWxlcyAjIGJ1aWxka2l0IiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTEyVDE4OjE4OjU0LjcyODI5ODA0OVoiLCJjcmVhdGVkX2J5IjoiUlVOIC9iaW4vc2ggLWMgYWRkZ3JvdXAgLVMgYXBwZ3JvdXAgXHUwMDI2XHUwMDI2IGFkZHVzZXIgLVMgYXBwdXNlciAtRyBhcHBncm91cCAgXHUwMDI2XHUwMDI2IG1rZGlyIC1wIC91c3Ivc3JjL2FwcCBcdTAwMjZcdTAwMjYgY2hvd24gLVIgYXBwdXNlcjphcHBncm91cCAvdXNyL3NyYy9hcHAgIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNS0xMlQxODoxODo1NC43MzYwMzEzNjJaIiwiY3JlYXRlZF9ieSI6IldPUktESVIgL3Vzci9zcmMvYXBwIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTEyVDE4OjE4OjU0LjczNjAzMTM2MloiLCJjcmVhdGVkX2J5IjoiVVNFUiBhcHB1c2VyIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0xMlQxODoxODo1OC4wNzQ0NjM5MDdaIiwiY3JlYXRlZF9ieSI6IkNPUFkgL3Byb2QgLiAjIGJ1aWxka2l0IiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTEyVDE4OjE4OjU4LjA3NDQ2MzkwN1oiLCJjcmVhdGVkX2J5IjoiRVhQT1NFIFs1ODAwL3RjcF0iLCJjb21tZW50IjoiYnVpbGRraXQuZG9ja2VyZmlsZS52MCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTEyVDE4OjE4OjU4LjA3NDQ2MzkwN1oiLCJjcmVhdGVkX2J5IjoiQ01EIFtcIm5vZGVcIiBcInNlcnZlci5qc1wiXSIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIiwiZW1wdHlfbGF5ZXIiOnRydWV9XSwib3MiOiJsaW51eCIsInJvb3RmcyI6eyJ0eXBlIjoibGF5ZXJzIiwiZGlmZl9pZHMiOlsic2hhMjU2OjcyMTFkMDFhYmE4ZmEyZTllYjcxYWQzNDM5NWNkMzEzZGY1ZmM1MWE2YjY5YjkyZDJkZmFkMzJjYzM3NzU5Y2IiLCJzaGEyNTY6NTJiM2NmNDY4NDlhNTY5YWRlNjRmNjg1OTYyNDJkYzA5ZWI5YmNjNWM0NjFhOTdkNzFmMDdkMTI2NzhhZGM3MCIsInNoYTI1NjpiOWY1ODg4YzExZjlkZTE5ZDdlMDYxMGRiMzFhMWJkZTI3ZGVlMWE1MzBkY2QzYWY4YTQyNGU2OTExZmI0Y2QzIiwic2hhMjU2OjVmNzBiZjE4YTA4NjAwNzAxNmU5NDhiMDRhZWQzYjgyMTAzYTM2YmVhNDE3NTViNmNkZGZhZjEwYWNlM2M2ZWYiLCJzaGEyNTY6MzhlN2E5M2Q2MGRhNTcyYjU3YzAxMDUyZjY1MGFmZjFlYWI4Nzc4NmQwZjgxMzhiYjY1OGUyZmNmODQ4NzM0MiJdfX0=",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "os": "linux",
+      "labels": {
+        "org.opencontainers.image.authors": "Godfrey <godfreyifeanyi50@gmail.com>",
+        "org.opencontainers.image.description": "PDF editing microservice for PDF Labs (rotate, watermark, merge, split, protect, unlock)",
+        "org.opencontainers.image.source": "https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/edit-pdf-service",
+        "org.opencontainers.image.title": "EDIT PDF SERVICE",
+        "org.opencontainers.image.version": "1.0.0"
+      }
+    }
+  },
+  "distro": {
+    "name": "alpine",
+    "version": "3.21.7",
+    "idLike": []
+  },
+  "descriptor": {
+    "name": "grype",
+    "version": "0.110.0",
+    "configuration": {
+      "output": [
+        "json"
+      ],
+      "file": "grype-image-report.json",
+      "pretty": false,
+      "distro": "",
+      "add-cpes-if-none": false,
+      "output-template-file": "",
+      "check-for-app-update": false,
+      "only-fixed": false,
+      "only-notfixed": false,
+      "ignore-wontfix": "",
+      "platform": "",
+      "search": {
+        "scope": "squashed",
+        "unindexed-archives": false,
+        "indexed-archives": true
+      },
+      "ignore": [
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "kernel-headers",
+            "version": "",
+            "language": "",
+            "type": "rpm",
+            "location": "",
+            "upstream-name": "kernel"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux(-.*)?-headers-.*",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux.*"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux-libc-dev",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        }
+      ],
+      "exclude": [],
+      "externalSources": {
+        "enable": false,
+        "maven": {
+          "searchUpstreamBySha1": true,
+          "baseUrl": "https://search.maven.org/solrsearch/select",
+          "rateLimit": 300000000
+        }
+      },
+      "match": {
+        "java": {
+          "using-cpes": false
+        },
+        "jvm": {
+          "using-cpes": true
+        },
+        "dotnet": {
+          "using-cpes": false
+        },
+        "golang": {
+          "using-cpes": false,
+          "always-use-cpe-for-stdlib": true,
+          "allow-main-module-pseudo-version-comparison": false
+        },
+        "javascript": {
+          "using-cpes": false
+        },
+        "python": {
+          "using-cpes": false
+        },
+        "ruby": {
+          "using-cpes": false
+        },
+        "rust": {
+          "using-cpes": false
+        },
+        "hex": {
+          "using-cpes": false
+        },
+        "stock": {
+          "using-cpes": true
+        },
+        "dpkg": {
+          "using-cpes": false,
+          "missing-epoch-strategy": "zero",
+          "use-cpes-for-eol": false
+        },
+        "rpm": {
+          "using-cpes": false,
+          "missing-epoch-strategy": "auto",
+          "use-cpes-for-eol": false
+        }
+      },
+      "fail-on-severity": "high",
+      "registry": {
+        "insecure-skip-tls-verify": false,
+        "insecure-use-http": false,
+        "ca-cert": ""
+      },
+      "show-suppressed": false,
+      "by-cve": false,
+      "SortBy": {
+        "sort-by": "risk"
+      },
+      "name": "",
+      "default-image-pull-source": "",
+      "from": null,
+      "vex-documents": [],
+      "vex-add": [],
+      "match-upstream-kernel-headers": false,
+      "fix-channel": {
+        "redhat-eus": {
+          "apply": "auto",
+          "versions": ">= 8.0"
+        }
+      },
+      "timestamp": true,
+      "alerts": {
+        "enable-eol-distro-warnings": true
+      },
+      "db": {
+        "cache-dir": "/home/runner/.cache/grype/db",
+        "update-url": "https://grype.anchore.io/databases",
+        "ca-cert": "",
+        "auto-update": true,
+        "validate-by-hash-on-start": true,
+        "validate-age": true,
+        "max-allowed-built-age": 432000000000000,
+        "require-update-check": false,
+        "update-available-timeout": 30000000000,
+        "update-download-timeout": 300000000000,
+        "max-update-check-frequency": 7200000000000
+      },
+      "exp": {},
+      "dev": {
+        "db": {
+          "debug": false
+        }
+      }
+    },
+    "db": {
+      "status": {
+        "schemaVersion": "v6.1.4",
+        "from": "https://grype.anchore.io/databases/v6/vulnerability-db_v6.1.4_2026-05-11T17:07:49Z_1778570477.tar.zst?checksum=sha256%3Aaf2be971e48fdf41f0e6c21f4aaf2e10e1229ceac5cbda6041d1e20ebad1868b",
+        "built": "2026-05-12T07:21:17Z",
+        "path": "/home/runner/.cache/grype/db/6/vulnerability.db",
+        "valid": true
+      },
+      "providers": {
+        "alma": {
+          "captured": "2026-05-12T00:46:04Z",
+          "input": "xxh64:70e3e30563a950ee"
+        },
+        "alpine": {
+          "captured": "2026-05-12T00:46:21Z",
+          "input": "xxh64:aaef8fd9ea8dd2df"
+        },
+        "amazon": {
+          "captured": "2026-05-12T00:47:04Z",
+          "input": "xxh64:213980bf9542f0da"
+        },
+        "arch": {
+          "captured": "2026-05-12T00:47:02Z",
+          "input": "xxh64:b32f56c99665399c"
+        },
+        "bitnami": {
+          "captured": "2026-05-12T00:47:02Z",
+          "input": "xxh64:e5ae7f6e78bfe315"
+        },
+        "chainguard": {
+          "captured": "2026-05-12T00:47:12Z",
+          "input": "xxh64:3b9d0ce404bee13c"
+        },
+        "chainguard-libraries": {
+          "captured": "2026-05-12T00:47:01Z",
+          "input": "xxh64:86fe3df26d3331a2"
+        },
+        "debian": {
+          "captured": "2026-05-12T00:46:10Z",
+          "input": "xxh64:76472d47a87f53e9"
+        },
+        "echo": {
+          "captured": "2026-05-12T00:47:02Z",
+          "input": "xxh64:20e4598cd5ed1b4d"
+        },
+        "eol": {
+          "captured": "2026-05-12T00:46:35Z",
+          "input": "xxh64:4fb5b8feed9a6033"
+        },
+        "epss": {
+          "captured": "2026-05-12T00:46:25Z",
+          "input": "xxh64:075e358bd756485a"
+        },
+        "fedora": {
+          "captured": "2026-05-12T00:47:01Z",
+          "input": "xxh64:9b8b5e24975d6add"
+        },
+        "github": {
+          "captured": "2026-05-12T00:46:10Z",
+          "input": "xxh64:81575178121b92e2"
+        },
+        "hummingbird": {
+          "captured": "2026-05-12T00:47:15Z",
+          "input": "xxh64:b25448fde8edbb6e"
+        },
+        "kev": {
+          "captured": "2026-05-12T00:46:19Z",
+          "input": "xxh64:1ab77b43460f16cb"
+        },
+        "mariner": {
+          "captured": "2026-05-12T00:46:08Z",
+          "input": "xxh64:a5e6a7e8aa24abed"
+        },
+        "minimos": {
+          "captured": "2026-05-12T00:47:11Z",
+          "input": "xxh64:3dc3fc681cdb3081"
+        },
+        "nvd": {
+          "captured": "2026-05-12T00:46:49Z",
+          "input": "xxh64:3420ce0f0a26194c"
+        },
+        "oracle": {
+          "captured": "2026-05-12T00:47:02Z",
+          "input": "xxh64:98aa064e5d4e3551"
+        },
+        "photon": {
+          "captured": "2026-05-12T00:47:21Z",
+          "input": "xxh64:e67b471e83003d09"
+        },
+        "rhel": {
+          "captured": "2026-05-12T00:47:15Z",
+          "input": "xxh64:09b53b7d8f5fee67"
+        },
+        "secureos": {
+          "captured": "2026-05-12T00:47:19Z",
+          "input": "xxh64:18e39ca28e7ce958"
+        },
+        "sles": {
+          "captured": "2026-05-12T00:46:34Z",
+          "input": "xxh64:30a84af170699691"
+        },
+        "ubuntu": {
+          "captured": "2026-05-11T17:07:49Z",
+          "input": "xxh64:d056922035519f12"
+        },
+        "wolfi": {
+          "captured": "2026-05-12T00:46:04Z",
+          "input": "xxh64:93d472a40aecce25"
+        }
+      }
+    },
+    "timestamp": "2026-05-12T18:20:07.891656246Z"
+  }
+};
+  function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\u[a-zA-Z0-9]{4}|\[^u]|[^\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+  document.getElementById('json').innerHTML=highlight(data);
+</script>
+</body></html>
