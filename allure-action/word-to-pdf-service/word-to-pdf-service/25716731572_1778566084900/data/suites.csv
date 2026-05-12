@@ -1,0 +1,8 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"npm audit scan for known vulnerabilities in project dependencies.","","Dependency Audit (npm audit)","word-to-pdf-service","","failed","","460c90e","Security Scans","",""
+"Grype scan of the built Docker image for HIGH and CRITICAL CVEs.","","Grype Docker Image Vulnerability Scan","word-to-pdf-service","","skipped","","460c90e","Security Scans","",""
+"Scan for hardcoded secrets and credentials in the repository.","","Secret Scanning (Gitleaks)","word-to-pdf-service","","skipped","","460c90e","Security Scans","",""
+"Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.","","Docker Image Vulnerability Scan (Trivy)","word-to-pdf-service","","skipped","","460c90e","Security Scans","",""
+"Hadolint static analysis of the project Dockerfile.","","Dockerfile Lint (Hadolint)","word-to-pdf-service","","failed","","460c90e","Security Scans","",""
+"OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.","","OWASP Dependency Check","word-to-pdf-service","","skipped","","460c90e","Security Scans","",""
+"Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.","","Filesystem Vulnerability Scan (Trivy)","word-to-pdf-service","","failed","","460c90e","Security Scans","",""
