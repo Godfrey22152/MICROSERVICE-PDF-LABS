@@ -1,14 +1,14 @@
 # ---------- Stage 1: Build ----------
-FROM node:22-alpine AS builder
+FROM node:20.20.2-alpine AS builder
 
+# Set working directory
 WORKDIR /usr/src/app
 
 # Copy dependency manifests first for layer caching
 COPY package*.json ./
 
-# Install production dependencies only; clean npm cache
-RUN npm ci --omit=dev \
- && npm cache clean --force
+# npm install (not ci) to avoid lock-file sync errors when deps change
+RUN npm install --omit=dev && npm cache clean --force
 
 # Copy application source
 COPY . .
@@ -26,28 +26,52 @@ RUN mkdir -p /prod \
  && cp -r server.js routes config middleware public views node_modules \
          controllers models utils /prod
 
-# ---------- Stage 2: Runtime ----------
-FROM alpine:3.18
+# Extract ONLY the node binary from the musl tarball
+# strip it and remove debug symbols, then UPX-compress the binary
+RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
+ && curl -fsSLO --compressed \
+    "https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64-musl.tar.xz" \
+ && mkdir -p /node-bin \
+ && tar -xf node-v20.20.2-linux-x64-musl.tar.xz \
+    --strip-components=2 \
+    -C /node-bin \
+    node-v20.20.2-linux-x64-musl/bin/node \
+ && rm node-v20.20.2-linux-x64-musl.tar.xz \
+ && strip /node-bin/node \
+ && upx --best --lzma /node-bin/node \
+ && apk del .build-deps
 
+# ---------- Stage 2: Runtime ----------
+FROM alpine:3.21
+
+# Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF COMPRESSOR SERVICE" \
       org.opencontainers.image.description="Lightweight PDF compression microservice for PDF Labs" \
       org.opencontainers.image.authors="Godfrey <godfreyifeanyi50@gmail.com>" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-compressor-service"
 
-# Node.js 18 LTS + Ghostscript (gs) for PDF compression
-RUN apk add --no-cache nodejs=18.20.1-r0 ghostscript \
- && rm -rf /var/cache/apk/* /usr/share/man /usr/lib/node_modules
+# Copy the stripped and UPX-compressed node binary from builder
+COPY --from=builder /node-bin/node /usr/local/bin/node
 
-# Non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
- && mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
+# Ghostscript (gs) for PDF compression + libstdc++
+RUN apk add --no-cache libstdc++ ghostscript \
+ && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
+
+# Create non-root user and working directory for enhanced security
+RUN addgroup -S appgroup \
+ && adduser -S appuser -G appgroup \
+ && mkdir -p /usr/src/app \
+ && chown -R appuser:appgroup /usr/src/app
 
 WORKDIR /usr/src/app
 USER appuser
 
+# Copy production artifact from builder
 COPY --from=builder /prod .
 
+# Expose only required port
 EXPOSE 5300
 
+# Run the application
 CMD ["node", "server.js"]
