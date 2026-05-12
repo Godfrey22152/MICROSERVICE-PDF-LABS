@@ -1,0 +1,8 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.","","OWASP Dependency Check","logout-service","","passed","","05c5c77","Security Scans","",""
+"Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.","","Filesystem Vulnerability Scan (Trivy)","logout-service","","passed","","05c5c77","Security Scans","",""
+"Hadolint static analysis of the project Dockerfile.","","Dockerfile Lint (Hadolint)","logout-service","","failed","","05c5c77","Security Scans","",""
+"Scan for hardcoded secrets and credentials in the repository.","","Secret Scanning (Gitleaks)","logout-service","","passed","","05c5c77","Security Scans","",""
+"Grype scan of the built Docker image for HIGH and CRITICAL CVEs.","","Grype Docker Image Vulnerability Scan","logout-service","","skipped","","05c5c77","Security Scans","",""
+"npm audit scan for known vulnerabilities in project dependencies.","","Dependency Audit (npm audit)","logout-service","","failed","","05c5c77","Security Scans","",""
+"Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.","","Docker Image Vulnerability Scan (Trivy)","logout-service","","skipped","","05c5c77","Security Scans","",""
