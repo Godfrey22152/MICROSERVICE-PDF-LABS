@@ -1,5 +1,21 @@
 [
   {
+    "runId": 25708864908,
+    "runUniqueId": "25708864908_1778551731129",
+    "testResult": "FAIL",
+    "summary": {
+      "statistic": {
+        "failed": 2,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 5,
+        "unknown": 0,
+        "total": 7
+      },
+      "time": {}
+    }
+  },
+  {
     "runId": 25280284473,
     "runUniqueId": "25280284473_1777814554012",
     "testResult": "FAIL",
