@@ -57,9 +57,9 @@ RUN curl -fsSL "https://download.osgeo.org/libtiff/tiff-4.7.0.tar.gz" \
 # CVE-2025-70873 requires >= 3.52.0 to fix. We build 3.53.0 from source.
 FROM alpine:3.22.4 AS sqlitebuilder
 RUN apk add --no-cache build-base curl tcl-dev
-RUN curl -fsSL "https://www.sqlite.org/2025/sqlite-autoconf-3530000.tar.gz" \
+RUN curl -fsSL "https://www.sqlite.org/2026/sqlite-autoconf-3530100.tar.gz" \
       | tar -xz -C /tmp \
- && cd /tmp/sqlite-autoconf-3530000 \
+ && cd /tmp/sqlite-autoconf-3530100 \
  && ./configure --prefix=/sqlite-patched --disable-static --enable-shared \
       --enable-fts5 --enable-json1 \
  && make -j$(nproc) \
