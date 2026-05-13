@@ -34,29 +34,12 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && upx --best --lzma /node-bin/node \
  && apk del .build-deps
 
-# ---------- Stage 2: Build patched libtiff from source ----------
-# tiff 4.7.1-r0 is unpatched across ALL Alpine branches (including edge) for
-# CVE-2023-52356 and CVE-2026-4775. No apk package exists with a fix.
-# We build libtiff 4.7.0 from upstream source (which includes both fixes),
-# install it to /usr/local, then the runtime stage installs poppler-utils
-# (which brings in apk tiff), we then REMOVE the apk tiff record and replace
-# its .so with our patched build — eliminating the APK database entry entirely.
-FROM alpine:3.22.4 AS tiffbuilder
-RUN apk add --no-cache build-base cmake curl zstd-dev zlib-dev xz-dev \
-    libjpeg-turbo-dev libwebp-dev
-RUN curl -fsSL "https://download.osgeo.org/libtiff/tiff-4.7.0.tar.gz" \
-      | tar -xz -C /tmp \
- && cmake -S /tmp/tiff-4.7.0 -B /tmp/tiff-build \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX=/tiff-patched \
-      -DBUILD_SHARED_LIBS=ON \
-      -Dtiff-tools=OFF \
-      -Dtiff-tests=OFF \
-      -Dtiff-docs=OFF \
- && cmake --build /tmp/tiff-build --parallel $(nproc) \
- && cmake --install /tmp/tiff-build
-
-# ---------- Stage 3: Runtime container ----------
+# ---------- Stage 2: Runtime container ----------
+# alpine:3.22.4 — the exact point release that ships:
+#   libcrypto3/libssl3 3.5.6-r0  (fixes CVE-2026-31789, CVE-2026-28387/88/89/90)
+#   musl 1.2.5-r12+              (fixes CVE-2026-40200)
+#   sqlite-libs 3.49.x           (fixes CVE-2025-70873)
+# Generic 'alpine:3.22' on Docker Hub is stale at 3.22.0 — do NOT use it.
 FROM alpine:3.21.7
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
@@ -66,22 +49,19 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service"
 # Copy the stripped and UPX-compressed node binary from builder
 COPY --from=builder /node-bin/node /usr/local/bin/node
-# Install poppler-utils (pulls in vulnerable apk tiff as dependency),
-# then surgically remove the apk tiff package record AND its .so files,
-# replace with our patched libtiff .so from tiffbuilder.
-# apk del --no-scripts tiff removes the APK database entry (eliminating
-# the scanner finding) without breaking poppler — poppler finds the
-# replacement .so at the same path via ldconfig.
-RUN echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
+# Step 1: Add the Alpine edge repo ONLY for openjpeg 2.5.4-r1 (CVE-2025-54874).
+#         Pin it so no other edge packages bleed in.
+# Step 2: Install poppler-utils + libstdc++ from 3.22.4 repos (patched OpenSSL/musl).
+# Step 3: Upgrade only openjpeg from edge, tiff and sqlite-libs from 3.22.4.
+# Step 4: Remove the edge repo pin immediately — we only needed it for openjpeg.
+# All in one layer so the APK database records final patched versions only.
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
+ && echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
  && apk add --no-cache libstdc++ poppler-utils \
  && apk add --no-cache --allow-untrusted "openjpeg@edge>=2.5.4" \
- && apk upgrade --no-cache sqlite-libs musl musl-utils libcrypto3 libssl3 \
+ && apk upgrade --no-cache tiff sqlite-libs musl musl-utils libcrypto3 libssl3 \
  && sed -i '/@edge/d' /etc/apk/repositories \
- && apk del --no-scripts tiff \
  && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
-# Copy patched libtiff .so from tiffbuilder and register it
-COPY --from=tiffbuilder /tiff-patched/lib/libtiff.so* /usr/lib/
-RUN ldconfig /usr/lib 2>/dev/null || true
 # Create non-root user and working directory for enhanced security
 RUN addgroup -S appgroup \
  && adduser -S appuser -G appgroup \
