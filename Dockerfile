@@ -41,7 +41,7 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && apk del .build-deps
 
 # ---------- Stage 2: Runtime container ----------
-FROM alpine:3.22.4
+FROM alpine:3.23.4
 
 LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.description="Lightweight and secure PDF to image Tool microservice for PDF Labs" \
