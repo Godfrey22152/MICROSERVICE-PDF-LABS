@@ -53,15 +53,15 @@ RUN curl -fsSL "https://download.osgeo.org/libtiff/tiff-4.7.0.tar.gz" \
  && cmake --install /tmp/tiff-build
 
 # ---------- Stage 3: Build patched sqlite from source ----------
-# sqlite-libs 3.49.2-r1 is the highest available on Alpine 3.22.4.
-# CVE-2025-70873 requires >= 3.52.0 to fix. We build 3.53.0 from source.
+# sqlite-libs 3.49.2-r1 is the highest on Alpine 3.22.4.
+# CVE-2025-70873 requires >= 3.52.0 to fix. We build 3.53.1 from source.
+# URL year is 2026 (release date 2026-05-05). No tcl-dev needed for autoconf tarball.
 FROM alpine:3.22.4 AS sqlitebuilder
-RUN apk add --no-cache build-base curl tcl-dev
+RUN apk add --no-cache build-base curl
 RUN curl -fsSL "https://www.sqlite.org/2026/sqlite-autoconf-3530100.tar.gz" \
       | tar -xz -C /tmp \
  && cd /tmp/sqlite-autoconf-3530100 \
  && ./configure --prefix=/sqlite-patched --disable-static --enable-shared \
-      --enable-fts5 --enable-json1 \
  && make -j$(nproc) \
  && make install
 
