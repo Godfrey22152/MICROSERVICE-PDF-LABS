@@ -35,11 +35,6 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && apk del .build-deps
 
 # ---------- Stage 2: Runtime container ----------
-# alpine:3.22.4 — the exact point release that ships:
-#   libcrypto3/libssl3 3.5.6-r0  (fixes CVE-2026-31789, CVE-2026-28387/88/89/90)
-#   musl 1.2.5-r12+              (fixes CVE-2026-40200)
-#   sqlite-libs 3.49.x           (fixes CVE-2025-70873)
-# Generic 'alpine:3.22' on Docker Hub is stale at 3.22.0 — do NOT use it.
 FROM alpine:3.21.7
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
@@ -47,21 +42,14 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.authors="Godfrey <godfreyifeanyi50@gmail.com>" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service"
+
 # Copy the stripped and UPX-compressed node binary from builder
 COPY --from=builder /node-bin/node /usr/local/bin/node
-# Step 1: Add the Alpine edge repo ONLY for openjpeg 2.5.4-r1 (CVE-2025-54874).
-#         Pin it so no other edge packages bleed in.
-# Step 2: Install poppler-utils + libstdc++ from 3.22.4 repos (patched OpenSSL/musl).
-# Step 3: Upgrade only openjpeg from edge, tiff and sqlite-libs from 3.22.4.
-# Step 4: Remove the edge repo pin immediately — we only needed it for openjpeg.
-# All in one layer so the APK database records final patched versions only.
-RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
- && echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
- && apk add --no-cache libstdc++ poppler-utils \
- && apk add --no-cache --allow-untrusted "openjpeg@edge>=2.5.4" \
- && apk upgrade --no-cache tiff sqlite-libs musl musl-utils libcrypto3 libssl3 \
- && sed -i '/@edge/d' /etc/apk/repositories \
- && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
+
+# libstdc++ is the only runtime dependency the musl node binary needs
+RUN apk add --no-cache libstdc++ poppler-utils=0.4.12-r0 \
+ && rm -rf /var/cache/apk/* /usr/share/man /tmp/*
+ 
 # Create non-root user and working directory for enhanced security
 RUN addgroup -S appgroup \
  && adduser -S appuser -G appgroup \
@@ -69,9 +57,12 @@ RUN addgroup -S appgroup \
  && chown -R appuser:appgroup /usr/src/app
 WORKDIR /usr/src/app
 USER appuser
+
 # Copy production-ready files
 COPY --from=builder /prod .
+
 # Expose only required port
 EXPOSE 5100
+
 # Run the application
 CMD ["node", "server.js"]
