@@ -1,0 +1,8 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.","","Filesystem Vulnerability Scan (Trivy)","pdf-to-image-service","","passed","","eda4a12","Security Scans","",""
+"npm audit scan for known vulnerabilities in project dependencies.","","Dependency Audit (npm audit)","pdf-to-image-service","","passed","","eda4a12","Security Scans","",""
+"Scan for hardcoded secrets and credentials in the repository.","","Secret Scanning (Gitleaks)","pdf-to-image-service","","passed","","eda4a12","Security Scans","",""
+"OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.","","OWASP Dependency Check","pdf-to-image-service","","passed","","eda4a12","Security Scans","",""
+"Hadolint static analysis of the project Dockerfile.","","Dockerfile Lint (Hadolint)","pdf-to-image-service","","failed","","eda4a12","Security Scans","",""
+"Grype scan of the built Docker image for HIGH and CRITICAL CVEs.","","Grype Docker Image Vulnerability Scan","pdf-to-image-service","","failed","","eda4a12","Security Scans","",""
+"Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.","","Docker Image Vulnerability Scan (Trivy)","pdf-to-image-service","","passed","","eda4a12","Security Scans","",""
