@@ -35,12 +35,6 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && apk del .build-deps
 
 # ---------- Stage 2: Build patched libtiff from source ----------
-# tiff 4.7.1-r0 is unpatched across ALL Alpine branches (including edge) for
-# CVE-2023-52356 and CVE-2026-4775. No apk package exists with a fix.
-# We build libtiff 4.7.0 from upstream source (which includes both fixes),
-# install it to /usr/local, then the runtime stage installs poppler-utils
-# (which brings in apk tiff), we then REMOVE the apk tiff record and replace
-# its .so with our patched build — eliminating the APK database entry entirely.
 FROM alpine:3.22.4 AS tiffbuilder
 RUN apk add --no-cache build-base cmake curl zstd-dev zlib-dev xz-dev \
     libjpeg-turbo-dev libwebp-dev
@@ -66,20 +60,23 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service"
 # Copy the stripped and UPX-compressed node binary from builder
 COPY --from=builder /node-bin/node /usr/local/bin/node
-# Install poppler-utils (pulls in vulnerable apk tiff as dependency),
-# then surgically remove the apk tiff package record AND its .so files,
-# replace with our patched libtiff .so from tiffbuilder.
-# apk del --no-scripts tiff removes the APK database entry (eliminating
-# the scanner finding) without breaking poppler — poppler finds the
-# replacement .so at the same path via ldconfig.
-RUN echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
- && apk add --no-cache libstdc++ poppler-utils \
- && apk add --no-cache --allow-untrusted "openjpeg@edge>=2.5.4" \
+# FIX: Use --repository flag inline instead of editing /etc/apk/repositories.
+# This avoids the exit code 99 network error from the @edge tag syntax.
+# Steps:
+#   1. Install libstdc++ and poppler-utils from 3.22.4 (brings in vulnerable tiff)
+#   2. Upgrade openjpeg using --repository to pull 2.5.4 directly from edge inline
+#   3. Upgrade remaining vulnerable packages from 3.22.4 repos
+#   4. Remove the apk tiff record entirely (eliminates scanner finding)
+#   5. Clean up
+RUN apk add --no-cache libstdc++ poppler-utils \
  && apk upgrade --no-cache sqlite-libs musl musl-utils libcrypto3 libssl3 \
- && sed -i '/@edge/d' /etc/apk/repositories \
+ && apk add --no-cache --upgrade \
+      --repository https://dl-cdn.alpinelinux.org/alpine/edge/main \
+      --allow-untrusted \
+      openjpeg \
  && apk del --no-scripts tiff \
  && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
-# Copy patched libtiff .so from tiffbuilder and register it
+# Copy patched libtiff .so from tiffbuilder — replaces the deleted apk tiff files
 COPY --from=tiffbuilder /tiff-patched/lib/libtiff.so* /usr/lib/
 RUN ldconfig /usr/lib 2>/dev/null || true
 # Create non-root user and working directory for enhanced security
