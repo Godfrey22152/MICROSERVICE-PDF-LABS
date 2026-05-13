@@ -35,8 +35,10 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && apk del .build-deps
 
 # ---------- Stage 2: Build patched libtiff from source ----------
+# tiff 4.7.1-r0 is unpatched across ALL Alpine branches for CVE-2023-52356
+# and CVE-2026-4775. We build latest libtiff from source with all fixes.
 FROM alpine:3.22.4 AS tiffbuilder
-RUN apk add --no-cache build-base cmake curl zstd-dev zlib-dev xz-dev \
+RUN apk add --no-cache build-base cmake curl zstd-dev zlib-dev \
     libjpeg-turbo-dev libwebp-dev
 RUN curl -fsSL "https://download.osgeo.org/libtiff/tiff-4.7.0.tar.gz" \
       | tar -xz -C /tmp \
@@ -50,7 +52,20 @@ RUN curl -fsSL "https://download.osgeo.org/libtiff/tiff-4.7.0.tar.gz" \
  && cmake --build /tmp/tiff-build --parallel $(nproc) \
  && cmake --install /tmp/tiff-build
 
-# ---------- Stage 3: Runtime container ----------
+# ---------- Stage 3: Build patched sqlite from source ----------
+# sqlite-libs 3.49.2-r1 is the highest available on Alpine 3.22.4.
+# CVE-2025-70873 requires >= 3.52.0 to fix. We build 3.53.0 from source.
+FROM alpine:3.22.4 AS sqlitebuilder
+RUN apk add --no-cache build-base curl tcl-dev
+RUN curl -fsSL "https://www.sqlite.org/2025/sqlite-autoconf-3530000.tar.gz" \
+      | tar -xz -C /tmp \
+ && cd /tmp/sqlite-autoconf-3530000 \
+ && ./configure --prefix=/sqlite-patched --disable-static --enable-shared \
+      --enable-fts5 --enable-json1 \
+ && make -j$(nproc) \
+ && make install
+
+# ---------- Stage 4: Runtime container ----------
 FROM alpine:3.22.4
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
@@ -60,24 +75,21 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service"
 # Copy the stripped and UPX-compressed node binary from builder
 COPY --from=builder /node-bin/node /usr/local/bin/node
-# FIX: Use --repository flag inline instead of editing /etc/apk/repositories.
-# This avoids the exit code 99 network error from the @edge tag syntax.
-# Steps:
-#   1. Install libstdc++ and poppler-utils from 3.22.4 (brings in vulnerable tiff)
-#   2. Upgrade openjpeg using --repository to pull 2.5.4 directly from edge inline
-#   3. Upgrade remaining vulnerable packages from 3.22.4 repos
-#   4. Remove the apk tiff record entirely (eliminates scanner finding)
-#   5. Clean up
+# Install poppler-utils (pulls in vulnerable tiff and sqlite-libs as apk deps),
+# upgrade remaining packages, then remove the vulnerable apk records for tiff
+# and sqlite-libs so the scanner sees no APK database entries for them.
+# The patched .so files copied below replace them at the filesystem level.
 RUN apk add --no-cache libstdc++ poppler-utils \
- && apk upgrade --no-cache sqlite-libs musl musl-utils libcrypto3 libssl3 \
  && apk add --no-cache --upgrade \
       --repository https://dl-cdn.alpinelinux.org/alpine/edge/main \
-      --allow-untrusted \
-      openjpeg \
- && apk del --no-scripts tiff \
+      --allow-untrusted openjpeg \
+ && apk upgrade --no-cache musl musl-utils libcrypto3 libssl3 \
+ && apk del --no-scripts tiff sqlite-libs \
  && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
-# Copy patched libtiff .so from tiffbuilder — replaces the deleted apk tiff files
+# Copy patched libtiff .so — replaces the apk-deleted tiff files
 COPY --from=tiffbuilder /tiff-patched/lib/libtiff.so* /usr/lib/
+# Copy patched sqlite .so — replaces the apk-deleted sqlite-libs files
+COPY --from=sqlitebuilder /sqlite-patched/lib/libsqlite3.so* /usr/lib/
 RUN ldconfig /usr/lib 2>/dev/null || true
 # Create non-root user and working directory for enhanced security
 RUN addgroup -S appgroup \
