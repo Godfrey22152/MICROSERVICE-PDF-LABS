@@ -33,28 +33,29 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
  && apk del .build-deps
 
 # ---------- Stage 2: Build poppler WITHOUT libtiff ----------
-# The CVEs (CVE-2023-52356, CVE-2026-4775) live in tiff 4.7.1-r0,
-# which poppler pulls in only for TIFF image output (pdfimages -tiff).
-# This app converts PDF→PNG/JPEG so libtiff is never needed.
-# Building with -DENABLE_LIBTIFF=OFF means libtiff is never linked
-# and never present in the final image.
+# tiff 4.7.1-r0 carries CVE-2023-52356 and CVE-2026-4775 with no Alpine patch.
+# Alpine's poppler package links against libtiff only for TIFF image output
+# (pdfimages -tiff). This PDF-to-image app outputs PNG/JPEG, so libtiff is
+# completely unnecessary. Building with -DENABLE_LIBTIFF=OFF eliminates it.
 FROM alpine:3.22.4 AS poppler-builder
 
+# freetype-dev and fontconfig-dev are REQUIRED (hard cmake deps, not optional).
+# The previous attempt was missing freetype-dev, causing cmake to abort.
 RUN apk add --no-cache \
-    build-base cmake curl xz \
+    build-base \
+    cmake \
+    curl \
+    xz \
+    freetype-dev \
     fontconfig-dev \
     libjpeg-turbo-dev \
     libpng-dev \
     openjpeg-dev \
     lcms2-dev \
-    nss-dev \
     zlib-dev \
-    glib-dev \
     cairo-dev \
-    gobject-introspection-dev \
-    gettext-dev
+    pixman-dev
 
-# Download poppler source tarball directly from freedesktop.org
 RUN curl -fsSL "https://poppler.freedesktop.org/poppler-26.05.0.tar.xz" \
     -o /tmp/poppler.tar.xz \
  && mkdir -p /src/poppler \
@@ -94,11 +95,12 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
 
 COPY --from=builder /node-bin/node /usr/local/bin/node
 
-# Install poppler's runtime deps (NOT tiff — that's the whole point).
-# openjpeg from edge fixes CVE-2025-54874 as before.
+# Runtime deps for our tiff-free poppler build.
+# Notably: tiff is NOT listed here — that is the entire point.
 RUN echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
  && apk add --no-cache \
     libstdc++ \
+    freetype \
     fontconfig \
     libjpeg-turbo \
     libpng \
@@ -112,12 +114,12 @@ RUN echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/rep
  && sed -i '/@edge/d' /etc/apk/repositories \
  && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
 
-# Drop in the tiff-free poppler build
-COPY --from=poppler-builder /poppler-install/bin/pdf* /usr/local/bin/
+# Copy the tiff-free poppler binaries and libs from the build stage
+COPY --from=poppler-builder /poppler-install/bin/pdf*   /usr/local/bin/
 COPY --from=poppler-builder /poppler-install/lib/libpoppler*.so* /usr/local/lib/
 
-# Ensure the runtime linker picks up /usr/local/lib
-RUN echo "/usr/local/lib" >> /etc/ld-musl-x86_64.path || true
+# Register /usr/local/lib with the musl dynamic linker
+RUN echo "/usr/local/lib" >> /etc/ld-musl-x86_64.path
 
 RUN addgroup -S appgroup \
  && adduser -S appuser -G appgroup \
