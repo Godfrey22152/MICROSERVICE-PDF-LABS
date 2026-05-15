@@ -50,7 +50,8 @@ RUN apk add --no-cache --virtual .build-deps \
       build-base curl tar xz autoconf automake libtool pkgconf \
       libjpeg-turbo-dev zlib-dev zstd-dev xz-dev libwebp-dev \
  && apk add --no-cache libstdc++ \
- && mkdir -p /tmp/tiff-build && cd /tmp/tiff-build \
+ && # === Build latest libtiff first ===
+    mkdir -p /tmp/tiff-build && cd /tmp/tiff-build \
  && curl -fsSLO https://download.osgeo.org/libtiff/tiff-4.7.1.tar.gz \
  && tar -xzf tiff-4.7.1.tar.gz --strip-components=1 \
  && ./configure \
@@ -64,8 +65,15 @@ RUN apk add --no-cache --virtual .build-deps \
       --disable-tools \
  && make -j$(nproc) \
  && make install-strip \
- && apk add --no-cache poppler-utils \
+ && ldconfig \   # <-- Important: Update library cache
+ && # Add edge repo temporarily for patched openjpeg
+    echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
+ && apk add --no-cache \
+      poppler-utils \
+      openjpeg@edge \
+      sqlite-libs@edge \
  && apk del .build-deps \
+ && sed -i '/edge/d' /etc/apk/repositories \
  && rm -rf /tmp/tiff-build /var/cache/apk/* /usr/share/man /tmp/* /root/.cache
 
 # Non-root user
