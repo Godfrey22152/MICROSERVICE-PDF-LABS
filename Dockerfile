@@ -47,26 +47,26 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
 COPY --from=builder /node-bin/node /usr/local/bin/node
 
 RUN apk add --no-cache --virtual .build-deps \
- build-base curl tar xz autoconf automake libtool pkgconf \
- libjpeg-turbo-dev zlib-dev zstd-dev xz-dev libwebp-dev \
+      build-base curl tar xz autoconf automake libtool pkgconf \
+      libjpeg-turbo-dev zlib-dev zstd-dev xz-dev libwebp-dev \
  && apk add --no-cache libstdc++ \
  && mkdir -p /tmp/tiff-build && cd /tmp/tiff-build \
  && curl -fsSLO https://download.osgeo.org/libtiff/tiff-4.7.1.tar.gz \
- && tar -x zf tiff-4.7.1.tar.gz --strip-components=1 \
+ && tar -xzf tiff-4.7.1.tar.gz --strip-components=1 \
  && ./configure \
- --prefix=/usr \
- --disable-static \
- --enable-shared \
- --with-jpeg=auto \
- --with-zlib=auto \
- --with-zstd=auto \
- --with-webp=auto \
- --disable-tools \
+      --prefix=/usr \
+      --disable-static \
+      --enable-shared \
+      --with-jpeg=auto \
+      --with-zlib=auto \
+      --with-zstd=auto \
+      --with-webp=auto \
+      --disable-tools \
  && make -j$(nproc) \
  && make install-strip \
  && apk add --no-cache poppler-utils \
  && apk del .build-deps \
- && rm -rf /tmp/tiff-build /var/cache/apk/* /usr/share/man /tmp/*
+ && rm -rf /tmp/tiff-build /var/cache/apk/* /usr/share/man /tmp/* /root/.cache
 
 # Non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
