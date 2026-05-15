@@ -36,6 +36,7 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
 
 # ---------- Stage 2: Runtime container ----------
 FROM alpine:3.22.4
+
 # Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.description="Lightweight and secure PDF to image Tool microservice for PDF Labs" \
@@ -46,15 +47,16 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
 # Copy compressed Node binary from builder stage
 COPY --from=builder /node-bin/node /usr/local/bin/node
 
+# Build patched libtiff + install patched dependencies from edge
 RUN apk add --no-cache --virtual .build-deps \
       build-base curl tar xz autoconf automake libtool pkgconf \
-      libjpeg-turbo-dev zlib-dev zstd-dev xz-dev libwebp-dev \
- && apk add --no-cache libstdc++ \
- && # === Build latest libtiff first ===
-    mkdir -p /tmp/tiff-build && cd /tmp/tiff-build \
- && curl -fsSLO https://download.osgeo.org/libtiff/tiff-4.7.1.tar.gz \
- && tar -xzf tiff-4.7.1.tar.gz --strip-components=1 \
- && ./configure \
+      libjpeg-turbo-dev zlib-dev zstd-dev xz-dev libwebp-dev && \
+    apk add --no-cache libstdc++ && \
+    # Build and install latest libtiff from source
+    mkdir -p /tmp/tiff-build && cd /tmp/tiff-build && \
+    curl -fsSLO https://download.osgeo.org/libtiff/tiff-4.7.1.tar.gz && \
+    tar -xzf tiff-4.7.1.tar.gz --strip-components=1 && \
+    ./configure \
       --prefix=/usr \
       --disable-static \
       --enable-shared \
@@ -62,23 +64,24 @@ RUN apk add --no-cache --virtual .build-deps \
       --with-zlib=auto \
       --with-zstd=auto \
       --with-webp=auto \
-      --disable-tools \
- && make -j$(nproc) \
- && make install-strip \
- && ldconfig \   # <-- Important: Update library cache
- && # Add edge repo temporarily for patched openjpeg
-    echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
- && apk add --no-cache \
+      --disable-tools && \
+    make -j$(nproc) && \
+    make install-strip && \
+    ldconfig && \
+    # Add edge repo temporarily for newer openjpeg + sqlite
+    echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    apk add --no-cache \
       poppler-utils \
       openjpeg@edge \
-      sqlite-libs@edge \
- && apk del .build-deps \
- && sed -i '/edge/d' /etc/apk/repositories \
- && rm -rf /tmp/tiff-build /var/cache/apk/* /usr/share/man /tmp/* /root/.cache
+      sqlite-libs@edge && \
+    # Cleanup
+    apk del .build-deps && \
+    sed -i '/edge/d' /etc/apk/repositories && \
+    rm -rf /tmp/tiff-build /var/cache/apk/* /usr/share/man /tmp/* /root/.cache
 
 # Non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
- && mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    mkdir -p /usr/src/app && chown -R appuser:appgroup /usr/src/app
 
 WORKDIR /usr/src/app
 USER appuser
@@ -86,8 +89,5 @@ USER appuser
 # Copy app from builder
 COPY --from=builder /prod .
 
-# Expose only required port
 EXPOSE 5100
-
-# Run the application
 CMD ["node", "server.js"]
