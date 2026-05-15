@@ -37,47 +37,44 @@ RUN apk add --no-cache --virtual .build-deps curl xz upx binutils \
 # ---------- Stage 2: Runtime container ----------
 FROM alpine:3.22.4
 
-# Metadata for maintainability
 LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.description="Lightweight and secure PDF to image Tool microservice for PDF Labs" \
       org.opencontainers.image.authors="Godfrey <godfreyifeanyi50@gmail.com>" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service"
 
-# Copy compressed Node binary from builder stage
 COPY --from=builder /node-bin/node /usr/local/bin/node
 
-# Build patched libtiff + install patched dependencies from edge
 RUN apk add --no-cache --virtual .build-deps \
-      build-base curl tar xz autoconf automake libtool pkgconf \
-      libjpeg-turbo-dev zlib-dev zstd-dev xz-dev libwebp-dev && \
+      build-base cmake ninja curl tar xz pkgconf \
+      fontconfig-dev freetype-dev libjpeg-turbo-dev libpng-dev \
+      openjpeg-dev zlib-dev lcms2-dev cairo-dev glib-dev libxml2-dev && \
     apk add --no-cache libstdc++ && \
-    # Build and install latest libtiff from source
-    mkdir -p /tmp/tiff-build && cd /tmp/tiff-build && \
-    curl -fsSLO https://download.osgeo.org/libtiff/tiff-4.7.1.tar.gz && \
-    tar -xzf tiff-4.7.1.tar.gz --strip-components=1 && \
-    ./configure \
-      --prefix=/usr \
-      --disable-static \
-      --enable-shared \
-      --with-jpeg=auto \
-      --with-zlib=auto \
-      --with-zstd=auto \
-      --with-webp=auto \
-      --disable-tools && \
-    make -j$(nproc) && \
-    make install-strip && \
-    ldconfig && \
-    # Add edge repo temporarily for newer openjpeg + sqlite
+    # Build latest Poppler WITHOUT TIFF support
+    mkdir -p /tmp/poppler && cd /tmp/poppler && \
+    curl -fsSLO https://poppler.freedesktop.org/poppler-26.05.0.tar.xz && \
+    tar -xJf poppler-26.05.0.tar.xz --strip-components=1 && \
+    mkdir build && cd build && \
+    cmake -GNinja .. \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DENABLE_LIBTIFF=OFF \
+      -DENABLE_GLIB=ON \
+      -DENABLE_UTILS=ON \
+      -DENABLE_CPP=ON \
+      -DENABLE_LIBOPENJPEG=openjpeg \
+      -DENABLE_BOOST=OFF \
+      -DBUILD_SHARED_LIBS=ON \
+      -DENABLE_UNSTABLE_API_ABI_HEADERS=ON && \
+    ninja && \
+    ninja install && \
+    # Patched packages from edge
     echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
-    apk add --no-cache \
-      poppler-utils \
-      openjpeg@edge \
-      sqlite-libs@edge && \
+    apk add --no-cache openjpeg@edge sqlite-libs@edge && \
     # Cleanup
     apk del .build-deps && \
     sed -i '/edge/d' /etc/apk/repositories && \
-    rm -rf /tmp/tiff-build /var/cache/apk/* /usr/share/man /tmp/* /root/.cache
+    rm -rf /tmp/poppler /var/cache/apk/* /usr/share/man /tmp/* /root/.cache
 
 # Non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
@@ -86,7 +83,6 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
 WORKDIR /usr/src/app
 USER appuser
 
-# Copy app from builder
 COPY --from=builder /prod .
 
 EXPOSE 5100
