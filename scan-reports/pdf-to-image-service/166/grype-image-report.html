@@ -1,0 +1,2007 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>Grype Docker Image Scan Report — pdf-to-image-service #166</title>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}
+  h1{color:#58a6ff;margin-bottom:4px}
+  .meta{color:#8b949e;font-size:.85rem;margin-bottom:8px}
+  .status{font-size:.9rem;font-weight:600;margin-bottom:4px}
+  .detail{color:#8b949e;font-size:.85rem;margin-bottom:24px}
+  pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}
+</style>
+</head><body>
+<h1>🔬 Grype Docker Image Scan Report</h1>
+<div class="meta">Branch: pdf-to-image-service &nbsp;|&nbsp; Run: #166</div>
+<div class="status" style="color:#f85149">Status: ❌ Failed</div>
+<div class="detail">Details: Found 2 HIGH or CRITICAL vulnerabilities.</div>
+<pre id="json"></pre>
+<script>
+  const data = {
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2023-6277",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-6277",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://access.redhat.com/security/cve/CVE-2023-6277",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2251311",
+          "https://gitlab.com/libtiff/libtiff/-/issues/614",
+          "https://gitlab.com/libtiff/libtiff/-/merge_requests/545",
+          "http://seclists.org/fulldisclosure/2024/Jul/16",
+          "http://seclists.org/fulldisclosure/2024/Jul/17",
+          "http://seclists.org/fulldisclosure/2024/Jul/18",
+          "http://seclists.org/fulldisclosure/2024/Jul/19",
+          "http://seclists.org/fulldisclosure/2024/Jul/20",
+          "http://seclists.org/fulldisclosure/2024/Jul/21",
+          "http://seclists.org/fulldisclosure/2024/Jul/22",
+          "http://seclists.org/fulldisclosure/2024/Jul/23",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WJIN6DTSL3VODZUGWEUXLEL5DR53EZMV/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/Y7ZGN2MZXJ6E57W3L4YBM3ZPAU3T7T5C/",
+          "https://security.netapp.com/advisory/ntap-20240119-0002/",
+          "https://support.apple.com/kb/HT214116",
+          "https://support.apple.com/kb/HT214117",
+          "https://support.apple.com/kb/HT214118",
+          "https://support.apple.com/kb/HT214119",
+          "https://support.apple.com/kb/HT214120",
+          "https://support.apple.com/kb/HT214122",
+          "https://support.apple.com/kb/HT214123",
+          "https://support.apple.com/kb/HT214124"
+        ],
+        "description": "An out-of-memory flaw was found in libtiff. Passing a crafted tiff file to TIFFOpen() API may allow a remote attacker to cause a denial of service via a craft input with size smaller than 379 KB.",
+        "cvss": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Primary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 2.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          },
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 2.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-6277",
+            "epss": 0.0375,
+            "percentile": 0.88147,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-6277",
+            "cwe": "CWE-400",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          },
+          {
+            "cve": "CVE-2023-6277",
+            "cwe": "CWE-400",
+            "source": "nvd@nist.gov",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 2.15625
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:4.7.1:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "tiff",
+              "version": "4.7.1-r0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-6277",
+            "versionConstraint": "none (unknown)",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "17485b00a1162c63",
+        "name": "tiff",
+        "version": "4.7.1-r0",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "libtiff"
+        ],
+        "cpes": [
+          "cpe:2.3:a:libtiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:libtiff:tiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:tiff:4.7.1-r0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/tiff@4.7.1-r0?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "tiff"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6.2.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2023-52356",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-52356",
+        "namespace": "nvd:cpe",
+        "severity": "High",
+        "urls": [
+          "https://access.redhat.com/errata/RHSA-2024:5079",
+          "https://access.redhat.com/errata/RHSA-2025:20801",
+          "https://access.redhat.com/errata/RHSA-2025:21994",
+          "https://access.redhat.com/errata/RHSA-2025:23078",
+          "https://access.redhat.com/errata/RHSA-2025:23079",
+          "https://access.redhat.com/errata/RHSA-2025:23080",
+          "https://access.redhat.com/errata/RHSA-2026:16174",
+          "https://access.redhat.com/errata/RHSA-2026:3461",
+          "https://access.redhat.com/errata/RHSA-2026:3462",
+          "https://access.redhat.com/errata/RHSA-2026:5958",
+          "https://access.redhat.com/errata/RHSA-2026:7081",
+          "https://access.redhat.com/errata/RHSA-2026:7304",
+          "https://access.redhat.com/errata/RHSA-2026:7335",
+          "https://access.redhat.com/errata/RHSA-2026:8746",
+          "https://access.redhat.com/errata/RHSA-2026:8747",
+          "https://access.redhat.com/errata/RHSA-2026:8748",
+          "https://access.redhat.com/security/cve/CVE-2023-52356",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2251344",
+          "https://gitlab.com/libtiff/libtiff/-/issues/622",
+          "https://gitlab.com/libtiff/libtiff/-/merge_requests/546",
+          "http://seclists.org/fulldisclosure/2024/Jul/16",
+          "http://seclists.org/fulldisclosure/2024/Jul/17",
+          "http://seclists.org/fulldisclosure/2024/Jul/18",
+          "http://seclists.org/fulldisclosure/2024/Jul/19",
+          "http://seclists.org/fulldisclosure/2024/Jul/20",
+          "http://seclists.org/fulldisclosure/2024/Jul/21",
+          "http://seclists.org/fulldisclosure/2024/Jul/22",
+          "http://seclists.org/fulldisclosure/2024/Jul/23",
+          "https://lists.debian.org/debian-lts-announce/2024/03/msg00011.html",
+          "https://lists.debian.org/debian-lts-announce/2025/01/msg00019.html",
+          "https://support.apple.com/kb/HT214116",
+          "https://support.apple.com/kb/HT214117",
+          "https://support.apple.com/kb/HT214118",
+          "https://support.apple.com/kb/HT214119",
+          "https://support.apple.com/kb/HT214120",
+          "https://support.apple.com/kb/HT214122",
+          "https://support.apple.com/kb/HT214123",
+          "https://support.apple.com/kb/HT214124"
+        ],
+        "description": "A segment fault (SEGV) flaw was found in libtiff that could be triggered by passing a crafted tiff file to the TIFFReadRGBATileExt() API. This flaw allows a remote attacker to cause a heap-buffer overflow, leading to a denial of service.",
+        "cvss": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Primary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 7.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          },
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 7.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-52356",
+            "epss": 0.00717,
+            "percentile": 0.72598,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-52356",
+            "cwe": "CWE-122",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          },
+          {
+            "cve": "CVE-2023-52356",
+            "cwe": "CWE-787",
+            "source": "nvd@nist.gov",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.5377500000000001
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:4.7.1:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "tiff",
+              "version": "4.7.1-r0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-52356",
+            "versionConstraint": "none (unknown)",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "17485b00a1162c63",
+        "name": "tiff",
+        "version": "4.7.1-r0",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "libtiff"
+        ],
+        "cpes": [
+          "cpe:2.3:a:libtiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:libtiff:tiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:tiff:4.7.1-r0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/tiff@4.7.1-r0?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "tiff"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6.2.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2026-4775",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2026-4775",
+        "namespace": "nvd:cpe",
+        "severity": "High",
+        "urls": [
+          "https://access.redhat.com/errata/RHSA-2026:12265",
+          "https://access.redhat.com/errata/RHSA-2026:12271",
+          "https://access.redhat.com/errata/RHSA-2026:14929",
+          "https://access.redhat.com/errata/RHSA-2026:16055",
+          "https://access.redhat.com/security/cve/CVE-2026-4775",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2450768",
+          "https://lists.debian.org/debian-lts-announce/2026/04/msg00016.html"
+        ],
+        "description": "A flaw was found in the libtiff library. A remote attacker could exploit a signed integer overflow vulnerability in the putcontig8bitYCbCr44tile function by providing a specially crafted TIFF file. This flaw can lead to an out-of-bounds heap write due to incorrect memory pointer calculations, potentially causing a denial of service (application crash) or arbitrary code execution.",
+        "cvss": [
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "metrics": {
+              "baseScore": 7.8,
+              "exploitabilityScore": 1.9,
+              "impactScore": 5.9
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2026-4775",
+            "epss": 0.00053,
+            "percentile": 0.1639,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2026-4775",
+            "cwe": "CWE-190",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.040545000000000005
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:4.7.1:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "tiff",
+              "version": "4.7.1-r0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2026-4775",
+            "versionConstraint": "none (unknown)",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "17485b00a1162c63",
+        "name": "tiff",
+        "version": "4.7.1-r0",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "libtiff"
+        ],
+        "cpes": [
+          "cpe:2.3:a:libtiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:libtiff:tiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:tiff:4.7.1-r0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/tiff@4.7.1-r0?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "tiff"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6.2.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2023-39329",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-39329",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://access.redhat.com/errata/RHSA-2026:4128",
+          "https://access.redhat.com/security/cve/CVE-2023-39329",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2295816"
+        ],
+        "description": "A flaw was found in OpenJPEG. A resource exhaustion can occur in the opj_t1_decode_cblks function in tcd.c through a crafted image file, causing a denial of service.",
+        "cvss": [
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 2.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-39329",
+            "epss": 0.00062,
+            "percentile": 0.19136,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-39329",
+            "cwe": "CWE-400",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.03565
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:uclouvain:openjpeg:2.5.4:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "openjpeg",
+              "version": "2.5.4-r1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-39329",
+            "versionConstraint": "= 2.0,= 2.5.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:uclouvain:openjpeg:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "6312929bd811b53c",
+        "name": "openjpeg",
+        "version": "2.5.4-r1",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "BSD-2-Clause"
+        ],
+        "cpes": [
+          "cpe:2.3:a:uclouvain:openjpeg:2.5.4-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:openjpeg:openjpeg:2.5.4-r1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/openjpeg@2.5.4-r1?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "openjpeg"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libopenjp2.so.2.5.4"
+            },
+            {
+              "path": "/usr/lib/libopenjp2.so.7"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2023-37769",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-37769",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gitlab.freedesktop.org/pixman/pixman/-/issues/76"
+        ],
+        "description": "stress-test master commit e4c878 was discovered to contain a FPE vulnerability via the component combine_inner at /pixman-combine-float.c.",
+        "cvss": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Primary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 2.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-37769",
+            "epss": 0.00057,
+            "percentile": 0.17795,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-37769",
+            "cwe": "CWE-369",
+            "source": "nvd@nist.gov",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.032775
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:pixman:pixman:0.46.4:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "pixman",
+              "version": "0.46.4-r0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-37769",
+            "versionConstraint": "none (unknown)",
+            "cpes": [
+              "cpe:2.3:a:pixman:pixman:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "fb805e8977103c9f",
+        "name": "pixman",
+        "version": "0.46.4-r0",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "MIT"
+        ],
+        "cpes": [
+          "cpe:2.3:a:pixman:pixman:0.46.4-r0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/pixman@0.46.4-r0?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "pixman"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libpixman-1.so.0"
+            },
+            {
+              "path": "/usr/lib/libpixman-1.so.0.46.4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00051,
+            "percentile": 0.15998,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.029325
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r30"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "5b8a9495e4efe754",
+        "name": "busybox",
+        "version": "1.37.0-r30",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:busybox:busybox:1.37.0-r30:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/busybox@1.37.0-r30?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/bin"
+            },
+            {
+              "path": "/bin/busybox"
+            },
+            {
+              "path": "/etc"
+            },
+            {
+              "path": "/etc/securetty"
+            },
+            {
+              "path": "/etc/busybox-paths.d"
+            },
+            {
+              "path": "/etc/busybox-paths.d/busybox"
+            },
+            {
+              "path": "/etc/logrotate.d"
+            },
+            {
+              "path": "/etc/logrotate.d/acpid"
+            },
+            {
+              "path": "/etc/network"
+            },
+            {
+              "path": "/etc/network/if-down.d"
+            },
+            {
+              "path": "/etc/network/if-post-down.d"
+            },
+            {
+              "path": "/etc/network/if-post-up.d"
+            },
+            {
+              "path": "/etc/network/if-pre-down.d"
+            },
+            {
+              "path": "/etc/network/if-pre-up.d"
+            },
+            {
+              "path": "/etc/network/if-up.d"
+            },
+            {
+              "path": "/etc/network/if-up.d/dad"
+            },
+            {
+              "path": "/etc/udhcpc"
+            },
+            {
+              "path": "/etc/udhcpc/udhcpc.conf"
+            },
+            {
+              "path": "/sbin"
+            },
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/sbin"
+            },
+            {
+              "path": "/usr/share"
+            },
+            {
+              "path": "/usr/share/udhcpc"
+            },
+            {
+              "path": "/usr/share/udhcpc/default.script"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00051,
+            "percentile": 0.15998,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.029325
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r30"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "3e88c98a595f91bf",
+        "name": "busybox-binsh",
+        "version": "1.37.0-r30",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:busybox-binsh:busybox-binsh:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox-binsh:busybox_binsh:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox_binsh:busybox-binsh:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox_binsh:busybox_binsh:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox:busybox-binsh:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox:busybox_binsh:1.37.0-r30:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/busybox-binsh@1.37.0-r30?arch=x86_64&distro=alpine-3.23.4&upstream=busybox",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/bin"
+            },
+            {
+              "path": "/bin/sh"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00051,
+            "percentile": 0.15998,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.029325
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r30"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "70e62fc46b7f6a24",
+        "name": "ssl_client",
+        "version": "1.37.0-r30",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:ssl-client:ssl-client:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl-client:ssl_client:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl_client:ssl-client:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl_client:ssl_client:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl:ssl-client:1.37.0-r30:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl:ssl_client:1.37.0-r30:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/ssl_client@1.37.0-r30?arch=x86_64&distro=alpine-3.23.4&upstream=busybox",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/bin"
+            },
+            {
+              "path": "/usr/bin/ssl_client"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2023-39327",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-39327",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://access.redhat.com/errata/RHSA-2026:4128",
+          "https://access.redhat.com/security/cve/CVE-2023-39327",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2295812"
+        ],
+        "description": "A flaw was found in OpenJPEG. Maliciously constructed pictures can cause the program to enter a large loop and continuously print warning messages on the terminal.",
+        "cvss": [
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 4.3,
+              "exploitabilityScore": 2.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-39327",
+            "epss": 0.00027,
+            "percentile": 0.07684,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-39327",
+            "cwe": "CWE-400",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.012554999999999998
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:uclouvain:openjpeg:2.5.4:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "openjpeg",
+              "version": "2.5.4-r1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-39327",
+            "versionConstraint": "= 2.0,= 2.5.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:uclouvain:openjpeg:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "6312929bd811b53c",
+        "name": "openjpeg",
+        "version": "2.5.4-r1",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "BSD-2-Clause"
+        ],
+        "cpes": [
+          "cpe:2.3:a:uclouvain:openjpeg:2.5.4-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:openjpeg:openjpeg:2.5.4-r1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/openjpeg@2.5.4-r1?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "openjpeg"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libopenjp2.so.2.5.4"
+            },
+            {
+              "path": "/usr/lib/libopenjp2.so.7"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2026-23865",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2026-23865",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gitlab.com/freetype/freetype/-/commit/fc85a255849229c024c8e65f536fe1875d84841c",
+          "https://sourceforge.net/projects/freetype/files/freetype2/2.14.2/",
+          "https://www.facebook.com/security/advisories/cve-2026-23865",
+          "http://www.openwall.com/lists/oss-security/2026/03/03/8"
+        ],
+        "description": "An integer overflow in the tt_var_load_item_variation_store function of the Freetype library in versions 2.13.2 and 2.13.3 may allow for an out of bounds read operation when parsing HVAR/VVAR/MVAR tables in OpenType variable fonts. This issue is fixed in version 2.14.2.",
+        "cvss": [
+          {
+            "source": "cve-assign@fb.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 1.9,
+              "impactScore": 3.4
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2026-23865",
+            "epss": 0.00017,
+            "percentile": 0.04568,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2026-23865",
+            "cwe": "CWE-125",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.008755
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:freetype:freetype:2.14.1:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "freetype",
+              "version": "2.14.1-r0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2026-23865",
+            "versionConstraint": ">= 2.13.2, <= 2.13.3,>= 2.14.0, <= 2.14.1 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:freetype:freetype:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "c92f514716da320b",
+        "name": "freetype",
+        "version": "2.14.1-r0",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "FTL OR GPL-2.0-or-later"
+        ],
+        "cpes": [
+          "cpe:2.3:a:freetype:freetype:2.14.1-r0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/freetype@2.14.1-r0?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "freetype"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libfreetype.so.6"
+            },
+            {
+              "path": "/usr/lib/libfreetype.so.6.20.4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2023-6228",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-6228",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://access.redhat.com/errata/RHSA-2024:2289",
+          "https://access.redhat.com/errata/RHSA-2024:5079",
+          "https://access.redhat.com/security/cve/CVE-2023-6228",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2240995"
+        ],
+        "description": "An issue was found in the tiffcp utility distributed by the libtiff package where a crafted TIFF file on processing may cause a heap-based buffer overflow leads to an application crash.",
+        "cvss": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 5.5,
+              "exploitabilityScore": 1.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          },
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 3.3,
+              "exploitabilityScore": 1.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-6228",
+            "epss": 0.00016,
+            "percentile": 0.03538,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-6228",
+            "cwe": "CWE-787",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          },
+          {
+            "cve": "CVE-2023-6228",
+            "cwe": "CWE-787",
+            "source": "nvd@nist.gov",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.0075200000000000015
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:4.7.1:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "tiff",
+              "version": "4.7.1-r0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-6228",
+            "versionConstraint": "none (unknown)",
+            "cpes": [
+              "cpe:2.3:a:libtiff:libtiff:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "17485b00a1162c63",
+        "name": "tiff",
+        "version": "4.7.1-r0",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "libtiff"
+        ],
+        "cpes": [
+          "cpe:2.3:a:libtiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:libtiff:tiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:libtiff:4.7.1-r0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:tiff:tiff:4.7.1-r0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/tiff@4.7.1-r0?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "tiff"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6"
+            },
+            {
+              "path": "/usr/lib/libtiff.so.6.2.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2023-39328",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-39328",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://access.redhat.com/security/cve/CVE-2023-39328",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=2219236"
+        ],
+        "description": "A vulnerability was found in OpenJPEG similar to CVE-2019-6988. This flaw allows an attacker to bypass existing protections and cause an application crash through a maliciously crafted file.",
+        "cvss": [
+          {
+            "source": "secalert@redhat.com",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 5.5,
+              "exploitabilityScore": 1.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2023-39328",
+            "epss": 0.00013,
+            "percentile": 0.02403,
+            "date": "2026-05-18"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2023-39328",
+            "cwe": "CWE-400",
+            "source": "secalert@redhat.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.0068249999999999995
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:uclouvain:openjpeg:2.5.4:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "openjpeg",
+              "version": "2.5.4-r1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2023-39328",
+            "versionConstraint": "= 2.0,= 2.5.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:uclouvain:openjpeg:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "6312929bd811b53c",
+        "name": "openjpeg",
+        "version": "2.5.4-r1",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "BSD-2-Clause"
+        ],
+        "cpes": [
+          "cpe:2.3:a:uclouvain:openjpeg:2.5.4-r1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:openjpeg:openjpeg:2.5.4-r1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/openjpeg@2.5.4-r1?arch=x86_64&distro=alpine-3.23.4",
+        "upstreams": [
+          {
+            "name": "openjpeg"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/lib"
+            },
+            {
+              "path": "/usr/lib/libopenjp2.so.2.5.4"
+            },
+            {
+              "path": "/usr/lib/libopenjp2.so.7"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "source": {
+    "type": "image",
+    "target": {
+      "userInput": "ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-to-image-service:2e1f5d67e6c7a824b8bd08a9c97bd9a188d76eff",
+      "imageID": "sha256:14c8ad9319fa888c77a33cbe7c6bbce00bedd700eb73440f6f8848a7ad78eeec",
+      "manifestDigest": "sha256:54996c2969885732968b547862a3e1c2909e3e337f129511dedaaa715e397710",
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "tags": [
+        "ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-to-image-service:2e1f5d67e6c7a824b8bd08a9c97bd9a188d76eff"
+      ],
+      "imageSize": 65596345,
+      "layers": [
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:29df493baa13de438d6d2ece3a8333032e0b7b9b9d8cce4ee82194da255f61e1",
+          "size": 8445005
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:bb0225530c550470ba295f11cb65259a79d5093759b7f15e928ba61dc1bc3512",
+          "size": 22758796
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:b7a60eb43c8d8f629b92eb3ae16734013693ef6aedd399706481f7e54e701228",
+          "size": 23534945
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:ccd4755f2f7ef7d302dee28f4708f3d646de21576d9d5b03055c88d1274ae2d4",
+          "size": 3059
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "size": 0
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:5826f8f280379b2f674d0c773dba0b07749376cdb0c04fad52ed9e2fc0d3181b",
+          "size": 10854540
+        }
+      ],
+      "manifest": "eyJzY2hlbWFWZXJzaW9uIjoyLCJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmRpc3RyaWJ1dGlvbi5tYW5pZmVzdC52Mitqc29uIiwiY29uZmlnIjp7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuY29udGFpbmVyLmltYWdlLnYxK2pzb24iLCJzaXplIjozMzI4LCJkaWdlc3QiOiJzaGEyNTY6MTRjOGFkOTMxOWZhODg4Yzc3YTMzY2JlN2M2YmJjZTAwYmVkZDcwMGViNzM0NDBmNmY4ODQ4YTdhZDc4ZWVlYyJ9LCJsYXllcnMiOlt7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLCJzaXplIjo4NzMyMTYwLCJkaWdlc3QiOiJzaGEyNTY6MjlkZjQ5M2JhYTEzZGU0MzhkNmQyZWNlM2E4MzMzMDMyZTBiN2I5YjlkOGNjZTRlZTgyMTk0ZGEyNTVmNjFlMSJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjIyNzYxOTg0LCJkaWdlc3QiOiJzaGEyNTY6YmIwMjI1NTMwYzU1MDQ3MGJhMjk1ZjExY2I2NTI1OWE3OWQ1MDkzNzU5YjdmMTVlOTI4YmE2MWRjMWJjMzUxMiJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjIzODc1NTg0LCJkaWdlc3QiOiJzaGEyNTY6YjdhNjBlYjQzYzhkOGY2MjliOTJlYjNhZTE2NzM0MDEzNjkzZWY2YWVkZDM5OTcwNjQ4MWY3ZTU0ZTcwMTIyOCJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjEyMjg4LCJkaWdlc3QiOiJzaGEyNTY6Y2NkNDc1NWYyZjdlZjdkMzAyZGVlMjhmNDcwOGYzZDY0NmRlMjE1NzZkOWQ1YjAzMDU1Yzg4ZDEyNzRhZTJkNCJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjEwMjQsImRpZ2VzdCI6InNoYTI1Njo1ZjcwYmYxOGEwODYwMDcwMTZlOTQ4YjA0YWVkM2I4MjEwM2EzNmJlYTQxNzU1YjZjZGRmYWYxMGFjZTNjNmVmIn0seyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwic2l6ZSI6MTIxMDM2ODAsImRpZ2VzdCI6InNoYTI1Njo1ODI2ZjhmMjgwMzc5YjJmNjc0ZDBjNzczZGJhMGIwNzc0OTM3NmNkYjBjMDRmYWQ1MmVkOWUyZmMwZDMxODFiIn1dfQ==",
+      "config": "eyJhcmNoaXRlY3R1cmUiOiJhbWQ2NCIsImNvbmZpZyI6eyJVc2VyIjoiYXBwdXNlciIsIkV4cG9zZWRQb3J0cyI6eyI1MTAwL3RjcCI6e319LCJFbnYiOlsiUEFUSD0vdXNyL2xvY2FsL3NiaW46L3Vzci9sb2NhbC9iaW46L3Vzci9zYmluOi91c3IvYmluOi9zYmluOi9iaW4iXSwiQ21kIjpbIm5vZGUiLCJzZXJ2ZXIuanMiXSwiV29ya2luZ0RpciI6Ii91c3Ivc3JjL2FwcCIsIkxhYmVscyI6eyJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYXV0aG9ycyI6IkdvZGZyZXkgXHUwMDNjZ29kZnJleWlmZWFueWk1MEBnbWFpbC5jb21cdTAwM2UiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuZGVzY3JpcHRpb24iOiJMaWdodHdlaWdodCBhbmQgc2VjdXJlIFBERiB0byBpbWFnZSBUb29sIG1pY3Jvc2VydmljZSBmb3IgUERGIExhYnMiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2Uuc291cmNlIjoiaHR0cHM6Ly9naXRodWIuY29tL0dvZGZyZXkyMjE1Mi9NSUNST1NFUlZJQ0UtUERGLUxBQlMvdHJlZS9wZGYtdG8taW1hZ2Utc2VydmljZSIsIm9yZy5vcGVuY29udGFpbmVycy5pbWFnZS50aXRsZSI6IlBERiBUTyBJTUFHRSBBUFAiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudmVyc2lvbiI6IjEuMC4wIn0sIkFyZ3NFc2NhcGVkIjp0cnVlfSwiY3JlYXRlZCI6IjIwMjYtMDUtMjBUMDI6NTY6MTkuNTU5MjE1NTA0WiIsImhpc3RvcnkiOlt7ImNyZWF0ZWQiOiIyMDI2LTA0LTE1VDIwOjAxOjQwLjEzOTY3Njc1N1oiLCJjcmVhdGVkX2J5IjoiQUREIGFscGluZS1taW5pcm9vdGZzLTMuMjMuNC14ODZfNjQudGFyLmd6IC8gIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNC0xNVQyMDowMTo0MC4xMzk2NzY3NTdaIiwiY3JlYXRlZF9ieSI6IkNNRCBbXCIvYmluL3NoXCJdIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0yMFQwMjo1NjoxOC41ODgwMDQxMloiLCJjcmVhdGVkX2J5IjoiTEFCRUwgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnRpdGxlPVBERiBUTyBJTUFHRSBBUFAgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLmRlc2NyaXB0aW9uPUxpZ2h0d2VpZ2h0IGFuZCBzZWN1cmUgUERGIHRvIGltYWdlIFRvb2wgbWljcm9zZXJ2aWNlIGZvciBQREYgTGFicyBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYXV0aG9ycz1Hb2RmcmV5IFx1MDAzY2dvZGZyZXlpZmVhbnlpNTBAZ21haWwuY29tXHUwMDNlIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS52ZXJzaW9uPTEuMC4wIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5zb3VyY2U9aHR0cHM6Ly9naXRodWIuY29tL0dvZGZyZXkyMjE1Mi9NSUNST1NFUlZJQ0UtUERGLUxBQlMvdHJlZS9wZGYtdG8taW1hZ2Utc2VydmljZSIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDUtMjBUMDI6NTY6MTguNTg4MDA0MTJaIiwiY3JlYXRlZF9ieSI6IkNPUFkgL25vZGUtYmluL25vZGUgL3Vzci9sb2NhbC9iaW4vbm9kZSAjIGJ1aWxka2l0IiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTIwVDAyOjU2OjE5LjI5Nzk2ODA4OVoiLCJjcmVhdGVkX2J5IjoiUlVOIC9iaW4vc2ggLWMgYXBrIGFkZCAtLW5vLWNhY2hlIGxpYnN0ZGMrKyBwb3BwbGVyLXV0aWxzICBcdTAwMjZcdTAwMjYgYXBrIGRlbCAtLW5vLXNjcmlwdHMgdGlmZiAgXHUwMDI2XHUwMDI2IHJtIC1yZiAvdmFyL2NhY2hlL2Fway8qIC91c3Ivc2hhcmUvbWFuIC90bXAvKiAvdXNyL2xpYi9ub2RlX21vZHVsZXMgIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNS0yMFQwMjo1NjoxOS4zNTczNzg4MjRaIiwiY3JlYXRlZF9ieSI6IlJVTiAvYmluL3NoIC1jIGFkZGdyb3VwIC1TIGFwcGdyb3VwICBcdTAwMjZcdTAwMjYgYWRkdXNlciAtUyBhcHB1c2VyIC1HIGFwcGdyb3VwICBcdTAwMjZcdTAwMjYgbWtkaXIgLXAgL3Vzci9zcmMvYXBwICBcdTAwMjZcdTAwMjYgY2hvd24gLVIgYXBwdXNlcjphcHBncm91cCAvdXNyL3NyYy9hcHAgIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNS0yMFQwMjo1NjoxOS4zNjQ0OTU2MDFaIiwiY3JlYXRlZF9ieSI6IldPUktESVIgL3Vzci9zcmMvYXBwIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTIwVDAyOjU2OjE5LjM2NDQ5NTYwMVoiLCJjcmVhdGVkX2J5IjoiVVNFUiBhcHB1c2VyIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNS0yMFQwMjo1NjoxOS41NTkyMTU1MDRaIiwiY3JlYXRlZF9ieSI6IkNPUFkgL3Byb2QgLiAjIGJ1aWxka2l0IiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTIwVDAyOjU2OjE5LjU1OTIxNTUwNFoiLCJjcmVhdGVkX2J5IjoiRVhQT1NFIFs1MTAwL3RjcF0iLCJjb21tZW50IjoiYnVpbGRraXQuZG9ja2VyZmlsZS52MCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA1LTIwVDAyOjU2OjE5LjU1OTIxNTUwNFoiLCJjcmVhdGVkX2J5IjoiQ01EIFtcIm5vZGVcIiBcInNlcnZlci5qc1wiXSIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIiwiZW1wdHlfbGF5ZXIiOnRydWV9XSwib3MiOiJsaW51eCIsInJvb3RmcyI6eyJ0eXBlIjoibGF5ZXJzIiwiZGlmZl9pZHMiOlsic2hhMjU2OjI5ZGY0OTNiYWExM2RlNDM4ZDZkMmVjZTNhODMzMzAzMmUwYjdiOWI5ZDhjY2U0ZWU4MjE5NGRhMjU1ZjYxZTEiLCJzaGEyNTY6YmIwMjI1NTMwYzU1MDQ3MGJhMjk1ZjExY2I2NTI1OWE3OWQ1MDkzNzU5YjdmMTVlOTI4YmE2MWRjMWJjMzUxMiIsInNoYTI1NjpiN2E2MGViNDNjOGQ4ZjYyOWI5MmViM2FlMTY3MzQwMTM2OTNlZjZhZWRkMzk5NzA2NDgxZjdlNTRlNzAxMjI4Iiwic2hhMjU2OmNjZDQ3NTVmMmY3ZWY3ZDMwMmRlZTI4ZjQ3MDhmM2Q2NDZkZTIxNTc2ZDlkNWIwMzA1NWM4OGQxMjc0YWUyZDQiLCJzaGEyNTY6NWY3MGJmMThhMDg2MDA3MDE2ZTk0OGIwNGFlZDNiODIxMDNhMzZiZWE0MTc1NWI2Y2RkZmFmMTBhY2UzYzZlZiIsInNoYTI1Njo1ODI2ZjhmMjgwMzc5YjJmNjc0ZDBjNzczZGJhMGIwNzc0OTM3NmNkYjBjMDRmYWQ1MmVkOWUyZmMwZDMxODFiIl19fQ==",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "os": "linux",
+      "labels": {
+        "org.opencontainers.image.authors": "Godfrey <godfreyifeanyi50@gmail.com>",
+        "org.opencontainers.image.description": "Lightweight and secure PDF to image Tool microservice for PDF Labs",
+        "org.opencontainers.image.source": "https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service",
+        "org.opencontainers.image.title": "PDF TO IMAGE APP",
+        "org.opencontainers.image.version": "1.0.0"
+      }
+    }
+  },
+  "distro": {
+    "name": "alpine",
+    "version": "3.23.4",
+    "idLike": []
+  },
+  "descriptor": {
+    "name": "grype",
+    "version": "0.110.0",
+    "configuration": {
+      "output": [
+        "json"
+      ],
+      "file": "grype-image-report.json",
+      "pretty": false,
+      "distro": "",
+      "add-cpes-if-none": false,
+      "output-template-file": "",
+      "check-for-app-update": false,
+      "only-fixed": false,
+      "only-notfixed": false,
+      "ignore-wontfix": "",
+      "platform": "",
+      "search": {
+        "scope": "squashed",
+        "unindexed-archives": false,
+        "indexed-archives": true
+      },
+      "ignore": [
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "kernel-headers",
+            "version": "",
+            "language": "",
+            "type": "rpm",
+            "location": "",
+            "upstream-name": "kernel"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux(-.*)?-headers-.*",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux.*"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux-libc-dev",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        }
+      ],
+      "exclude": [],
+      "externalSources": {
+        "enable": false,
+        "maven": {
+          "searchUpstreamBySha1": true,
+          "baseUrl": "https://search.maven.org/solrsearch/select",
+          "rateLimit": 300000000
+        }
+      },
+      "match": {
+        "java": {
+          "using-cpes": false
+        },
+        "jvm": {
+          "using-cpes": true
+        },
+        "dotnet": {
+          "using-cpes": false
+        },
+        "golang": {
+          "using-cpes": false,
+          "always-use-cpe-for-stdlib": true,
+          "allow-main-module-pseudo-version-comparison": false
+        },
+        "javascript": {
+          "using-cpes": false
+        },
+        "python": {
+          "using-cpes": false
+        },
+        "ruby": {
+          "using-cpes": false
+        },
+        "rust": {
+          "using-cpes": false
+        },
+        "hex": {
+          "using-cpes": false
+        },
+        "stock": {
+          "using-cpes": true
+        },
+        "dpkg": {
+          "using-cpes": false,
+          "missing-epoch-strategy": "zero",
+          "use-cpes-for-eol": false
+        },
+        "rpm": {
+          "using-cpes": false,
+          "missing-epoch-strategy": "auto",
+          "use-cpes-for-eol": false
+        }
+      },
+      "fail-on-severity": "high",
+      "registry": {
+        "insecure-skip-tls-verify": false,
+        "insecure-use-http": false,
+        "ca-cert": ""
+      },
+      "show-suppressed": false,
+      "by-cve": false,
+      "SortBy": {
+        "sort-by": "risk"
+      },
+      "name": "",
+      "default-image-pull-source": "",
+      "from": null,
+      "vex-documents": [],
+      "vex-add": [],
+      "match-upstream-kernel-headers": false,
+      "fix-channel": {
+        "redhat-eus": {
+          "apply": "auto",
+          "versions": ">= 8.0"
+        }
+      },
+      "timestamp": true,
+      "alerts": {
+        "enable-eol-distro-warnings": true
+      },
+      "db": {
+        "cache-dir": "/home/runner/.cache/grype/db",
+        "update-url": "https://grype.anchore.io/databases",
+        "ca-cert": "",
+        "auto-update": true,
+        "validate-by-hash-on-start": true,
+        "validate-age": true,
+        "max-allowed-built-age": 432000000000000,
+        "require-update-check": false,
+        "update-available-timeout": 30000000000,
+        "update-download-timeout": 300000000000,
+        "max-update-check-frequency": 7200000000000
+      },
+      "exp": {},
+      "dev": {
+        "db": {
+          "debug": false
+        }
+      }
+    },
+    "db": {
+      "status": {
+        "schemaVersion": "v6.1.4",
+        "from": "https://grype.anchore.io/databases/v6/vulnerability-db_v6.1.4_2026-05-19T00:50:19Z_1779176089.tar.zst?checksum=sha256%3A6db37701ca5e92b4c4a2b45147eebecb9c743afb4abdeae1b8f62779e4470fd8",
+        "built": "2026-05-19T07:34:49Z",
+        "path": "/home/runner/.cache/grype/db/6/vulnerability.db",
+        "valid": true
+      },
+      "providers": {
+        "alma": {
+          "captured": "2026-05-19T00:50:54Z",
+          "input": "xxh64:8a0b200c82b4bffe"
+        },
+        "alpine": {
+          "captured": "2026-05-19T00:50:54Z",
+          "input": "xxh64:15a6dfb4b483c909"
+        },
+        "amazon": {
+          "captured": "2026-05-19T00:50:45Z",
+          "input": "xxh64:c76ea1ba8c10ac4e"
+        },
+        "arch": {
+          "captured": "2026-05-19T00:50:40Z",
+          "input": "xxh64:5bb676e969bb424b"
+        },
+        "bitnami": {
+          "captured": "2026-05-19T00:50:41Z",
+          "input": "xxh64:15f479ac2ca08471"
+        },
+        "chainguard": {
+          "captured": "2026-05-19T00:50:19Z",
+          "input": "xxh64:9b64f5e1823ceb7c"
+        },
+        "chainguard-libraries": {
+          "captured": "2026-05-19T00:50:52Z",
+          "input": "xxh64:7ba917a690b5cd55"
+        },
+        "debian": {
+          "captured": "2026-05-19T00:50:52Z",
+          "input": "xxh64:1f32c09b20bf1f98"
+        },
+        "echo": {
+          "captured": "2026-05-19T00:50:45Z",
+          "input": "xxh64:84be2fecd1330d3d"
+        },
+        "eol": {
+          "captured": "2026-05-19T00:50:27Z",
+          "input": "xxh64:173ee65da85a6b41"
+        },
+        "epss": {
+          "captured": "2026-05-19T00:50:59Z",
+          "input": "xxh64:39e5820e1d218857"
+        },
+        "fedora": {
+          "captured": "2026-05-19T00:50:32Z",
+          "input": "xxh64:f3196a7acc2f8c21"
+        },
+        "github": {
+          "captured": "2026-05-19T00:50:57Z",
+          "input": "xxh64:3ab10c7d1f6a0de1"
+        },
+        "hummingbird": {
+          "captured": "2026-05-19T00:50:32Z",
+          "input": "xxh64:f964805930c16075"
+        },
+        "kev": {
+          "captured": "2026-05-19T00:50:53Z",
+          "input": "xxh64:6533b4dbac6e282e"
+        },
+        "mariner": {
+          "captured": "2026-05-19T00:50:25Z",
+          "input": "xxh64:8475e97fb018bd65"
+        },
+        "minimos": {
+          "captured": "2026-05-19T00:50:48Z",
+          "input": "xxh64:cb58cfa857f2197e"
+        },
+        "nvd": {
+          "captured": "2026-05-19T00:51:05Z",
+          "input": "xxh64:3ef1b0815f4a28ec"
+        },
+        "oracle": {
+          "captured": "2026-05-19T00:51:02Z",
+          "input": "xxh64:5c02a79512b77eaa"
+        },
+        "photon": {
+          "captured": "2026-05-19T00:50:46Z",
+          "input": "xxh64:f015a502cfdf4e49"
+        },
+        "rhel": {
+          "captured": "2026-05-19T00:51:30Z",
+          "input": "xxh64:d3b63fa51919c93a"
+        },
+        "secureos": {
+          "captured": "2026-05-19T00:50:54Z",
+          "input": "xxh64:f3b7aed78e796622"
+        },
+        "sles": {
+          "captured": "2026-05-19T01:23:31Z",
+          "input": "xxh64:07dd3622ee4e9947"
+        },
+        "ubuntu": {
+          "captured": "2026-05-19T00:55:07Z",
+          "input": "xxh64:b94964f72fbb9821"
+        },
+        "wolfi": {
+          "captured": "2026-05-19T00:50:55Z",
+          "input": "xxh64:28a3e3edccc0f350"
+        }
+      }
+    },
+    "timestamp": "2026-05-20T02:57:15.130149863Z"
+  }
+};
+  function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\u[a-zA-Z0-9]{4}|\[^u]|[^\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls='number';if(/^"/.test(m)){cls=/:$/.test(m)?'key':'string';}else if(/true|false/.test(m)){cls='boolean';}else if(/null/.test(m)){cls='null';}return'<span class="'+cls+'">'+m+'</span>';});}
+  document.getElementById('json').innerHTML=highlight(data);
+</script>
+</body></html>
