@@ -1,6 +1,6 @@
 # PDF Labs — PDF Compressor Service
 
-> The PDF compression microservice for the PDF Labs platform. Reduces PDF file sizes across four selectable quality presets using **Ghostscript** running as a local system process — no external API calls, no conversion limits, and no per-operation cost. Displays original size, compressed size, bytes saved, and percentage reduction for every file.
+> The PDF compression microservice for the PDF Labs platform. Reduces PDF file sizes across six selectable quality presets using the **ConvertAPI** cloud compression engine — no local binaries required, no shell execution, and no Ghostscript dependency. Displays original size, compressed size, bytes saved, and percentage reduction for every file.
 
 ---
 
@@ -11,7 +11,7 @@
 - [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
-- [Compression Levels](#compression-levels)
+- [Compression Presets](#compression-presets)
 - [API Endpoints](#api-endpoints)
 - [Environment Variables](#environment-variables)
 - [Getting Started](#getting-started)
@@ -29,24 +29,24 @@
 
 ## Overview
 
-The **PDF Compressor Service** is a Node.js/Express microservice that compresses PDF files for the [PDF Labs](https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS) platform. Compression is performed **entirely server-side** using **Ghostscript** (`gs`), which is installed directly into the Docker image — no external API is required.
+The **PDF Compressor Service** is a Node.js/Express microservice that compresses PDF files for the [PDF Labs](https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS) platform. Compression is performed via the **[ConvertAPI](https://www.convertapi.com/pdf-to-compress)** cloud API — the uploaded PDF is transmitted securely using `multipart/form-data` with a `Bearer` token, and the compressed PDF is returned as base64 in the JSON response and written to the local filesystem for download.
 
 This service is responsible for:
 
 - Rendering the PDF Compressor page (EJS) with the user's compression history and size stats
 - Accepting single PDF uploads (up to 100 MB) via drag-and-drop or file picker, with client and server-side type validation
-- Executing Ghostscript via Node.js `child_process.exec` with one of four `dPDFSETTINGS` presets
+- Sending the uploaded PDF to the ConvertAPI compress endpoint with the user's chosen preset
 - Reporting exact original size, compressed size, bytes saved, and percentage reduction per file
 - Persisting a `CompressedFile` record to MongoDB linked to the authenticated user
 - Serving compressed PDFs as direct downloads scoped by a `uuid`-based output directory
 - Allowing users to delete individual records and their associated output directories
-- AJAX-first form submission with a simulated progress bar and inline result card injection
+- AJAX-first form submission with a real upload progress bar and inline result card injection
 
 ---
 
 ## Architecture
 
-The compressor service runs Ghostscript as a local subprocess. No outbound API calls are made. Output files are stored in `outputs/<uuid>/` directories on the container filesystem.
+The compressor service sends each uploaded PDF to ConvertAPI over HTTPS using Node's built-in `https` module — no external HTTP library is needed. The compressed PDF is returned in the API response, decoded from base64, and stored locally in an `outputs/<uuid>/` directory for download.
 
 ```
                   ┌─────────────────────────────────────────────────┐
@@ -57,20 +57,25 @@ The compressor service runs Ghostscript as a local subprocess. No outbound API c
          ┌───────────────────────────▼───────────────────────────────────────┐
          │              pdf-compressor-service (:5300)  ◄── THIS             │
          │  • Upload PDF via multer (single file, 100 MB limit)              │
-         │  • Execute: gs -dPDFSETTINGS=<preset> -sOutputFile=<out> <in>     │
-         │  • Write output to outputs/<uuid>/<name>_compressed.pdf           │
+         │  • POST multipart/form-data → ConvertAPI compress endpoint        │
+         │  • Decode base64 response → write to outputs/<uuid>/              │
          │  • Persist CompressedFile record to MongoDB                       │
          │  • Serve per-file download routes                                 │
-         └──────┬─────────────────────────────────────────────┬──────────────┘
-                │                                             │
-   ┌────────────▼───────────────┐             ┌───────────────▼──────────────┐
-   │  MongoDB (:27017)          │             │  Local filesystem            │
-   │  pdf-compressor-service DB │             │  uploads/  (multer staging)  │
-   │  • CompressedFile schema   │             │  outputs/  (uuid dirs)       │
-   └────────────────────────────┘             └──────────────────────────────┘
+         └──────┬──────────────────────────────────────┬─────────────────────┘
+                │                                      │
+   ┌────────────▼───────────────┐        ┌─────────────▼────────────────────┐
+   │  MongoDB (:27017)          │        │  Local filesystem                │
+   │  pdf-compressor-service DB │        │  uploads/  (multer staging)      │
+   │  • CompressedFile schema   │        │  outputs/  (uuid dirs)           │
+   └────────────────────────────┘        └──────────────────────────────────┘
 
-  Ghostscript (installed in Docker image via apk add ghostscript)
-  ── runs as a child process inside the container, no network required ──
+                              ┌──────────────────────────────────┐
+                              │  ConvertAPI (cloud)              │
+                              │  POST /convert/pdf/to/compress   │
+                              │  Auth: Bearer <CONVERTAPI_SECRET>│
+                              │  Preset: none|text|archive|      │
+                              │          web|ebook|printer       │
+                              └──────────────────────────────────┘
 ```
 
 > **Note:** The **[docker-compose.yml file](https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/blob/main/docker-compose.yml)** that wires all services together lives in the **root/main repository**, not in this repository.
@@ -84,8 +89,8 @@ The compressor service runs Ghostscript as a local subprocess. No outbound API c
 ### PDF Compressor Page
 ![Compressor Page](images/compressor-page.png)
 
-### Compression Level Selection Cards
-![Compression Levels](images/compression-level-cards.png)
+### Compression Preset Selection Cards
+![Compression Presets](images/compression-level-cards.png)
 
 ### Compressed Files History Grid
 ![History Grid](images/compressed-files-grid.png)
@@ -101,10 +106,11 @@ The compressor service runs Ghostscript as a local subprocess. No outbound API c
 | Templating | EJS |
 | Database | MongoDB (via Mongoose 8) |
 | File uploads | `multer` (disk storage, PDF-only filter, 100 MB limit) |
-| PDF compression | **Ghostscript** (`gs`) — runs as a local subprocess via `child_process.exec` |
+| PDF compression | **[ConvertAPI](https://www.convertapi.com/pdf-to-compress)** — cloud-based, via Node built-in `https` |
+| HTTP to ConvertAPI | Node.js built-in `https` module — no external HTTP library |
 | Auth | JWT (`jsonwebtoken`) — Bearer header, query param, or body |
 | File ID | `uuid` v11 |
-| Container | Docker (multi-stage, Alpine 3.18 + `ghostscript` package) |
+| Container | Docker (multi-stage, Alpine 3.23 — no Ghostscript dependency) |
 
 ---
 
@@ -113,12 +119,12 @@ The compressor service runs Ghostscript as a local subprocess. No outbound API c
 ```
 pdf-compressor-service/
 ├── server.js                         # Express entry point
-├── Dockerfile                        # Multi-stage build; installs Ghostscript in runtime stage
+├── Dockerfile                        # Multi-stage build; no Ghostscript — compression via ConvertAPI
 ├── package.json
 ├── config/
 │   └── db.js                         # MongoDB connection with disconnect/error listeners
 ├── controllers/
-│   └── pdfController.js              # Render, compress (Ghostscript), download, delete
+│   └── pdfController.js              # Render, compress (ConvertAPI), download, delete
 ├── middleware/
 │   └── sessionCheck.js               # JWT guard — Bearer, query, body; HTML redirect fallback
 ├── models/
@@ -126,10 +132,10 @@ pdf-compressor-service/
 ├── routes/
 │   └── pdfRoutes.js                  # GET/POST /pdf-compressor, GET /download/:id, DELETE /:id
 ├── utils/
-│   ├── errorHandler.js               # handleExecError (Ghostscript errors) + globalErrorHandler
+│   ├── errorHandler.js               # globalErrorHandler (ConvertAPI / server errors)
 │   └── fileUtils.js                  # sanitizeFilename, formatBytes
 ├── views/
-│   └── pdf-compressor.ejs            # Compressor page with level cards and file history
+│   └── pdf-compressor.ejs            # Compressor page with preset cards and file history
 ├── public/
 │   ├── css/
 │   │   └── styles.css
@@ -142,20 +148,20 @@ pdf-compressor-service/
 
 ---
 
-## Compression Levels
+## Compression Presets
 
-Four presets map directly to Ghostscript's `dPDFSETTINGS` parameter, each targeting a different balance of file size and image quality.
+Six presets map directly to ConvertAPI's `Preset` parameter, each targeting a different balance of file size and image quality. When a preset is selected, it overrides all other advanced compression options.
 
-| Level | dPDFSETTINGS | DPI | Expected Reduction | Best For |
+| Preset | Image DPI | Quality | Expected Reduction | Best For |
 |---|---|---|---|---|
-| **Maximum** | `/screen` | ~40 dpi | 70–90% | Email, messaging, screen display |
-| **High** *(default)* | `/ebook` | ~150 dpi | 40–60% | Digital use, e-readers |
-| **Medium** | `/printer` | ~300 dpi | 20–40% | Desktop printing |
-| **Low** | `/prepress` | ~300 dpi + colour | 5–20% | Professional / pre-press print |
+| **Not Set** (`none`) | Original | Original | 5–15% | Structural optimisation only — fonts subsetted, duplicates removed, streams optimised |
+| **Text** (`text`) | 20 dpi | Lowest | 80–95% | Text-only documents; email, archiving |
+| **Archive** (`archive`) | 40 dpi | Low | 70–90% | Long-term storage, minimal filesize |
+| **Web** (`web`) *(default)* | 75 dpi | Medium | 50–70% | Web sharing, email attachments |
+| **Ebook** (`ebook`) | 150 dpi | High | 30–50% | E-readers, tablets, digital distribution |
+| **Printer** (`printer`) | 300 dpi | High | 10–30% | Desktop printing, high-fidelity output |
 
-The **Maximum** level adds extra Ghostscript flags (`-dColorImageResolution=40 -dGrayImageResolution=40 -dMonoImageResolution=70`) beyond the standard preset for maximum size reduction. All other levels use only the standard `dPDFSETTINGS` preset.
-
-> **Note:** Reduction percentages are estimates. Actual results depend on the content of the source PDF (image-heavy PDFs compress far more than text-only PDFs).
+> **Note:** Reduction percentages are estimates. Actual results depend on the content of the source PDF — image-heavy PDFs compress far more than text-only PDFs. PDFs that are already optimised may show little or no reduction.
 
 ---
 
@@ -166,7 +172,7 @@ All routes are prefixed with `/tools`. Session-protected routes require a valid 
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | `GET` | `/tools/pdf-compressor` | JWT | Render the compressor page with user's file history |
-| `POST` | `/tools/pdf-compressor` | JWT | Upload a PDF and compress it at the selected level |
+| `POST` | `/tools/pdf-compressor` | JWT | Upload a PDF and compress it at the selected preset |
 | `GET` | `/tools/pdf-compressor/download/:id` | None | Download the compressed PDF by UUID |
 | `DELETE` | `/tools/pdf-compressor/:id` | JWT | Delete a compression record and its output directory |
 
@@ -178,7 +184,7 @@ All routes are prefixed with `/tools`. Session-protected routes require a valid 
 GET http://localhost:5300/tools/pdf-compressor?token=<jwt>
 ```
 
-Queries all `CompressedFile` records for the authenticated user (sorted newest-first) and renders the page with the compression level cards and file history grid.
+Queries all `CompressedFile` records for the authenticated user (sorted newest-first) and renders the page with the preset cards and file history grid.
 
 **Responses:**
 - `200` — Renders `pdf-compressor.ejs`
@@ -195,8 +201,8 @@ Accepts `multipart/form-data`. Called via AJAX (`X-Requested-With: XMLHttpReques
 POST http://localhost:5300/tools/pdf-compressor?token=<jwt>
 Content-Type: multipart/form-data
 
-pdf:              <file>   (PDF only, max 100 MB)
-compressionLevel: maximum | high | medium | low
+pdf:               <file>   (PDF only, max 100 MB)
+compressionLevel:  none | text | archive | web | ebook | printer
 ```
 
 **Success response (XHR):**
@@ -205,8 +211,8 @@ compressionLevel: maximum | high | medium | low
   "fileId": "<uuid>",
   "originalName": "report.pdf",
   "sanitizedName": "report",
-  "compressionLevel": "high",
-  "compressionLabel": "High Compression",
+  "compressionLevel": "web",
+  "compressionLabel": "Web",
   "originalSize": 5242880,
   "compressedSize": 2097152,
   "savedBytes": 3145728,
@@ -217,9 +223,10 @@ compressionLevel: maximum | high | medium | low
 ```
 
 **Error responses:**
-- `400` — No file uploaded / invalid compression level / non-PDF file
+- `400` — No file uploaded / invalid preset / non-PDF file
 - `401` — Auth error (`NO_TOKEN`, `TOKEN_EXPIRED`, `INVALID_TOKEN`)
-- `500` — Ghostscript execution error or output file not created
+- `500` — `CONVERTAPI_SECRET` not set / unexpected server error
+- `502` — ConvertAPI returned an error or unexpected response
 
 ---
 
@@ -256,15 +263,27 @@ Authorization: Bearer <jwt>
 
 ## Environment Variables
 
-Create a `.env` file in the project root (or supply via Docker/Compose):
+Create a `.env` file in the project root (or supply via Docker Compose):
 
 | Variable | Required | Description |
 |---|---|---|
 | `MONGO_URI` | Yes | MongoDB connection string, e.g. `mongodb://mongo:27017/pdf-compressor-service` |
 | `JWT_SECRET` | Yes | Secret key for verifying JWTs — must match the account-service |
+| `CONVERTAPI_SECRET` | Yes | Your ConvertAPI API token — obtain from [convertapi.com/a/authentication](https://www.convertapi.com/a/authentication) |
 | `PORT` | No | Server port (defaults to `5300`) |
 
-> **No external API key required.** Compression is handled entirely by Ghostscript, which is installed into the Docker image.
+### Supplying `CONVERTAPI_SECRET` via Docker Compose
+
+The API token is injected at runtime — it is never baked into the Docker image. In your root `docker-compose.yml`, add it to the `pdf-compressor-service` environment block:
+
+```yaml
+services:
+  pdf-compressor-service:
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/pdf-compressor-service
+      - JWT_SECRET=your_jwt_secret
+      - CONVERTAPI_SECRET=your_convertapi_token
+```
 
 > **Warning:** Never commit your `.env` file or real secrets to version control.
 
@@ -276,25 +295,11 @@ Create a `.env` file in the project root (or supply via Docker/Compose):
 
 - [Node.js](https://nodejs.org/) ≥ 15.0.0
 - [MongoDB](https://www.mongodb.com/) instance (local or Docker)
-- **[Ghostscript](https://www.ghostscript.com/)** — must be installed and available as `gs` on the system `PATH`
-- [Docker](https://www.docker.com/) (optional — Ghostscript is installed automatically in the Docker image)
+- A **ConvertAPI account** and API token — [sign up free](https://www.convertapi.com/a/signup) (250 free conversions included, no credit card required)
+- [Docker](https://www.docker.com/) (optional)
 - A valid JWT issued by the **account-service**
 
-#### Installing Ghostscript locally
-
-```bash
-# Ubuntu / Debian
-sudo apt-get install ghostscript
-
-# macOS (Homebrew)
-brew install ghostscript
-
-# Alpine Linux (as used in the Docker image)
-apk add --no-cache ghostscript
-
-# Verify installation
-gs --version
-```
+> **No local binary installation required.** There is no Ghostscript dependency — compression is handled entirely by ConvertAPI.
 
 ### Run Locally (without Docker)
 
@@ -308,7 +313,7 @@ npm install
 
 # 3. Create your environment file
 cp .env.example .env
-# Edit .env with your MONGO_URI and JWT_SECRET
+# Edit .env — set MONGO_URI, JWT_SECRET, and CONVERTAPI_SECRET
 
 # 4. Start the server
 npm start
@@ -320,7 +325,7 @@ The service will be available at `http://localhost:5300/tools/pdf-compressor`.
 
 ### Run with Docker
 
-Ghostscript is installed automatically via `apk add ghostscript` in the runtime stage — no manual installation needed.
+The Docker image requires no system-level binaries — no Ghostscript, no ImageMagick. The runtime stage only installs `libstdc++`, making the final image significantly smaller than the previous version.
 
 #### Build and run this service standalone
 
@@ -328,7 +333,8 @@ Ghostscript is installed automatically via `apk add ghostscript` in the runtime 
 docker build -t pdf-compressor-service .
 docker run -p 5300:5300 \
   -e MONGO_URI=mongodb://<your-mongo-host>:27017/pdf-compressor-service \
-  -e JWT_SECRET=your_secret_here \
+  -e JWT_SECRET=your_jwt_secret \
+  -e CONVERTAPI_SECRET=your_convertapi_token \
   pdf-compressor-service
 ```
 
@@ -355,38 +361,38 @@ POST /tools/pdf-compressor  (multipart/form-data, XHR)
   sessionCheck validates JWT server-side
         │
         ▼
-  multer: saves PDF to uploads/<originalname>
+  multer: saves PDF to uploads/<temp>
   multer fileFilter: rejects non-PDF MIME types before controller runs
         │
         ▼
   pdfController.compressPdf:
     • Reads compressionLevel from body → looks up COMPRESSION_LEVELS[level]
+    • Reads uploaded file into memory as Buffer
+    • Deletes temp file from uploads/
     • Generates uuid → creates outputs/<uuid>/ directory
-    • Records originalSize = fs.statSync(inputPath).size
     │
     ▼
-  Builds Ghostscript command:
-    gs -dNOPAUSE -dBATCH -dSAFER \
-       -sDEVICE=pdfwrite \
-       -dCompatibilityLevel=1.4 \
-       -dPDFSETTINGS=<preset> \
-       [-dColorImageResolution=N -dGrayImageResolution=N ...]  ← maximum only
-       -dEmbedAllFonts=true -dSubsetFonts=true \
-       -dAutoRotatePages=/None -dDetectDuplicateImages=true \
-       -dCompressFonts=true \
-       -sOutputFile="outputs/<uuid>/<name>_compressed.pdf" \
-       "uploads/<temp>"
+  Builds multipart/form-data body (pure Node — no external library):
+    ┌──────────────────────────────────────────────────────┐
+    │  Preset: <none|text|archive|web|ebook|printer>       │
+    │  File:   <PDF binary, multipart attachment>          │
+    │  (+ structural flags for "none" preset)              │
+    └──────────────────────────────────────────────────────┘
         │
         ▼
-  child_process.exec(cmd, callback):
-    • On error  → handleExecError(err, stderr, res) → 500 JSON
-    • On success → verify output file exists → compute stats
+  https.request → POST https://v2.convertapi.com/convert/pdf/to/compress
+    Authorization: Bearer <CONVERTAPI_SECRET>
+    Content-Type:  multipart/form-data; boundary=...
         │
         ▼
-  Cleanup: fs.unlinkSync(inputPath)   ← temp upload always deleted
+  ConvertAPI processes and returns:
+    { "Files": [{ "FileData": "<base64-encoded PDF>" }] }
+        │
+        ├─ HTTP 4xx/5xx → 502 JSON error to client
+        └─ HTTP 200 → decode FileData → write to outputs/<uuid>/<name>_compressed.pdf
         │
         ▼
-  Compute:
+  Compute stats:
     compressedSize = fs.statSync(outputPath).size
     savedBytes     = max(0, originalSize - compressedSize)
     savedPercent   = (savedBytes / originalSize) × 100
@@ -398,20 +404,17 @@ POST /tools/pdf-compressor  (multipart/form-data, XHR)
         └─ non-XHR: res.redirect(/tools/pdf-compressor?token=...)
 ```
 
-### Ghostscript Command Flags
+### ConvertAPI Request Details
 
-| Flag | Purpose |
+| Detail | Value |
 |---|---|
-| `-dNOPAUSE -dBATCH` | Non-interactive, exit immediately after processing |
-| `-dSAFER` | Restricts file system access for security |
-| `-sDEVICE=pdfwrite` | Output device: PDF writer |
-| `-dCompatibilityLevel=1.4` | Broad PDF reader compatibility |
-| `-dPDFSETTINGS=<preset>` | Quality/size preset (`/screen`, `/ebook`, `/printer`, `/prepress`) |
-| `-dEmbedAllFonts=true` | Ensures fonts render correctly on all viewers |
-| `-dSubsetFonts=true` | Only embeds used glyph subsets to reduce size |
-| `-dAutoRotatePages=/None` | Preserves original page orientation |
-| `-dDetectDuplicateImages=true` | Deduplicates repeated images across pages |
-| `-dCompressFonts=true` | Applies font stream compression |
+| Endpoint | `POST https://v2.convertapi.com/convert/pdf/to/compress` |
+| Authentication | `Authorization: Bearer <CONVERTAPI_SECRET>` header |
+| Content-Type | `multipart/form-data` |
+| Preset field | `Preset` (singular) |
+| File field | `File` (binary attachment) |
+| Response | JSON — `Files[0].FileData` base64-encoded compressed PDF |
+| HTTP client | Node.js built-in `https` module — no `node-fetch`, no `form-data` package |
 
 ---
 
@@ -437,8 +440,11 @@ User arrives at /tools/pdf-compressor?token=<jwt>
     • checkSession() decodes exp → setTimeout at exact expiry moment
     • Expired/tampered → handleAuthError() → clears token → redirect to :3000
 
-  User clicks compression level card  →  radio input toggled + .selected class applied
+  User clicks preset card  →  radio input toggled + .selected class + info strip updates
   User submits form (XHR, X-Requested-With: XMLHttpRequest)
+        │
+        ├─ Real upload progress via xhr.upload events (0–40%)
+        ├─ Simulated progress while ConvertAPI processes (40–90%)
         │
         ├─ sessionCheck validates token again server-side
         │
@@ -462,18 +468,19 @@ User arrives at /tools/pdf-compressor?token=<jwt>
 
 ## Security Highlights
 
-- **Ghostscript `-dSAFER` flag** — restricts Ghostscript's filesystem access during execution, preventing it from reading or writing arbitrary files outside the operation scope.
+- **ConvertAPI Bearer auth** — the API token is sent as an `Authorization: Bearer` header on every outbound request; it is never exposed to the browser or included in any client-side code.
+- **Secret injected at runtime** — `CONVERTAPI_SECRET` is supplied via Docker Compose environment variables and is never baked into the Docker image.
 - **Multer MIME type enforcement** — the `fileFilter` rejects any upload whose `mimetype` is not `application/pdf` before the file reaches the controller, even if the client-side check was bypassed.
 - **Client-side type validation** — the drag-and-drop handler and `input[type=file]` change listener both validate `application/pdf` MIME type immediately, with toast feedback before any upload is attempted.
-- **Temp file cleanup on all paths** — `fs.unlinkSync(inputPath)` runs inside the Ghostscript callback regardless of whether the compression succeeded or failed.
+- **Temp file cleanup on all paths** — the uploaded file is read into memory and deleted from `uploads/` before the ConvertAPI request is made, regardless of the outcome.
 - **User-scoped delete** — `deleteCompressedFile` queries MongoDB with both `fileId` AND `userId`, preventing one user from deleting another user's files.
 - **UUID-scoped output directories** — download routes are scoped by a `uuid`-based directory name, making output files non-guessable without the exact ID.
-- **No external API dependency** — compression uses Ghostscript running locally inside the container; there is no API key to leak and no external service that can fail or rate-limit.
+- **No shell execution** — the service makes no `child_process.exec` or `spawn` calls; there is no shell injection surface.
 - **Dual-layer token validation** — `sessionCheck` verifies the JWT server-side on every protected route; `main.js` independently schedules a precise client-side expiry redirect.
 - **HTML/API dual response mode** — all auth and error paths check `req.xhr` / `X-Requested-With` to return either a redirect or structured JSON without leaking information across modes.
 - **Non-root Docker user** — the production container runs as `appuser` (non-root) on Alpine Linux.
-- **Multi-stage Docker build** — dev tooling, source maps, and docs are stripped; only production artifacts and the Ghostscript binary land in the final image.
-- **No secrets in image** — `MONGO_URI` and `JWT_SECRET` are injected at runtime via environment variables.
+- **Multi-stage Docker build** — dev tooling, source maps, and docs are stripped; only production artifacts land in the final image.
+- **No secrets in image** — `MONGO_URI`, `JWT_SECRET`, and `CONVERTAPI_SECRET` are injected at runtime via environment variables.
 
 ---
 
@@ -490,7 +497,7 @@ All services below are part of the PDF Labs platform and are wired together via 
 | `tools-service` | 5000 | Authenticated tools hub |
 | `pdf-to-image-service` | 5100 | PDF → Image conversion |
 | `image-to-pdf-service` | 5200 | Image → PDF conversion |
-| `pdf-compressor-service` | 5300 | **This service** — PDF compression via Ghostscript |
+| `pdf-compressor-service` | 5300 | **This service** — PDF compression via ConvertAPI |
 | `pdf-to-audio-service` | 5400 | PDF → Audio conversion |
 | `pdf-to-word-service` | 5500 | PDF → Word conversion |
 | `sheetlab-service` | 5600 | PDF ↔ Excel conversion |
