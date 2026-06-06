@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF Compressor - PDF Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css"/>
+
+  <style>
+    /* ── ConvertAPI Preset Cards ─────────────────────────────────────── */
+    .level-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .level-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px 14px;
+      border: 2px solid var(--border, #e2e8f0);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      background: var(--card-bg, #fff);
+      user-select: none;
+    }
+
+    .level-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .level-card:hover {
+      border-color: var(--accent, #3b82f6);
+      box-shadow: 0 4px 14px rgba(59,130,246,.15);
+      transform: translateY(-2px);
+    }
+
+    .level-card.selected {
+      border-color: var(--accent, #3b82f6);
+      background: var(--accent-light, #eff6ff);
+      box-shadow: 0 4px 18px rgba(59,130,246,.2);
+    }
+
+    .level-card .level-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .level-card .level-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary, #1e293b);
+    }
+
+    .level-card .level-dpi {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent, #3b82f6);
+      background: var(--accent-light, #eff6ff);
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .level-card.selected .level-dpi {
+      background: rgba(59,130,246,.2);
+    }
+
+    .level-card .level-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted, #64748b);
+      line-height: 1.4;
+    }
+
+    .level-card .level-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #16a34a;
+      background: #f0fdf4;
+      border-radius: 20px;
+      padding: 2px 8px;
+      width: fit-content;
+      border: 1px solid #bbf7d0;
+    }
+
+    .level-card.selected .level-badge {
+      background: #dcfce7;
+    }
+
+    /* Selected check indicator */
+    .level-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 20px;
+      height: 20px;
+      background: var(--accent, #3b82f6);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    /* Preset info strip */
+    .preset-info-strip {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--accent-light, #eff6ff);
+      border: 1px solid var(--accent, #3b82f6);
+      border-radius: 8px;
+      margin-top: 14px;
+      font-size: 0.8rem;
+      color: var(--text-primary, #1e293b);
+      animation: fadeSlideIn 0.25s ease;
+    }
+
+    .preset-info-strip.visible { display: flex; }
+    .preset-info-strip .pis-icon { font-size: 1.2rem; }
+    .preset-info-strip strong { font-family: 'Space Mono', monospace; font-size: 0.78rem; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .level-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F5DC; PDF Compressor</h1>
+  <p>Reduce PDF file sizes without compromising your workflow</p>
+  <nav class="tools-nav">
+    <button id="switchToPdfToImage" class="button">&#x1F4DA; PDF to Image</button>
+    &nbsp;
+    <button id="switchToImageToPdf" class="button">&#x1F3B4; Image to PDF</button>
+    &nbsp;
+    <button id="switchToPdfToWord" class="button">&#x1F4DD; PDF to Word</button>
+    &nbsp;
+    <button id="switchToWordToPdf" class="button">&#x1F4D5; Word to PDF</button>
+    &nbsp;
+    <button id="switchToPdfToAudio" class="button">&#x1F3A7; PDF to Audio</button>
+    &nbsp;
+    <button id="switchToEditPdf" class="button">&#x2702; Edit PDF</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- NAV BUTTONS -->
+  <section class="dashboard">
+    <div class="nav-buttons">
+      <button id="toolsBtn">Tools</button>
+      <button id="profileBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </section>
+
+  <!-- UPLOAD & COMPRESS FORM -->
+  <section class="dashboard">
+    <h2 class="form-title">&#x1F4C4; Upload PDF &amp; Compress &#x1F5DC;</h2>
+
+    <form
+      id="pdf-compressor-form"
+      class="pdf-form"
+      action="/tools/pdf-compressor?token=<%= locals.token || '' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="return handleSubmit(event)"
+    >
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone" aria-label="Drag and drop PDF here">
+        <p class="dropzone-title">Drag &amp; Drop your PDF here or click to browse</p>
+        <p class="dropzone-sub">Only .pdf files are accepted &bull; Max 100 MB</p>
+        <input
+          type="file"
+          id="pdf-file"
+          name="pdf"
+          accept="application/pdf"
+          required
+          hidden
+        />
+        <button type="button" class="button dz-btn">Choose PDF</button>
+        <div id="selected-file" class="selected-file"></div>
+      </div>
+
+      <!-- Compression Level — 7 ConvertAPI presets -->
+      <div class="form-group">
+        <label>Select Compression Preset:</label>
+        <small class="helper-text" style="display:block;margin-bottom:8px;">
+          When a preset is selected, all other advanced compression options are overridden by the preset's optimised settings.
+        </small>
+
+        <div class="level-cards">
+
+          <!-- none -->
+          <label class="level-card" id="card-none">
+            <input type="radio" name="compressionLevel" value="none" />
+            <span class="level-icon">⚙️</span>
+            <span class="level-label">Not Set</span>
+            <span class="level-dpi">Advanced</span>
+            <span class="level-desc">No preset. Structural optimisation only (fonts, duplicates, streams).</span>
+            <span class="level-badge">5–15% smaller</span>
+          </label>
+
+          <!-- text -->
+          <label class="level-card" id="card-text">
+            <input type="radio" name="compressionLevel" value="text" />
+            <span class="level-icon">📝</span>
+            <span class="level-label">Text</span>
+            <span class="level-dpi">20 DPI</span>
+            <span class="level-desc">Lowest quality, highest compression. Best for text-only docs.</span>
+            <span class="level-badge">80–95% smaller</span>
+          </label>
+
+          <!-- archive -->
+          <label class="level-card" id="card-archive">
+            <input type="radio" name="compressionLevel" value="archive" />
+            <span class="level-icon">🗄️</span>
+            <span class="level-label">Archive</span>
+            <span class="level-dpi">40 DPI</span>
+            <span class="level-desc">Low quality, high compression. Good for long-term storage.</span>
+            <span class="level-badge">70–90% smaller</span>
+          </label>
+
+          <!-- web (default) -->
+          <label class="level-card selected" id="card-web">
+            <input type="radio" name="compressionLevel" value="web" checked />
+            <span class="level-icon">🌐</span>
+            <span class="level-label">Web</span>
+            <span class="level-dpi">75 DPI</span>
+            <span class="level-desc">Medium quality, high compression. Ideal for web sharing &amp; email.</span>
+            <span class="level-badge">50–70% smaller</span>
+          </label>
+
+          <!-- ebook -->
+          <label class="level-card" id="card-ebook">
+            <input type="radio" name="compressionLevel" value="ebook" />
+            <span class="level-icon">📱</span>
+            <span class="level-label">Ebook</span>
+            <span class="level-dpi">150 DPI</span>
+            <span class="level-desc">High quality, medium compression. Great for e-readers &amp; tablets.</span>
+            <span class="level-badge">30–50% smaller</span>
+          </label>
+
+          <!-- printer -->
+          <label class="level-card" id="card-printer">
+            <input type="radio" name="compressionLevel" value="printer" />
+            <span class="level-icon">🖨️</span>
+            <span class="level-label">Printer</span>
+            <span class="level-dpi">300 DPI</span>
+            <span class="level-desc">High quality, low compression. Suitable for desktop printing.</span>
+            <span class="level-badge">10–30% smaller</span>
+          </label>
+
+        </div>
+
+        <!-- Dynamic info strip that updates on selection -->
+        <div class="preset-info-strip visible" id="preset-info-strip">
+          <span class="pis-icon">🌐</span>
+          <span>
+            <strong>Web</strong> — 75 image DPI, medium quality, high compression.
+            Ideal for web sharing &amp; email.
+          </span>
+        </div>
+
+        <small class="helper-text" style="margin-top:10px;display:block;">
+          ⚡ Powered by <strong>ConvertAPI</strong> — cloud-based compression, no quality guesswork.
+        </small>
+      </div>
+
+      <!-- Progress UI -->
+      <div id="progress-message" class="progress-message" style="display:none;">
+        <span class="spinner"></span>
+        Compressing your PDF... Please wait.
+      </div>
+      <div class="progress-container" id="progress-container" style="display:none;">
+        <div class="progress-bar" id="progress-bar" style="width:0%;"></div>
+        <span id="progress-label" class="progress-label">0%</span>
+      </div>
+
+      <div class="nav-buttons center-buttons">
+        <button type="submit" class="button">&#x1F5DC; Compress PDF</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- COMPRESSED FILES -->
+  <section class="processed-files-section">
+    <h2 class="section-title">&#x1F4C2; Compressed Files</h2>
+
+    <% if (locals.compressedFiles && locals.compressedFiles.length > 0) { %>
+      <div class="processed-files-grid" id="processed-grid">
+        <% locals.compressedFiles.forEach(function(file) { %>
+          <div class="processed-file-card" data-file-id="<%= file.fileId %>">
+            <button class="delete-btn" title="Delete this file">&times;</button>
+
+            <span class="file-icon">&#x1F4E6;</span>
+
+            <p class="file-name" title="<%= file.originalName %>">
+              <%= file.originalName %>
+            </p>
+
+            <span class="compression-badge">
+              <%= file.compressionLabel || (file.compressionLevel.charAt(0).toUpperCase() + file.compressionLevel.slice(1)) %>
+            </span>
+
+            <div class="stats-block">
+              <div class="stats-row">
+                <span class="stats-label">Original</span>
+                <span class="stats-value"><%= locals.formatBytes(file.originalSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Compressed</span>
+                <span class="stats-value"><%= locals.formatBytes(file.compressedSize) %></span>
+              </div>
+              <div class="stats-row">
+                <span class="stats-label">Saved</span>
+                <span class="stats-value"><%= locals.formatBytes(file.savedBytes) %></span>
+              </div>
+              <span class="stats-saved">&#x2193; <%= file.savedPercent %>% smaller</span>
+            </div>
+
+            <a href="<%= file.downloadUrl %>" class="download-button" download>Download</a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="no-files-message">No compressed files yet. Upload a PDF above to get started.</p>
+    <% } %>
+  </section>
+
+</main>
+
+<!-- Toasts -->
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<footer>
+  <p>PDF Compressor Tool &mdash; PDF Labs &copy; 2025; Developed by Godfrey</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/eventlisteners.js"></script>
+</body>
+</html>
