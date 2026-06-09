@@ -1,0 +1,268 @@
+# ============================================================
+# Services
+# ============================================================
+# account-service → LoadBalancer (external entry point)
+# All other services → ClusterIP (internal only)
+# ============================================================
+
+# ── account-service (LoadBalancer — external landing page) ──
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: account-service
+  annotations:
+    # Uncomment if your load-balancer supports session affinity
+    # service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+spec:
+  type: LoadBalancer
+  selector:
+    app: account-service
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+
+---
+# ── home-service ─────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: home-service
+spec:
+  type: ClusterIP
+  selector:
+    app: home-service
+  ports:
+    - name: http
+      port: 3500
+      targetPort: 3500
+      protocol: TCP
+
+---
+# ── profile-service ───────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: profile-service
+spec:
+  type: ClusterIP
+  selector:
+    app: profile-service
+  ports:
+    - name: http
+      port: 4000
+      targetPort: 4000
+      protocol: TCP
+
+---
+# ── logout-service ────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: logout-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: logout-service
+spec:
+  type: ClusterIP
+  selector:
+    app: logout-service
+  ports:
+    - name: http
+      port: 4500
+      targetPort: 4500
+      protocol: TCP
+
+---
+# ── tools-service ─────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: tools-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: tools-service
+spec:
+  type: ClusterIP
+  selector:
+    app: tools-service
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+
+---
+# ── pdf-to-image-service ──────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-to-image-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-to-image-service
+spec:
+  type: ClusterIP
+  selector:
+    app: pdf-to-image-service
+  ports:
+    - name: http
+      port: 5100
+      targetPort: 5100
+      protocol: TCP
+
+---
+# ── image-to-pdf-service ──────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-to-pdf-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: image-to-pdf-service
+spec:
+  type: ClusterIP
+  selector:
+    app: image-to-pdf-service
+  ports:
+    - name: http
+      port: 5200
+      targetPort: 5200
+      protocol: TCP
+
+---
+# ── pdf-compressor-service ────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-compressor-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-compressor-service
+spec:
+  type: ClusterIP
+  selector:
+    app: pdf-compressor-service
+  ports:
+    - name: http
+      port: 5300
+      targetPort: 5300
+      protocol: TCP
+
+---
+# ── pdf-to-audio-service ──────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-to-audio-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-to-audio-service
+spec:
+  type: ClusterIP
+  selector:
+    app: pdf-to-audio-service
+  ports:
+    - name: http
+      port: 5400
+      targetPort: 5400
+      protocol: TCP
+
+---
+# ── pdf-to-word-service ───────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-to-word-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-to-word-service
+spec:
+  type: ClusterIP
+  selector:
+    app: pdf-to-word-service
+  ports:
+    - name: http
+      port: 5500
+      targetPort: 5500
+      protocol: TCP
+
+---
+# ── sheetlab-service ──────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: sheetlab-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: sheetlab-service
+spec:
+  type: ClusterIP
+  selector:
+    app: sheetlab-service
+  ports:
+    - name: http
+      port: 5600
+      targetPort: 5600
+      protocol: TCP
+
+---
+# ── word-to-pdf-service ───────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: word-to-pdf-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: word-to-pdf-service
+spec:
+  type: ClusterIP
+  selector:
+    app: word-to-pdf-service
+  ports:
+    - name: http
+      port: 5700
+      targetPort: 5700
+      protocol: TCP
+
+---
+# ── edit-pdf-service ──────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: edit-pdf-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: edit-pdf-service
+spec:
+  type: ClusterIP
+  selector:
+    app: edit-pdf-service
+  ports:
+    - name: http
+      port: 5800
+      targetPort: 5800
+      protocol: TCP

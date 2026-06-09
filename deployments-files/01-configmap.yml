@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pdf-labs-config
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: config
+data:
+  NODE_ENV: "production"
+  MONGO_HOST: "mongo-pdf-labs"                          # headless service name
+  MONGO_PORT: "27017"
+  MONGO_REPLICASET: "rs0"
+  # Per-service DB names
+  MONGO_URI_ACCOUNT:       "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
+  MONGO_URI_TOOLS:         "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/tools-service?replicaSet=rs0"
+  MONGO_URI_PDF_TO_IMAGE:  "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/pdf-to-image-service?replicaSet=rs0"
+  MONGO_URI_IMAGE_TO_PDF:  "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/image-to-pdf-service?replicaSet=rs0"
+  MONGO_URI_PDF_TO_AUDIO:  "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/pdf-to-audio-service?replicaSet=rs0"
+  MONGO_URI_COMPRESSOR:    "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/pdf-compressor-service?replicaSet=rs0"
+  MONGO_URI_PDF_TO_WORD:   "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/pdf-to-word-service?replicaSet=rs0"
+  MONGO_URI_WORD_TO_PDF:   "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/word-to-pdf-service?replicaSet=rs0"
+  MONGO_URI_EDIT_PDF:      "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/edit-pdf-service?replicaSet=rs0"
+  MONGO_URI_SHEETLAB:      "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/sheetlab-service?replicaSet=rs0"
+  MONGO_URI_HOME:          "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
+  MONGO_URI_PROFILE:       "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
+  MONGO_URI_LOGOUT:        "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
+
+---
+# MongoDB replica-set bootstrap config
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-init-config
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: mongo
+data:
+  mongodb.conf: |
+    storage:
+      dbPath: /data/db
+    replication:
+      replSetName: "rs0"
+    net:
+      bindIp: "0.0.0.0"
+      port: 27017

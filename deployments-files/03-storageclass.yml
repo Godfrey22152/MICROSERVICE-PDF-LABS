@@ -1,0 +1,31 @@
+# ============================================================
+# StorageClass — OpenEBS LocalPV Hostpath
+# ============================================================
+# Prerequisites on each node:
+#   kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml
+#
+# OpenEBS LocalPV Hostpath is the recommended lightweight
+# provisioner for self-hosted kubeadm clusters. Volumes are
+# stored on the node's local filesystem under basePath.
+#
+# IMPORTANT: LocalPV volumes are node-local (ReadWriteOnce).
+# MongoDB pods are pinned to their volume's node via the
+# StatefulSet + volumeClaimTemplates binding.
+# ============================================================
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-hostpath
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+    openebs.io/cas-type: local
+    cas.openebs.io/config: |
+      - name: StorageType
+        value: "hostpath"
+      - name: BasePath
+        value: "/var/openebs/local"
+provisioner: openebs.io/local
+reclaimPolicy: Retain         # Retain data when PVC is deleted
+volumeBindingMode: WaitForFirstConsumer   # Bind after pod is scheduled (node-aware)
+allowVolumeExpansion: true

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/managed-by: kubectl

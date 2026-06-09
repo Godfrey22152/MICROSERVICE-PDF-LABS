@@ -1,0 +1,156 @@
+# ============================================================
+# Ingress — NGINX Ingress Controller
+# ============================================================
+# Prerequisites:
+#   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/baremetal/deploy.yaml
+#
+# Replace "pdf-labs.example.com" with your actual domain.
+# For TLS, create a cert-manager ClusterIssuer or manually
+# create the TLS secret and uncomment the tls block below.
+# ============================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pdf-labs-ingress
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"          # allow large PDF uploads
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"       # longer timeout for conversions
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # Uncomment for cert-manager TLS automation:
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  # ── TLS (uncomment and fill in after creating the secret) ──
+  # tls:
+  #   - hosts:
+  #       - pdf-labs.example.com
+  #     secretName: pdf-labs-tls
+  rules:
+    - host: pdf-labs.example.com     # ← replace with your domain
+      http:
+        paths:
+
+          # ── Landing page / auth (account-service) ──────────
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: account-service
+                port:
+                  number: 80
+
+          # ── Home dashboard ─────────────────────────────────
+          - path: /home
+            pathType: Prefix
+            backend:
+              service:
+                name: home-service
+                port:
+                  number: 3500
+
+          # ── User profile ───────────────────────────────────
+          - path: /profile
+            pathType: Prefix
+            backend:
+              service:
+                name: profile-service
+                port:
+                  number: 4000
+
+          # ── Logout ─────────────────────────────────────────
+          - path: /logout
+            pathType: Prefix
+            backend:
+              service:
+                name: logout-service
+                port:
+                  number: 4500
+
+          # ── Tools listing ──────────────────────────────────
+          - path: /tools
+            pathType: Prefix
+            backend:
+              service:
+                name: tools-service
+                port:
+                  number: 5000
+
+          # ── PDF → Image ────────────────────────────────────
+          - path: /pdf-to-image
+            pathType: Prefix
+            backend:
+              service:
+                name: pdf-to-image-service
+                port:
+                  number: 5100
+
+          # ── Image → PDF ────────────────────────────────────
+          - path: /image-to-pdf
+            pathType: Prefix
+            backend:
+              service:
+                name: image-to-pdf-service
+                port:
+                  number: 5200
+
+          # ── PDF Compressor ─────────────────────────────────
+          - path: /compress-pdf
+            pathType: Prefix
+            backend:
+              service:
+                name: pdf-compressor-service
+                port:
+                  number: 5300
+
+          # ── PDF → Audio ────────────────────────────────────
+          - path: /pdf-to-audio
+            pathType: Prefix
+            backend:
+              service:
+                name: pdf-to-audio-service
+                port:
+                  number: 5400
+
+          # ── PDF → Word ─────────────────────────────────────
+          - path: /pdf-to-word
+            pathType: Prefix
+            backend:
+              service:
+                name: pdf-to-word-service
+                port:
+                  number: 5500
+
+          # ── SheetLab ───────────────────────────────────────
+          - path: /sheetlab
+            pathType: Prefix
+            backend:
+              service:
+                name: sheetlab-service
+                port:
+                  number: 5600
+
+          # ── Word → PDF ─────────────────────────────────────
+          - path: /word-to-pdf
+            pathType: Prefix
+            backend:
+              service:
+                name: word-to-pdf-service
+                port:
+                  number: 5700
+
+          # ── Edit PDF ───────────────────────────────────────
+          - path: /edit-pdf
+            pathType: Prefix
+            backend:
+              service:
+                name: edit-pdf-service
+                port:
+                  number: 5800

@@ -1,0 +1,1148 @@
+# ============================================================
+# Deployments — all pdf-labs microservices
+# ============================================================
+# Images: replace each "REGISTRY/IMAGE:TAG" with your actual
+#         image references (e.g. from a private registry or
+#         Docker Hub).  Add an imagePullSecret if needed.
+#
+# Health endpoints: each service should expose /health.
+#   If yours use a different path, adjust httpGet.path below.
+# ============================================================
+
+# ────────────────────────────────────────────────────────────
+# 1. account-service  (port 3000 — landing page / auth)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: account-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: account-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: account-service
+        app.kubernetes.io/component: account-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: account-service
+          image: REGISTRY/account-service:TAG        # ← replace
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_ACCOUNT
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24     # 24 × 5s = 2 min max startup
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 2. home-service  (port 3500)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: home-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: home-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: home-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: home-service
+          image: REGISTRY/home-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3500
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_HOME
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3500
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3500
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3500
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 3. profile-service  (port 4000)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: profile-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: profile-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: profile-service
+          image: REGISTRY/profile-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 4000
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_PROFILE
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 4. logout-service  (port 4500)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logout-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: logout-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: logout-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: logout-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: logout-service
+          image: REGISTRY/logout-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 4500
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_LOGOUT
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 4500
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4500
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4500
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 5. tools-service  (port 5000)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tools-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: tools-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tools-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: tools-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: tools-service
+          image: REGISTRY/tools-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5000
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_TOOLS
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 6. pdf-to-image-service  (port 5100)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-to-image-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-to-image-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-to-image-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pdf-to-image-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: pdf-to-image-service
+          image: REGISTRY/pdf-to-image-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5100
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_PDF_TO_IMAGE
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5100
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5100
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5100
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 7. image-to-pdf-service  (port 5200)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-to-pdf-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: image-to-pdf-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: image-to-pdf-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: image-to-pdf-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: image-to-pdf-service
+          image: REGISTRY/image-to-pdf-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5200
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_IMAGE_TO_PDF
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5200
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5200
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5200
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 8. pdf-compressor-service  (port 5300)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-compressor-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-compressor-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-compressor-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pdf-compressor-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: pdf-compressor-service
+          image: REGISTRY/pdf-compressor-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5300
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_COMPRESSOR
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5300
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5300
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5300
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 9. pdf-to-audio-service  (port 5400)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-to-audio-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-to-audio-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-to-audio-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pdf-to-audio-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: pdf-to-audio-service
+          image: REGISTRY/pdf-to-audio-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5400
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_PDF_TO_AUDIO
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5400
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5400
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5400
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 10. pdf-to-word-service  (port 5500)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-to-word-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: pdf-to-word-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-to-word-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pdf-to-word-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: pdf-to-word-service
+          image: REGISTRY/pdf-to-word-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5500
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_PDF_TO_WORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+            - name: CONVERTAPI_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: CONVERTAPI_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5500
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5500
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5500
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 11. sheetlab-service  (port 5600)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sheetlab-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: sheetlab-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sheetlab-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: sheetlab-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: sheetlab-service
+          image: REGISTRY/sheetlab-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5600
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_SHEETLAB
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+            - name: CONVERTAPI_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: CONVERTAPI_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5600
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5600
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5600
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 12. word-to-pdf-service  (port 5700)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: word-to-pdf-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: word-to-pdf-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: word-to-pdf-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: word-to-pdf-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: word-to-pdf-service
+          image: REGISTRY/word-to-pdf-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5700
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_WORD_TO_PDF
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+            - name: CONVERTAPI_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: CONVERTAPI_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5700
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5700
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5700
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+
+---
+# ────────────────────────────────────────────────────────────
+# 13. edit-pdf-service  (port 5800)
+# ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edit-pdf-service
+  namespace: pdf-labs
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: edit-pdf-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: edit-pdf-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: edit-pdf-service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: edit-pdf-service
+          image: REGISTRY/edit-pdf-service:TAG
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5800
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: NODE_ENV
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_URI_EDIT_PDF
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: JWT_SECRET
+            - name: CONVERTAPI_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: CONVERTAPI_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5800
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 24
+            successThreshold: 1
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
