@@ -1,0 +1,627 @@
+# ============================================================
+# ci-report.yml  —  Allure Security Report & gh-pages publish
+# ============================================================
+# Called by: Shared-CI.yml (report job)
+#
+# This workflow:
+#   1. Downloads all JSON scan artifacts produced by the
+#      security-scans and docker stages.
+#   2. Converts each JSON report into an Allure test-result
+#      JSON file (passed/failed/skipped per scanner).
+#   3. Generates a dark-themed HTML viewer for each raw report.
+#   4. Generates a per-branch Allure HTML report with history.
+#   5. Publishes everything to the gh-pages branch:
+#        /allure-action/<branch>/   ← Allure reports
+#        /scan-reports/<branch>/<run>/  ← per-scan HTML viewers
+#        /owasp/<branch>/<run>/     ← OWASP HTML report
+#        /index.html                ← dashboard linking all branches
+#
+# This job always runs (if: always()) so a failed scan still
+# produces a visible report explaining what went wrong.
+#
+# No inputs or outputs — this stage is purely side-effectful
+# (writes to gh-pages).
+# ============================================================
+
+name: Allure Security Report
+
+on:
+  workflow_call:
+
+jobs:
+
+  allure-report:
+    name: Generate Allure Security Report
+    runs-on: ubuntu-latest
+    # always() ensures the report runs even when upstream jobs
+    # failed or were skipped (e.g. security gate blocked push).
+    if: always()
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      # ── Download all scan artifacts ────────────────────────
+      # continue-on-error on every download because a scan job
+      # may have been skipped (e.g. compile failed early), and
+      # we still want to produce a report to see why it failed.
+
+      - name: Download npm audit report
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-audit-report
+          path: raw-reports/npm-audit
+        continue-on-error: true
+
+      - name: Download Gitleaks report
+        uses: actions/download-artifact@v4
+        with:
+          name: gitleaks-report
+          path: raw-reports/gitleaks
+        continue-on-error: true
+
+      - name: Download Hadolint report
+        uses: actions/download-artifact@v4
+        with:
+          name: hadolint-report
+          path: raw-reports/hadolint
+        continue-on-error: true
+
+      - name: Download Trivy FS report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-report
+          path: raw-reports/trivy-fs
+        continue-on-error: true
+
+      - name: Download OWASP report
+        uses: actions/download-artifact@v4
+        with:
+          name: owasp-dependency-report
+          path: raw-reports/owasp
+        continue-on-error: true
+
+      - name: Download Trivy image report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-image-report
+          path: raw-reports/trivy-image
+        continue-on-error: true
+
+      - name: Download Grype image report
+        uses: actions/download-artifact@v4
+        with:
+          name: grype-image-report
+          path: raw-reports/grype-image
+        continue-on-error: true
+
+      # ── Convert JSON reports → Allure result files ─────────
+      # Each scanner's JSON is parsed with jq to determine
+      # passed/failed/skipped, then written as an Allure-format
+      # JSON result file. These drive the Allure HTML report.
+      - name: Convert Reports to Allure Results
+        run: |
+          mkdir -p allure-results
+
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+
+          BASE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          BRANCH="${{ github.ref_name }}"
+          RUN_NUMBER="${{ github.run_number }}"
+
+          # Pre-compute HTML report URLs so Allure result links
+          # point to the per-scan viewer pages on gh-pages.
+          NPM_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/npm-audit-report.html"
+          GITLEAKS_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/gitleaks-report.html"
+          HADOLINT_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/hadolint-report.html"
+          TRIVY_FS_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/trivy-fs-report.html"
+          TRIVY_IMG_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/trivy-image-report.html"
+          GRYPE_HTML_URL="${BASE_URL}/scan-reports/${BRANCH}/${RUN_NUMBER}/grype-image-report.html"
+          OWASP_HTML_URL="${BASE_URL}/owasp/${BRANCH}/${RUN_NUMBER}/dependency-check-report.html"
+
+          # Allure environment metadata (shown in report header)
+          cat > allure-results/environment.properties <<EOF
+          Branch=${{ github.ref_name }}
+          Commit=${{ github.sha }}
+          Repository=${{ github.repository }}
+          Workflow=${{ github.workflow }}
+          Run_Number=${{ github.run_number }}
+          Actor=${{ github.actor }}
+          EOF
+
+          # Allure executor metadata (links report back to the GHA run)
+          cat > allure-results/executor.json <<EOF
+          {
+            "name": "GitHub Actions",
+            "type": "github",
+            "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "buildOrder": ${{ github.run_number }},
+            "buildName": "${{ github.ref_name }} #${{ github.run_number }}",
+            "buildUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "reportUrl": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.ref_name }}/",
+            "reportName": "Security Report - ${{ github.ref_name }} - ${{ github.sha }}"
+          }
+          EOF
+
+          # ── NPM Audit ──────────────────────────────────────
+          NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
+          if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
+            VULN_COUNT=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No high or critical vulnerabilities found in npm dependencies."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '.advisories? // {} | to_entries[] | "[\(.value.severity | ascii_upcase)] \(.value.module_name) → \(.value.title)"' "$NPM_FILE" 2>/dev/null | head -20)
+            fi
+          else
+            STATUS="skipped"; DETAIL="npm audit report not available."
+          fi
+          cat > allure-results/npm-audit-result.json <<EOF
+          {
+            "name": "Dependency Audit (npm audit)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "npm audit scan for known vulnerabilities in project dependencies.",
+            "links": [{ "name": "Full npm Audit HTML Report", "url": "${NPM_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "High/Critical Vulnerabilities", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Dependency Audit" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Gitleaks ───────────────────────────────────────
+          GITLEAKS_FILE="raw-reports/gitleaks/gitleaks-report.json"
+          if [ -f "$GITLEAKS_FILE" ] && [ -s "$GITLEAKS_FILE" ]; then
+            COUNT=$(jq 'length' "$GITLEAKS_FILE" 2>/dev/null || echo 0)
+            if [ "$COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No secrets detected."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '.[] | "[\(.RuleID)] \(.Description) in \(.File):\(.StartLine)"' "$GITLEAKS_FILE" | head -20)
+            fi
+          else
+            STATUS="skipped"; DETAIL="Gitleaks report not available."
+          fi
+          cat > allure-results/gitleaks-result.json <<EOF
+          {
+            "name": "Secret Scanning (Gitleaks)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Scan for hardcoded secrets and credentials in the repository.",
+            "links": [{ "name": "Full Gitleaks Secret Scan HTML Report", "url": "${GITLEAKS_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "Detected Secrets", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Secret Scanning" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Hadolint ───────────────────────────────────────
+          HADOLINT_FILE="raw-reports/hadolint/hadolint-report.json"
+          if [ -f "$HADOLINT_FILE" ] && [ -s "$HADOLINT_FILE" ]; then
+            COUNT=$(jq 'length' "$HADOLINT_FILE")
+            if [ "$COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No Dockerfile issues found."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.[] | "[\(.level | ascii_upcase)] \(.code): \(.message) (line \(.line))"] | join("\n")' "$HADOLINT_FILE")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Hadolint report not available."
+          fi
+          cat > allure-results/hadolint-result.json <<EOF
+          {
+            "name": "Dockerfile Lint (Hadolint)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Hadolint static analysis of the project Dockerfile.",
+            "links": [{ "name": "Full Hadolint Dockerfile Lint HTML Report", "url": "${HADOLINT_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "Hadolint Findings", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Dockerfile Lint" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Trivy FS ───────────────────────────────────────
+          TRIVY_FS_FILE="raw-reports/trivy-fs/trivy-report.json"
+          if [ -f "$TRIVY_FS_FILE" ] && [ -s "$TRIVY_FS_FILE" ]; then
+            VULN_COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_FS_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No HIGH/CRITICAL filesystem vulnerabilities found."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL") | "[\(.Severity)] \(.VulnerabilityID) in \(.PkgName) \(.InstalledVersion) → \(.Title // "N/A")"] | unique | join("\n")' "$TRIVY_FS_FILE")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Trivy FS report not available."
+          fi
+          cat > allure-results/trivy-fs-result.json <<EOF
+          {
+            "name": "Filesystem Vulnerability Scan (Trivy)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Trivy scan of the repository filesystem for HIGH and CRITICAL CVEs.",
+            "links": [{ "name": "Full Trivy Filesystem Scan HTML Report", "url": "${TRIVY_FS_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "HIGH/CRITICAL CVEs Found", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Filesystem Vulnerability Scan" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Trivy Image ────────────────────────────────────
+          TRIVY_IMG_FILE="raw-reports/trivy-image/trivy-image-report.json"
+          if [ -f "$TRIVY_IMG_FILE" ] && [ -s "$TRIVY_IMG_FILE" ]; then
+            VULN_COUNT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TRIVY_IMG_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No HIGH/CRITICAL image vulnerabilities found."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL") | "[\(.Severity)] \(.VulnerabilityID) in \(.PkgName) \(.InstalledVersion) → \(.Title // "N/A")"] | unique | join("\n")' "$TRIVY_IMG_FILE")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Trivy image report not available."
+          fi
+          cat > allure-results/trivy-image-result.json <<EOF
+          {
+            "name": "Docker Image Vulnerability Scan (Trivy)",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Trivy scan of the built Docker image for HIGH and CRITICAL CVEs.",
+            "links": [{ "name": "Full Trivy Docker Image Scan HTML Report", "url": "${TRIVY_IMG_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "HIGH/CRITICAL CVEs in Image", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Docker Image Vulnerability Scan" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── Grype Image ────────────────────────────────────
+          GRYPE_FILE="raw-reports/grype-image/grype-image-report.json"
+          if [ -f "$GRYPE_FILE" ] && [ -s "$GRYPE_FILE" ]; then
+            VULN_COUNT=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' "$GRYPE_FILE" 2>/dev/null || echo 0)
+            if [ "$VULN_COUNT" -eq 0 ]; then
+              STATUS="passed"; DETAIL="No HIGH/CRITICAL image vulnerabilities found by Grype."
+            else
+              STATUS="failed"
+              DETAIL=$(jq -r '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical") | "[\(.vulnerability.severity | ascii_upcase)] \(.vulnerability.id) in \(.artifact.name) \(.artifact.version) — \(.vulnerability.description // "N/A" | .[0:100])"] | unique | join("\n")' "$GRYPE_FILE" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found.")
+            fi
+          else
+            STATUS="skipped"; DETAIL="Grype image report not available."
+          fi
+          cat > allure-results/grype-image-result.json <<EOF
+          {
+            "name": "Grype Docker Image Vulnerability Scan",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "Grype scan of the built Docker image for HIGH and CRITICAL CVEs.",
+            "links": [{ "name": "Full Grype Image Scan HTML Report", "url": "${GRYPE_HTML_URL}", "type": "tms" }],
+            "steps": [{ "name": "HIGH/CRITICAL CVEs in Image", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "Grype Image Scan" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+          # ── OWASP ──────────────────────────────────────────
+          OWASP_JSON="raw-reports/owasp/dependency-check-report.json"
+          if [ -f "$OWASP_JSON" ] && [ -s "$OWASP_JSON" ]; then
+            if ! jq empty "$OWASP_JSON" 2>/dev/null; then
+              STATUS="skipped"; DETAIL="OWASP JSON file exists but is not valid JSON."
+            else
+              VULN_COUNT=$(jq '[.dependencies[]?.vulnerabilities // [] | .[]] | length' "$OWASP_JSON" 2>/dev/null || echo 0)
+              if [ "$VULN_COUNT" -eq 0 ]; then
+                STATUS="passed"; DETAIL="No vulnerable dependencies found."
+              else
+                STATUS="failed"
+                DETAIL=$(jq -r '[.dependencies[]? | . as $dep | (.vulnerabilities // [])[] | "[\(.severity // "UNKNOWN")] \(.name) in \($dep.fileName // "unknown") — \((.description // "") | .[0:100])"] | join("\n")' "$OWASP_JSON" 2>/dev/null || echo "$VULN_COUNT vulnerabilities found.")
+              fi
+            fi
+          else
+            STATUS="skipped"; DETAIL="OWASP JSON report not found."
+          fi
+          cat > allure-results/owasp-result.json <<EOF
+          {
+            "name": "OWASP Dependency Check",
+            "status": "$STATUS",
+            "stage": "finished",
+            "description": "OWASP Dependency Check cross-referenced against the NVD database. Fails on CVSS >= 7.",
+            "links": [{ "name": "Full OWASP HTML Report", "url": "$OWASP_HTML_URL", "type": "tms" }],
+            "steps": [{ "name": "Vulnerable Dependencies Detected", "status": "$STATUS", "stage": "finished", "statusDetails": { "message": $(echo "$DETAIL" | jq -Rs .) } }],
+            "labels": [
+              { "name": "parentSuite", "value": "${{ github.ref_name }}" },
+              { "name": "suite", "value": "Security Scans" },
+              { "name": "subSuite", "value": "${SHORT_SHA}" },
+              { "name": "feature", "value": "OWASP Dependency Check" },
+              { "name": "severity", "value": "critical" }
+            ]
+          }
+          EOF
+
+      # ── Generate dark-themed HTML viewers ─────────────────
+      # Each scanner's raw JSON gets a standalone HTML page
+      # with syntax highlighting. These are published to
+      # gh-pages so engineers can read the raw findings without
+      # downloading and opening JSON files locally.
+      - name: Generate HTML Report Viewers for All Scans
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          RUN_NUMBER="${{ github.run_number }}"
+          mkdir -p scan-html-reports
+
+          # Shared highlight() JS function embedded in every page.
+          HIGHLIGHT_JS='function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls="number";if(/^"/.test(m)){cls=/:$/.test(m)?"key":"string";}else if(/true|false/.test(m)){cls="boolean";}else if(/null/.test(m)){cls="null";}return"<span class=\""+cls+"\">"+m+"</span>";});}'
+
+          # Shared CSS for all report pages.
+          SHARED_CSS='body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}h1{color:#58a6ff;margin-bottom:4px}.meta{color:#8b949e;font-size:.85rem;margin-bottom:8px}.status{font-size:.9rem;font-weight:600;margin-bottom:4px}.detail{color:#8b949e;font-size:.85rem;margin-bottom:24px}pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}.string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}'
+
+          # Helper: emit a single-page HTML viewer.
+          # Args: $1=output_file $2=title $3=icon $4=status_color
+          #       $5=status_text $6=detail_text $7=json_content
+          make_html() {
+            cat > "$1" <<PGEOF
+          <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+          <title>$3 $2 — ${BRANCH} #${RUN_NUMBER}</title>
+          <style>${SHARED_CSS}</style></head><body>
+          <h1>$3 $2</h1>
+          <div class="meta">Branch: ${BRANCH} &nbsp;|&nbsp; Run: #${RUN_NUMBER}</div>
+          <div class="status" style="color:$4">Status: $5</div>
+          <div class="detail">Details: $6</div>
+          <pre id="j"></pre>
+          <script>
+            const data=$7;
+            ${HIGHLIGHT_JS}
+            document.getElementById('j').innerHTML=highlight(data);
+          </script></body></html>
+          PGEOF
+          }
+
+          # ── npm Audit ──────────────────────────────────────
+          NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
+          if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
+            C=$(jq '.' "$NPM_FILE"); VC=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
+            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No high or critical vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} high/critical vulnerabilities."
+          else
+            C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="npm audit report not available."
+          fi
+          make_html "scan-html-reports/npm-audit-report.html" "npm Audit Report" "📦" "$SC" "$ST" "$DT" "$(echo "$C")"
+
+          # ── Gitleaks ───────────────────────────────────────
+          GL_FILE="raw-reports/gitleaks/gitleaks-report.json"
+          if [ -f "$GL_FILE" ] && [ -s "$GL_FILE" ]; then
+            C=$(jq '.' "$GL_FILE"); VC=$(jq 'length' "$GL_FILE" 2>/dev/null || echo 0)
+            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No secrets detected." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} potential secrets."
+          else
+            C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Gitleaks report not available."
+          fi
+          make_html "scan-html-reports/gitleaks-report.html" "Gitleaks Secret Scan" "🔑" "$SC" "$ST" "$DT" "$(echo "$C")"
+
+          # ── Hadolint ───────────────────────────────────────
+          HD_FILE="raw-reports/hadolint/hadolint-report.json"
+          if [ -f "$HD_FILE" ] && [ -s "$HD_FILE" ]; then
+            C=$(jq '.' "$HD_FILE"); VC=$(jq 'length' "$HD_FILE")
+            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No Dockerfile issues found." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} Dockerfile issues."
+          else
+            C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Hadolint report not available."
+          fi
+          make_html "scan-html-reports/hadolint-report.html" "Hadolint Dockerfile Lint" "🐳" "$SC" "$ST" "$DT" "$(echo "$C")"
+
+          # ── Trivy FS ───────────────────────────────────────
+          TFS_FILE="raw-reports/trivy-fs/trivy-report.json"
+          if [ -f "$TFS_FILE" ] && [ -s "$TFS_FILE" ]; then
+            C=$(jq '.' "$TFS_FILE")
+            VC=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TFS_FILE" 2>/dev/null || echo 0)
+            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No HIGH/CRITICAL filesystem vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+          else
+            C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Trivy filesystem report not available."
+          fi
+          make_html "scan-html-reports/trivy-fs-report.html" "Trivy Filesystem Scan" "🔍" "$SC" "$ST" "$DT" "$(echo "$C")"
+
+          # ── Trivy Image ────────────────────────────────────
+          TIMG_FILE="raw-reports/trivy-image/trivy-image-report.json"
+          if [ -f "$TIMG_FILE" ] && [ -s "$TIMG_FILE" ]; then
+            C=$(jq '.' "$TIMG_FILE")
+            VC=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TIMG_FILE" 2>/dev/null || echo 0)
+            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No HIGH/CRITICAL image vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+          else
+            C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Trivy image report not available."
+          fi
+          make_html "scan-html-reports/trivy-image-report.html" "Trivy Docker Image Scan" "🐋" "$SC" "$ST" "$DT" "$(echo "$C")"
+
+          # ── Grype Image ────────────────────────────────────
+          GR_FILE="raw-reports/grype-image/grype-image-report.json"
+          if [ -f "$GR_FILE" ] && [ -s "$GR_FILE" ]; then
+            C=$(jq '.' "$GR_FILE")
+            VC=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' "$GR_FILE" 2>/dev/null || echo 0)
+            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No HIGH/CRITICAL image vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+          else
+            C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Grype image report not available."
+          fi
+          make_html "scan-html-reports/grype-image-report.html" "Grype Docker Image Scan" "🔬" "$SC" "$ST" "$DT" "$(echo "$C")"
+
+      # ── Checkout gh-pages for Allure history ──────────────
+      # The allure-report-branch-action needs the existing
+      # gh-pages content to append history to the new report.
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+
+      # ── Generate per-branch Allure report ─────────────────
+      # Generates an Allure HTML report from allure-results/
+      # and places it under allure-action/<branch>/ inside the
+      # gh-pages checkout so it can be published with history.
+      - name: Generate Allure Report per Branch
+        uses: mgrybyk-org/allure-report-branch-action@v1
+        if: always()
+        continue-on-error: true
+        id: allure
+        with:
+          report_id: ${{ github.ref_name }}
+          gh_pages: gh-pages-dir
+          report_dir: allure-results
+
+      # ── Assemble gh-pages directory ────────────────────────
+      # Copies all HTML viewers and OWASP report into the right
+      # paths under gh-pages-dir, then rebuilds index.html.
+      - name: Assemble gh-pages directory
+        if: always()
+        run: |
+          sudo chown -R $USER:$USER gh-pages-dir
+
+          # Remove source files that may have leaked in from the
+          # main branch checkout (gh-pages should be HTML only).
+          find gh-pages-dir -maxdepth 1 -name "*.md"  -delete
+          find gh-pages-dir -maxdepth 1 -name "*.json" -delete
+          find gh-pages-dir -maxdepth 1 -name "*.js"  -delete
+          find gh-pages-dir -maxdepth 1 -name "*.yml" -delete
+          find gh-pages-dir -maxdepth 1 -name "Dockerfile" -delete
+
+          BRANCH="${{ github.ref_name }}"
+          RUN_NUMBER="${{ github.run_number }}"
+          BASE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+
+          # Copy OWASP HTML report
+          mkdir -p "gh-pages-dir/owasp/${BRANCH}/${RUN_NUMBER}"
+          cp raw-reports/owasp/dependency-check-report.html \
+             "gh-pages-dir/owasp/${BRANCH}/${RUN_NUMBER}/dependency-check-report.html" || true
+
+          # Copy all per-scan HTML viewer pages
+          mkdir -p "gh-pages-dir/scan-reports/${BRANCH}/${RUN_NUMBER}"
+          for f in npm-audit-report gitleaks-report hadolint-report \
+                   trivy-fs-report trivy-image-report grype-image-report; do
+            cp "scan-html-reports/${f}.html" \
+               "gh-pages-dir/scan-reports/${BRANCH}/${RUN_NUMBER}/${f}.html" || true
+          done
+
+          # Collect all branches that have Allure reports
+          BRANCHES=$(find gh-pages-dir/allure-action -mindepth 1 -maxdepth 1 -type d \
+                     2>/dev/null | xargs -I{} basename {} | sort)
+
+          # ── Build dashboard index.html ─────────────────────
+          cat > gh-pages-dir/index.html <<HTMLEOF
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>PDF-Labs CI Security Reports</title>
+            <style>
+              *{box-sizing:border-box;margin:0;padding:0}
+              body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;padding:40px 20px}
+              h1{color:#58a6ff;font-size:1.8rem;margin-bottom:8px}
+              .sub{color:#8b949e;margin-bottom:40px;font-size:.95rem}
+              h2.section{color:#8b949e;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;margin-top:40px}
+              .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;max-width:1100px}
+              .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;color:inherit;transition:border-color .2s}
+              .card:hover{border-color:#58a6ff}
+              .card-title{font-size:1rem;color:#58a6ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+              .btn{display:inline-block;text-decoration:none;padding:6px 14px;border-radius:6px;font-size:.82rem;margin-right:6px;margin-bottom:6px;cursor:pointer;border:none;font-family:inherit}
+              .btn-primary{background:#238636;color:#fff;border:1px solid #2ea043}.btn-primary:hover{background:#2ea043}
+              .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d;cursor:pointer}.btn-secondary:hover{border-color:#58a6ff;color:#58a6ff}
+              .dropdown{display:none;margin-top:12px;border-top:1px solid #30363d;padding-top:12px}
+              .dropdown.open{display:block}
+              .dropdown-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #21262d;font-size:.82rem;gap:8px}
+              .dropdown-item:last-child{border-bottom:none}
+              .dropdown-item span{color:#8b949e;flex:1}
+              .dropdown-item a{color:#58a6ff;text-decoration:none;white-space:nowrap;font-size:.8rem;padding:3px 8px;border:1px solid #30363d;border-radius:4px}
+              .dropdown-item a:hover{border-color:#58a6ff;background:#161b22}
+              .commit-sha{font-family:monospace;color:#e3b341;font-size:.78rem}
+              footer{color:#484f58;font-size:.8rem;margin-top:50px}
+            </style>
+          </head>
+          <body>
+            <h1>🔐 PDF-Labs CI Security Reports</h1>
+            <p class="sub">Per-branch security scan results powered by Allure.</p>
+            <h2 class="section">Branch Reports</h2>
+            <div class="grid">
+          HTMLEOF
+
+          for BRANCH_NAME in $BRANCHES; do
+            LATEST_URL="${BASE_URL}/allure-action/${BRANCH_NAME}/${BRANCH_NAME}/latest.html"
+            BRANCH_DIR="gh-pages-dir/allure-action/${BRANCH_NAME}/${BRANCH_NAME}"
+            RUN_DIRS=$(find "$BRANCH_DIR" -mindepth 1 -maxdepth 1 -type d \
+                       2>/dev/null | grep -E '/[0-9_]+$' | sort -t_ -k1 -rn)
+            cat >> gh-pages-dir/index.html <<CARDEOF
+              <div class="card">
+                <div class="card-title">🌿 ${BRANCH_NAME}</div>
+                <a class="btn btn-primary" href="${LATEST_URL}" target="_blank">Latest Report</a>
+                <button class="btn btn-secondary" onclick="toggleDropdown('hist-${BRANCH_NAME}',this)">▾ History</button>
+                <div class="dropdown" id="hist-${BRANCH_NAME}">
+          CARDEOF
+            if [ -z "$RUN_DIRS" ]; then
+              echo "<div style='color:#8b949e;font-size:.82rem;padding:8px 0'>No history yet.</div>" >> gh-pages-dir/index.html
+            else
+              for RUN_DIR in $RUN_DIRS; do
+                RUN_ID=$(basename "$RUN_DIR")
+                RUN_NUM=$(echo "$RUN_ID" | cut -d_ -f1)
+                REPORT_URL="${BASE_URL}/allure-action/${BRANCH_NAME}/${BRANCH_NAME}/${RUN_ID}/index.html"
+                SUMMARY_FILE="${RUN_DIR}/summary.json"
+                RUN_DATE=""
+                if [ -f "$SUMMARY_FILE" ]; then
+                  RUN_DATE=$(jq -r '.time.stop // empty' "$SUMMARY_FILE" 2>/dev/null | \
+                             xargs -I{} date -d "@{}" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "")
+                fi
+                [ -z "$RUN_DATE" ] && RUN_DATE="Run #${RUN_NUM}"
+                cat >> gh-pages-dir/index.html <<ROWEOF
+                  <div class="dropdown-item">
+                    <span>${RUN_DATE}</span>
+                    <span class="commit-sha">#${RUN_NUM}</span>
+                    <a href="${REPORT_URL}" target="_blank">View</a>
+                  </div>
+          ROWEOF
+              done
+            fi
+            echo "    </div></div>" >> gh-pages-dir/index.html
+          done
+
+          cat >> gh-pages-dir/index.html <<HTMLEOF
+            </div>
+            <footer>Generated by GitHub Actions · PDF-Labs CI · Run #${{ github.run_number }}</footer>
+            <script>
+              function toggleDropdown(id,btn){document.getElementById(id).classList.toggle('open');}
+            </script>
+          </body></html>
+          HTMLEOF
+
+      # ── Push everything to gh-pages in one commit ──────────
+      # A single push avoids race conditions when multiple
+      # service pipelines finish at the same time. --rebase -X ours
+      # resolves any concurrent push conflicts by preferring
+      # this run's version of index.html.
+      - name: Push to gh-pages
+        uses: mgrybyk-org/git-commit-pull-push-action@v1
+        if: always()
+        with:
+          repository: gh-pages-dir
+          branch: gh-pages
+          pull_args: --rebase -X ours
