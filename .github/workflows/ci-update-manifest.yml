@@ -1,0 +1,201 @@
+# ============================================================
+# ci-update-manifest.yml  —  Update Deployment Manifest
+# ============================================================
+# Called by: Shared-CI.yml (update-manifest job)
+#
+# Inputs (passed via `with:` from Shared-CI.yml):
+#   image   — full image name without tag
+#   tag     — git SHA tag
+#   digest  — sha256 digest of the signed+verified image
+#
+# This job runs ONLY after:
+#   ✅ Security gate passed   (no HIGH/CRITICAL CVEs)
+#   ✅ Image pushed to GHCR
+#   ✅ Image signed by Cosign (keyless, via OIDC)
+#   ✅ Signature verified independently
+#
+# What it does:
+#   1. Checks out main (where 06-deployments.yml lives).
+#   2. Derives the service name from the triggering repo name.
+#   3. Uses a Python script to surgically update ONLY the
+#      `image:` line of the matching container block in
+#      deployments-files/06-deployments.yml.
+#   4. Commits and pushes the change with [skip ci] so the
+#      commit does not re-trigger all service pipelines.
+#
+# Why Python for the YAML patch?
+#   sed/awk-based YAML patching is fragile with multi-document
+#   files. The Python script splits on `---` boundaries, then
+#   uses a regex anchored to the specific container name block,
+#   so it cannot accidentally update the wrong service's image
+#   even in a 13+ service manifest.
+#
+# Why [skip ci]?
+#   Without it, a push to main would trigger CI in every
+#   service repo that watches the shared workflow, creating a
+#   cascade of unnecessary pipeline runs.
+# ============================================================
+
+name: Update Deployment Manifest
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: "Full image name (no tag)"
+        required: true
+        type: string
+      tag:
+        description: "Image tag (git SHA)"
+        required: true
+        type: string
+      digest:
+        description: "sha256 digest of the signed+verified image"
+        required: true
+        type: string
+
+jobs:
+
+  update-deployment-manifest:
+    name: Update Deployment Manifest
+    runs-on: ubuntu-latest
+
+    permissions:
+      # write access is required to push the manifest change to main.
+      contents: write
+
+    steps:
+      # Check out the main branch — that is where
+      # deployments-files/06-deployments.yml lives alongside
+      # the shared workflow files.
+      - name: Check out main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Derive the service name from the triggering repository
+      # name. By convention every service repo is named exactly
+      # as its container `name:` entry in 06-deployments.yml
+      # (e.g. "account-service", "pdf-to-word-service").
+      # Reconstruct the full new image reference using the same
+      # formula used in ci-docker.yml so the strings always match.
+      - name: Derive service name and new image reference
+        id: vars
+        run: |
+          SERVICE=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          OWNER=$(echo "${{ github.repository_owner }}"        | tr '[:upper:]' '[:lower:]')
+          BRANCH=$(echo "${{ github.ref_name }}"               | tr '[:upper:]' '[:lower:]')
+
+          # Reconstruct the full image:tag string that was pushed.
+          # This matches exactly what ci-docker.yml built and pushed.
+          NEW_IMAGE="ghcr.io/${OWNER}/${SERVICE}/pdf-labs-deployment-${BRANCH}:${{ inputs.tag }}"
+
+          echo "service_name=${SERVICE}"   >> $GITHUB_OUTPUT
+          echo "new_image=${NEW_IMAGE}"    >> $GITHUB_OUTPUT
+
+      # Patch 06-deployments.yml using Python.
+      # The script:
+      #   - Splits the file on YAML `---` document separators.
+      #   - Searches each document for a container block whose
+      #     `name:` matches the service.
+      #   - Replaces only the `image:` line inside that block.
+      #   - Leaves every other document and every other field
+      #     completely untouched.
+      #   - Exits non-zero if the service was not found, so the
+      #     job fails loudly rather than silently doing nothing.
+      - name: Patch image tag in 06-deployments.yml
+        run: |
+          SERVICE="${{ steps.vars.outputs.service_name }}"
+          NEW_IMAGE="${{ steps.vars.outputs.new_image }}"
+          MANIFEST="deployments-files/06-deployments.yml"
+
+          echo "Service  : ${SERVICE}"
+          echo "New image: ${NEW_IMAGE}"
+          echo "Manifest : ${MANIFEST}"
+
+          # Sanity checks before we run the patcher.
+          if [ ! -f "$MANIFEST" ]; then
+            echo "❌ Manifest not found: $MANIFEST"
+            exit 1
+          fi
+          if ! grep -q "name: ${SERVICE}" "$MANIFEST"; then
+            echo "❌ Service '${SERVICE}' not found in $MANIFEST"
+            exit 1
+          fi
+
+          python3 - "$MANIFEST" "$SERVICE" "$NEW_IMAGE" <<'PYEOF'
+          import sys, re
+
+          manifest_path = sys.argv[1]
+          service_name  = sys.argv[2]
+          new_image     = sys.argv[3]
+
+          with open(manifest_path, "r") as f:
+              content = f.read()
+
+          # Split on YAML document separators so we operate on
+          # one Deployment at a time. This prevents a regex from
+          # crossing document boundaries.
+          docs = re.split(r'(?m)^---\s*$', content)
+
+          updated_docs = []
+          replaced = False
+
+          for doc in docs:
+              # Match the container list-item whose name == service_name,
+              # then capture the image: line that follows within that
+              # same container block (before the next list-item `- name:`).
+              container_pattern = re.compile(
+                  r'([ \t]*-[ \t]+name:[ \t]+' + re.escape(service_name) + r'\s*\n'
+                  # Consume lines that are NOT the start of another list item.
+                  r'(?:(?![ \t]*-[ \t]+name:[ \t]).)*?)'
+                  r'([ \t]+image:[ \t]+\S+)',
+                  re.DOTALL
+              )
+              if container_pattern.search(doc):
+                  # Replace only the first match (one container per document).
+                  new_doc = container_pattern.sub(
+                      lambda m: m.group(1)
+                                + re.sub(r'image:[ \t]+\S+', 'image: ' + new_image,
+                                         m.group(2), count=1),
+                      doc,
+                      count=1
+                  )
+                  updated_docs.append(new_doc)
+                  replaced = True
+              else:
+                  updated_docs.append(doc)
+
+          if not replaced:
+              print(f"❌ Container '{service_name}' with an image: line not found.")
+              sys.exit(1)
+
+          # Re-join with the document separator that was stripped.
+          result = '---'.join(updated_docs)
+
+          with open(manifest_path, "w") as f:
+              f.write(result)
+
+          print(f"✅ Updated '{service_name}' → {new_image}")
+          PYEOF
+
+      # Commit and push only if the file actually changed.
+      # The idempotency check (git diff --cached --quiet) means
+      # re-running the workflow for the same SHA does not create
+      # an empty commit. [skip ci] in the commit message
+      # prevents this push from triggering downstream pipelines.
+      - name: Commit and push manifest update
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add deployments-files/06-deployments.yml
+
+          if git diff --cached --quiet; then
+            echo "ℹ️  Image tag was already up to date — nothing to commit."
+          else
+            git commit -m \
+              "ci: update ${{ steps.vars.outputs.service_name }} → ${{ inputs.tag }} [skip ci]"
+            git push origin main
+          fi
