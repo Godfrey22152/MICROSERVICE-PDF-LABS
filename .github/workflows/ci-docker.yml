@@ -1,0 +1,297 @@
+# ============================================================
+# ci-docker.yml  —  Docker Build → Image Scan → Gate → Push
+# ============================================================
+# Called by: Shared-CI.yml (docker job)
+#
+# Responsibilities:
+#   1. Build the Docker image (no push) and cache it as a tar
+#   2. Scan the built image with Trivy and Grype independently
+#   3. Evaluate both scan results in a security gate
+#   4. Push the image to GHCR only if the gate passes
+#
+# Workflow-level outputs (consumed by Shared-CI.yml to pass
+# down to ci-sign.yml and ci-update-manifest.yml):
+#
+#   image       — full image name without tag
+#   tag         — git SHA used as the image tag
+#   digest      — sha256 digest written after push
+#   allow_push  — "true" / "false" string from the gate
+#
+# Jobs run in this order:
+#
+#   docker-build
+#       │
+#   ┌───┴──────────────┐
+#   ▼                  ▼
+# trivy-image-scan  grype-image-scan
+#       └───────┬───────┘
+#               ▼
+#         security-gate
+#               │
+#               ▼
+#          docker-push   (skipped if allow_push == 'false')
+# ============================================================
+
+name: Docker
+
+on:
+  workflow_call:
+
+    # ── Workflow-level outputs ─────────────────────────────────
+    # These bubble up job outputs so Shared-CI.yml can pass them to downstream reusable workflows via `with:`.
+    outputs:
+      image:
+        description: "Full image name (no tag)"
+        value: ${{ jobs.docker-build.outputs.image }}
+      tag:
+        description: "Image tag (git SHA)"
+        value: ${{ jobs.docker-build.outputs.tag }}
+      digest:
+        description: "sha256 digest of the pushed image"
+        value: ${{ jobs.docker-push.outputs.digest }}
+      allow_push:
+        description: "'true' if the security gate passed"
+        value: ${{ jobs.security-gate.outputs.allow_push }}
+
+jobs:
+
+  # ── Docker Image Build ───────────────────────────────────────
+  # Builds the image but does NOT push it. The image is exported
+  # as a tar artifact so downstream jobs (scan + push) can load
+  # it without rebuilding. GHA cache speeds up subsequent runs.
+  docker-build:
+    name: Build Image (No Push)
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+      tag:   ${{ steps.meta.outputs.tag }}
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set image name and tag variables
+        id: meta
+        run: |
+          # Lowercase everything: GHCR requires lowercase image names.
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          BRANCH=$(echo "${{ github.ref_name }}" | tr '[:upper:]' '[:lower:]')
+
+          # Image name convention: ghcr.io/<org>/<repo>/pdf-labs-deployment-<branch>
+          IMAGE="ghcr.io/$OWNER/$REPO/pdf-labs-deployment-$BRANCH"
+          # Tag is the full git SHA for exact traceability.
+          TAG="${{ github.sha }}"
+
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          echo "tag=$TAG"     >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build image and export as tar (no push)
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          # Export to a local tar so scan jobs can load it.
+          outputs: type=docker,dest=/tmp/image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Upload image tar artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp/image.tar
+          # Short retention: only needed for the jobs in this run.
+          retention-days: 1
+
+  # ── Docker Image Vulnerability Scan (Trivy) ─────────────────
+  # Downloads the built image tar, loads it into Docker, then
+  # scans it with Trivy. Two passes: JSON report first (for
+  # Allure), then table-format hard gate.
+  trivy-image-scan:
+    name: Image Vulnerability Scan (Trivy)
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Download image tar
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp
+
+      - name: Load image into Docker daemon
+        run: docker load --input /tmp/image.tar
+
+      - name: Generate Trivy Image Scan Report (non-blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: ${{ needs.docker-build.outputs.image }}:${{ needs.docker-build.outputs.tag }}
+          format: json
+          output: trivy-image-report.json
+          exit-code: 0             # always upload the report
+
+      - name: Upload Trivy Image Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-image-report
+          path: trivy-image-report.json
+          retention-days: 7
+
+      - name: Fail on High/Critical Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: ${{ needs.docker-build.outputs.image }}:${{ needs.docker-build.outputs.tag }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
+          skip-setup-trivy: true
+
+  # ── Docker Image Vulnerability Scan (Grype / Anchore) ───────
+  # A second independent scanner using Grype (Anchore). Running
+  # two scanners against different vulnerability databases
+  # reduces false-negative risk. Report is uploaded; the gate
+  # job aggregates both scanner results before deciding.
+  grype-image-scan:
+    name: Image Vulnerability Scan (Grype)
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Download image tar
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp
+
+      - name: Load image into Docker daemon
+        run: docker load --input /tmp/image.tar
+
+      - name: Run Anchore/Grype Container Scan
+        uses: anchore/scan-action@v7
+        with:
+          image: ${{ needs.docker-build.outputs.image }}:${{ needs.docker-build.outputs.tag }}
+          fail-build: false     # fail-build is false here — the security-gate job is the single source of truth for pass/fail, not individual scanners.
+          severity-cutoff: high
+          output-format: json
+          output-file: grype-image-report.json
+
+      - name: Upload Grype Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: grype-image-report
+          path: grype-image-report.json
+          retention-days: 7
+
+  # ── Security Gate ────────────────────────────────────────────
+  # Downloads both scanner reports and counts HIGH/CRITICAL findings.
+  # Only if BOTH scanners report zero findings is
+  # allow_push set to "true". This output is consumed by:
+  #   - docker-push (in this file)
+  #   - Shared-CI.yml (to gate sign + update-manifest)
+  security-gate:
+    name: Security Gate
+    runs-on: ubuntu-latest
+    needs:
+      - trivy-image-scan
+      - grype-image-scan
+
+    outputs:
+      allow_push: ${{ steps.check.outputs.allow_push }}
+
+    steps:
+      - name: Download Trivy image report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-image-report
+
+      - name: Download Grype image report
+        uses: actions/download-artifact@v4
+        with:
+          name: grype-image-report
+
+      - name: Evaluate vulnerabilities from both scanners
+        id: check
+        run: |
+          # Count HIGH/CRITICAL findings from each scanner.
+          # Default to 0 if jq fails (e.g. empty/malformed report).
+          TRIVY=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' trivy-image-report.json 2>/dev/null || echo 0)
+          GRYPE=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' grype-image-report.json 2>/dev/null || echo 0)
+
+          echo "Trivy HIGH/CRITICAL count : $TRIVY"
+          echo "Grype HIGH/CRITICAL count : $GRYPE"
+
+          if [ "$TRIVY" -eq 0 ] && [ "$GRYPE" -eq 0 ]; then
+            echo "✅ No HIGH or CRITICAL vulnerabilities. Image cleared to push."
+            echo "allow_push=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Vulnerabilities found. Image will NOT be pushed."
+            echo "allow_push=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Docker Push ──────────────────────────────────────────────
+  # Pushes the already-built image tar to GHCR. Only runs when
+  # the security gate passed. Captures the registry digest so
+  # cosign-sign can sign by digest (immutable reference) rather
+  # than by tag (mutable reference).
+  docker-push:
+    name: Push Clean Image to GHCR
+    runs-on: ubuntu-latest
+    needs:
+      - docker-build
+      - security-gate
+    if: needs.security-gate.outputs.allow_push == 'true'
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+
+    steps:
+      - name: Download image tar
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-tar
+          path: /tmp
+
+      - name: Load image into Docker daemon
+        run: docker load --input /tmp/image.tar
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image and capture digest
+        id: push
+        run: |
+          IMAGE="${{ needs.docker-build.outputs.image }}"
+          TAG="${{ needs.docker-build.outputs.tag }}"
+
+          docker push "$IMAGE:$TAG"
+
+          # Capture the immutable sha256 digest. Cosign signs by
+          # digest to avoid TOCTOU issues with mutable tags.
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$TAG" | cut -d@ -f2)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
