@@ -727,7 +727,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: pdf-to-audio-service
-          image: REGISTRY/pdf-to-audio-service:TAG
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-to-audio-service:1fe70d6cb8c165702e0905c86e05fbb89e2708b9
           imagePullPolicy: Always
           ports:
             - name: http
