@@ -113,7 +113,7 @@ RUN cmake -B build -G Ninja \
     -DENABLE_ZLIB_UNCOMPRESS=OFF \
     # Static binary — runtime image needs no Poppler .so files
     -DBUILD_SHARED_LIBS=OFF \
- && cmake --build build -- -j$(nproc) \
+ && cmake --build build -- -j"$(nproc)" \
  && cmake --install build
 
 # =============================================================
