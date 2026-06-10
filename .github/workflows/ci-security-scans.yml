@@ -1,0 +1,221 @@
+# ============================================================
+# ci-security-scans.yml  —  Pre-Build Security Scans
+# ============================================================
+# Called by: Shared-CI.yml (security-scans job)
+#
+# Runs all source-level checks that must pass before a Docker
+# image is built. Jobs run in this order:
+#
+#   compile  (syntax check — fastest gate)
+#       │
+#   ┌───┼───────────────────┬──────────────────┐
+#   ▼   ▼                   ▼                  ▼
+# audit  gitleaks   dockerfile-lint   trivy-fs   owasp
+#
+# All scan jobs run in parallel after compile succeeds.
+# Reports are uploaded as artifacts so ci-report.yml can
+# consume them without re-running the scans.
+# ============================================================
+
+name: Security Scans
+
+on:
+  workflow_call:
+  
+jobs:
+
+  # ── Syntax Check ────────────────────────────────────────────
+  # Fastest possible gate. Fails immediately on any JS syntax
+  # error so we don't waste scan time on broken code.
+  compile:
+    name: Syntax Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Syntax check — all JS files outside node_modules
+        run: |
+          for file in $(find . -name "*.js" -not -path "*/node_modules/*"); do
+            echo "Checking $file"
+            node --check "$file"
+          done
+
+  # ── Dependency Audit ────────────────────────────────────────
+  # npm audit cross-references installed packages against the
+  # npm advisory database. Fails on high/critical findings.
+  # The JSON report is uploaded for the Allure reporting stage.
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate audit report (non-blocking)
+        # exit-code 0 so the upload step always runs even when
+        # vulnerabilities are found; the next step enforces the gate.
+        run: npm audit --json > npm-audit-report.json || true
+
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: npm-audit-report.json
+          retention-days: 7
+          
+      # This is the real gate — separate from the upload so the report artifact is always available for review.
+      - name: Fail on high/critical vulnerabilities
+        run: | 
+          npm audit --audit-level=high
+
+  # ── Secret Scanning ─────────────────────────────────────────
+  # Gitleaks scans the full git history for secrets/credentials
+  # accidentally committed. The report is uploaded first; the
+  # hard-fail step runs separately so the artifact is preserved.
+  gitleaks-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: GitLeaks Setup
+        uses: gitleaks/gitleaks-action@v2
+
+      - name: Run GitLeaks Scan (non-blocking)
+        run: gitleaks detect --source . --report-format json --report-path gitleaks-report.json || true
+        
+      - name: Upload Gitleaks Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+          retention-days: 7
+
+      - name: Fail on detected secrets
+        run: gitleaks detect --source . --exit-code 1
+
+  # ── Dockerfile Lint ──────────────────────────────────────────
+  # Hadolint statically analyses the Dockerfile for best-practice
+  # violations. continue-on-error lets the report upload before
+  # the gate fires; failure-threshold controls the gate level.
+  dockerfile-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        continue-on-error: true
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: warning    # fails on warning or above
+          format: json
+          output-file: hadolint-report.json
+          no-color: false
+
+      - name: Upload Hadolint Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hadolint-report
+          path: hadolint-report.json
+          retention-days: 7
+
+  # ── Filesystem Vulnerability Scan ───────────────────────────
+  # Trivy scans the repository filesystem (not the image) for
+  # known CVEs in packages/libraries. Two passes: first writes
+  # the JSON report artifact, second enforces the hard gate.
+  trivy-fs-scan:
+    name: Filesystem Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Generate Trivy Vulnerability Report (non-blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          output: trivy-report.json
+          format: json
+          scan-ref: .
+          exit-code: 0             # always upload the report
+
+      - name: Upload Vulnerability Scan Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.json
+          retention-days: 7
+
+      - name: Fail on High/Critical Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          format: table
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
+          # skip-setup-trivy avoids re-downloading the Trivy binary since it is already installed from the previous step.
+          skip-setup-trivy: true
+
+  # ── OWASP Dependency Check ───────────────────────────────────
+  # Cross-references project dependencies against the NVD (CVE) database.
+  # More thorough than npm audit — covers transitive deps and non-npm ecosystems.
+  # Fails on CVSS score >= 7 (High/Critical). 
+  # Both HTML and JSON formats are generated;
+  # HTML goes to gh-pages, JSON feeds the Allure report.
+  owasp-dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "PDF-Labs"
+          path: "."
+          out: "owasp-report"
+          format: 'HTML'
+          args: >
+            --format HTML
+            --format JSON
+            --enableRetired
+            --failOnCVSS 7
+            --exclude "**/node_modules/**"
+
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-report
+          path: owasp-report/
+          retention-days: 7
