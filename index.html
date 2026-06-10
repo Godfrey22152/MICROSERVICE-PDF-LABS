@@ -15,10 +15,8 @@
     .card:hover{border-color:#58a6ff}
     .card-title{font-size:1rem;color:#58a6ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
     .btn{display:inline-block;text-decoration:none;padding:6px 14px;border-radius:6px;font-size:.82rem;margin-right:6px;margin-bottom:6px;cursor:pointer;border:none;font-family:inherit}
-    .btn-primary{background:#238636;color:#fff;border:1px solid #2ea043}
-    .btn-primary:hover{background:#2ea043}
-    .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d;cursor:pointer}
-    .btn-secondary:hover{border-color:#58a6ff;color:#58a6ff}
+    .btn-primary{background:#238636;color:#fff;border:1px solid #2ea043}.btn-primary:hover{background:#2ea043}
+    .btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d;cursor:pointer}.btn-secondary:hover{border-color:#58a6ff;color:#58a6ff}
     .dropdown{display:none;margin-top:12px;border-top:1px solid #30363d;padding-top:12px}
     .dropdown.open{display:block}
     .dropdown-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #21262d;font-size:.82rem;gap:8px}
@@ -27,480 +25,259 @@
     .dropdown-item a{color:#58a6ff;text-decoration:none;white-space:nowrap;font-size:.8rem;padding:3px 8px;border:1px solid #30363d;border-radius:4px}
     .dropdown-item a:hover{border-color:#58a6ff;background:#161b22}
     .commit-sha{font-family:monospace;color:#e3b341;font-size:.78rem}
-    .owasp-section{max-width:1100px;margin-top:8px}
-    .owasp-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;margin-bottom:12px}
-    .owasp-card-title{font-size:.95rem;color:#58a6ff;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-    .owasp-card-title:hover{color:#79c0ff}
-    .chevron{transition:transform .2s;display:inline-block;margin-left:8px}
-    .chevron.open{transform:rotate(180deg)}
     footer{color:#484f58;font-size:.8rem;margin-top:50px}
-    .badge-pass{background:#1a4731;color:#3fb950;border-radius:4px;padding:2px 7px;font-size:.75rem}
-    .badge-none{background:#21262d;color:#8b949e;border-radius:4px;padding:2px 7px;font-size:.75rem}
   </style>
 </head>
 <body>
   <h1>🔐 PDF-Labs CI Security Reports</h1>
-  <p class="sub">Per-branch security scan results powered by Allure. Use the buttons to view the latest report or expand history for past commits.</p>
-
+  <p class="sub">Per-branch security scan results powered by Allure.</p>
   <h2 class="section">Branch Reports</h2>
   <div class="grid">
     <div class="card">
       <div class="card-title">🌿 account-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/account-service/account-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-account-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-account-service',this)">▾ History</button>
       <div class="dropdown" id="hist-account-service">
         <div class="dropdown-item">
           <span>Run #25716151206</span>
           <span class="commit-sha">#25716151206</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/account-service/account-service/25716151206_1778565280264/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/account-service/account-service/25716151206_1778565280264/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 edit-pdf-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/edit-pdf-service/edit-pdf-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-edit-pdf-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-edit-pdf-service',this)">▾ History</button>
       <div class="dropdown" id="hist-edit-pdf-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25753643620</span>
           <span class="commit-sha">#25753643620</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/edit-pdf-service/edit-pdf-service/25753643620_1778610150883/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/edit-pdf-service/edit-pdf-service/25753643620_1778610150883/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25753585106</span>
           <span class="commit-sha">#25753585106</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/edit-pdf-service/edit-pdf-service/25753585106_1778610031647/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/edit-pdf-service/edit-pdf-service/25753585106_1778610031647/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 home-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-home-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-home-service',this)">▾ History</button>
       <div class="dropdown" id="hist-home-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25713880425</span>
           <span class="commit-sha">#25713880425</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25713880425_1778561207630/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25713880425_1778561207630/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25711044260</span>
           <span class="commit-sha">#25711044260</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25711044260_1778555880307/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25711044260_1778555880307/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25710009534</span>
           <span class="commit-sha">#25710009534</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25710009534_1778553869675/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25710009534_1778553869675/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25708864908</span>
           <span class="commit-sha">#25708864908</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25708864908_1778551731129/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25708864908_1778551731129/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25280284473</span>
           <span class="commit-sha">#25280284473</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25280284473_1777814554012/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25280284473_1777814554012/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25279209773</span>
           <span class="commit-sha">#25279209773</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25279209773_1777811563833/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25279209773_1777811563833/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25277401746</span>
           <span class="commit-sha">#25277401746</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25277401746_1777806320880/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25277401746_1777806320880/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25275750957</span>
           <span class="commit-sha">#25275750957</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25275750957_1777801530646/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25275750957_1777801530646/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25261275423</span>
           <span class="commit-sha">#25261275423</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25261275423_1777754314426/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25261275423_1777754314426/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25260859343</span>
           <span class="commit-sha">#25260859343</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25260859343_1777753032971/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25260859343_1777753032971/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25224972405</span>
           <span class="commit-sha">#25224972405</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25224972405_1777697701598/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/home-service/home-service/25224972405_1777697701598/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 image-to-pdf-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/image-to-pdf-service/image-to-pdf-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-image-to-pdf-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-image-to-pdf-service',this)">▾ History</button>
       <div class="dropdown" id="hist-image-to-pdf-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #27068462902</span>
           <span class="commit-sha">#27068462902</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/image-to-pdf-service/image-to-pdf-service/27068462902_1780765848212/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/image-to-pdf-service/image-to-pdf-service/27068462902_1780765848212/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 logout-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/logout-service/logout-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-logout-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-logout-service',this)">▾ History</button>
       <div class="dropdown" id="hist-logout-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25755141107</span>
           <span class="commit-sha">#25755141107</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/logout-service/logout-service/25755141107_1778611830286/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/logout-service/logout-service/25755141107_1778611830286/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25754906010</span>
           <span class="commit-sha">#25754906010</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/logout-service/logout-service/25754906010_1778611442635/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/logout-service/logout-service/25754906010_1778611442635/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 pdf-compressor-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-compressor-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-compressor-service',this)">▾ History</button>
       <div class="dropdown" id="hist-pdf-compressor-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #27067995424</span>
           <span class="commit-sha">#27067995424</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/27067995424_1780764325951/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/27067995424_1780764325951/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #27064847178</span>
           <span class="commit-sha">#27064847178</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/27064847178_1780756149482/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/27064847178_1780756149482/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25756965484</span>
           <span class="commit-sha">#25756965484</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/25756965484_1778613974425/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/25756965484_1778613974425/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25756924814</span>
           <span class="commit-sha">#25756924814</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/25756924814_1778613855674/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-compressor-service/pdf-compressor-service/25756924814_1778613855674/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 pdf-to-audio-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-audio-service/pdf-to-audio-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-to-audio-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-to-audio-service',this)">▾ History</button>
       <div class="dropdown" id="hist-pdf-to-audio-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #27256620848</span>
+          <span class="commit-sha">#27256620848</span>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-audio-service/pdf-to-audio-service/27256620848_1781071625141/index.html" target="_blank">View</a>
+        </div>
+        <div class="dropdown-item">
+          <span>Run #27081887015</span>
           <span class="commit-sha">#27081887015</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-audio-service/pdf-to-audio-service/27081887015_1780804348214/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-audio-service/pdf-to-audio-service/27081887015_1780804348214/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">🌿 pdf-to-image-service</div>
-      <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-to-image-service', this)">▾ History</button>
-      <div class="dropdown" id="hist-pdf-to-image-service">
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#26302436004</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/26302436004_1779471336735/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#26138388367</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/26138388367_1779245860988/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#26113908218</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/26113908218_1779211892932/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25915052316</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25915052316_1778844116003/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25901970274</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25901970274_1778822932547/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25901673551</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25901673551_1778822352552/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25901547334</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25901547334_1778822055819/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25900865627</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25900865627_1778820731199/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25900723010</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25900723010_1778820352458/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25899990391</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25899990391_1778818848311/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25899867807</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25899867807_1778818579952/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25899355017</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25899355017_1778817483332/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25898899607</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25898899607_1778816443196/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25898373914</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25898373914_1778815357309/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25897975043</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25897975043_1778814533540/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25872876086</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25872876086_1778777389911/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25816158232</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25816158232_1778694285116/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25813612901</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25813612901_1778691411117/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25812216396</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25812216396_1778689749733/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25811178529</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25811178529_1778688676582/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25809798384</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25809798384_1778687046238/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25809086888</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25809086888_1778686371973/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25806507612</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25806507612_1778683656187/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25805358350</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25805358350_1778682607452/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25804549824</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25804549824_1778681532707/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25803822802</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25803822802_1778680776537/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25803057537</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25803057537_1778680047127/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25802653894</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25802653894_1778679518714/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25801078461</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25801078461_1778677834196/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25791596665</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25791596665_1778666015744/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25790243251</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25790243251_1778664389625/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25752621853</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25752621853_1778608946412/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25751492576</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25751492576_1778608606545/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25751492576</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25751492576_1778607637028/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25740391890</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25740391890_1778595819752/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25738800747</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25738800747_1778594006143/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25738790459</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25738790459_1778593849067/index.html" target="_blank">View Report</a>
-        </div>
-        <div class="dropdown-item">
-          <span>Run #25716151206</span>
-          <span class="commit-sha">#25738572972</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-image-service/pdf-to-image-service/25738572972_1778593630299/index.html" target="_blank">View Report</a>
-        </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 pdf-to-word-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-to-word-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-pdf-to-word-service',this)">▾ History</button>
       <div class="dropdown" id="hist-pdf-to-word-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25737441506</span>
           <span class="commit-sha">#25737441506</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/25737441506_1778592716463/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/25737441506_1778592716463/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25737164977</span>
           <span class="commit-sha">#25737164977</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/25737164977_1778592248820/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/25737164977_1778592248820/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25737098366</span>
           <span class="commit-sha">#25737098366</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/25737098366_1778592035288/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/pdf-to-word-service/pdf-to-word-service/25737098366_1778592035288/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 profile-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-profile-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-profile-service',this)">▾ History</button>
       <div class="dropdown" id="hist-profile-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25719059911</span>
           <span class="commit-sha">#25719059911</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/25719059911_1778569737116/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/profile-service/profile-service/25719059911_1778569737116/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 sheetlab-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/sheetlab-service/sheetlab-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-sheetlab-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-sheetlab-service',this)">▾ History</button>
       <div class="dropdown" id="hist-sheetlab-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25715196450</span>
           <span class="commit-sha">#25715196450</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/sheetlab-service/sheetlab-service/25715196450_1778563641511/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/sheetlab-service/sheetlab-service/25715196450_1778563641511/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25280314668</span>
           <span class="commit-sha">#25280314668</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/sheetlab-service/sheetlab-service/25280314668_1777814665477/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/sheetlab-service/sheetlab-service/25280314668_1777814665477/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 tools-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-tools-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-tools-service',this)">▾ History</button>
       <div class="dropdown" id="hist-tools-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25713911423</span>
           <span class="commit-sha">#25713911423</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/25713911423_1778561323709/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/25713911423_1778561323709/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25224995394</span>
           <span class="commit-sha">#25224995394</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/25224995394_1777697712457/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/tools-service/tools-service/25224995394_1777697712457/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
     <div class="card">
       <div class="card-title">🌿 word-to-pdf-service</div>
       <a class="btn btn-primary" href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/latest.html" target="_blank">Latest Report</a>
-      <button class="btn btn-secondary" onclick="toggleDropdown('hist-word-to-pdf-service', this)">▾ History</button>
+      <button class="btn btn-secondary" onclick="toggleDropdown('hist-word-to-pdf-service',this)">▾ History</button>
       <div class="dropdown" id="hist-word-to-pdf-service">
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25716853914</span>
           <span class="commit-sha">#25716853914</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/25716853914_1778566438529/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/25716853914_1778566438529/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25716731572</span>
           <span class="commit-sha">#25716731572</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/25716731572_1778566084900/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/25716731572_1778566084900/index.html" target="_blank">View</a>
         </div>
         <div class="dropdown-item">
-          <span>Run #25716151206</span>
+          <span>Run #25716288215</span>
           <span class="commit-sha">#25716288215</span>
-          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/25716288215_1778565374251/index.html" target="_blank">View Report</a>
+          <a href="https://Godfrey22152.github.io/MICROSERVICE-PDF-LABS/allure-action/word-to-pdf-service/word-to-pdf-service/25716288215_1778565374251/index.html" target="_blank">View</a>
         </div>
-      </div>
-    </div>
+    </div></div>
   </div>
-  <footer>Generated by GitHub Actions · PDF-Labs CI Pipeline · Run #171</footer>
-
+  <footer>Generated by GitHub Actions · PDF-Labs CI · Run #172</footer>
   <script>
-    function toggleDropdown(id, btn) {
-      const el = document.getElementById(id);
-      const isOpen = el.classList.toggle('open');
-      // update chevron if inside owasp card title
-      const chevron = btn.querySelector('.chevron');
-      if (chevron) chevron.classList.toggle('open', isOpen);
-    }
+    function toggleDropdown(id,btn){document.getElementById(id).classList.toggle('open');}
   </script>
-</body>
-</html>
+</body></html>
