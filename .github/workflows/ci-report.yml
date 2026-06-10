@@ -405,8 +405,13 @@ jobs:
           # ── npm Audit ──────────────────────────────────────
           NPM_FILE="raw-reports/npm-audit/npm-audit-report.json"
           if [ -f "$NPM_FILE" ] && [ -s "$NPM_FILE" ]; then
-            C=$(jq '.' "$NPM_FILE"); VC=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
-            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No high or critical vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} high/critical vulnerabilities."
+            C=$(jq '.' "$NPM_FILE")
+            VC=$(jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' "$NPM_FILE" 2>/dev/null || echo 0)
+            if [ "$VC" -eq 0 ]; then
+              SC="#3fb950"; ST="✅ Passed"; DT="No high or critical vulnerabilities."
+            else
+              SC="#f85149"; ST="❌ Failed"; DT="Found ${VC} high/critical vulnerabilities."
+            fi
           else
             C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="npm audit report not available."
           fi
@@ -415,8 +420,13 @@ jobs:
           # ── Gitleaks ───────────────────────────────────────
           GL_FILE="raw-reports/gitleaks/gitleaks-report.json"
           if [ -f "$GL_FILE" ] && [ -s "$GL_FILE" ]; then
-            C=$(jq '.' "$GL_FILE"); VC=$(jq 'length' "$GL_FILE" 2>/dev/null || echo 0)
-            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No secrets detected." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} potential secrets."
+            C=$(jq '.' "$GL_FILE")
+            VC=$(jq 'length' "$GL_FILE" 2>/dev/null || echo 0)
+            if [ "$VC" -eq 0 ]; then
+              SC="#3fb950"; ST="✅ Passed"; DT="No secrets detected."
+            else
+              SC="#f85149"; ST="❌ Failed"; DT="Found ${VC} potential secrets."
+            fi
           else
             C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Gitleaks report not available."
           fi
@@ -425,8 +435,13 @@ jobs:
           # ── Hadolint ───────────────────────────────────────
           HD_FILE="raw-reports/hadolint/hadolint-report.json"
           if [ -f "$HD_FILE" ] && [ -s "$HD_FILE" ]; then
-            C=$(jq '.' "$HD_FILE"); VC=$(jq 'length' "$HD_FILE")
-            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No Dockerfile issues found." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} Dockerfile issues."
+            C=$(jq '.' "$HD_FILE")
+            VC=$(jq 'length' "$HD_FILE")
+            if [ "$VC" -eq 0 ]; then
+              SC="#3fb950"; ST="✅ Passed"; DT="No Dockerfile issues found."
+            else
+              SC="#f85149"; ST="❌ Failed"; DT="Found ${VC} Dockerfile issues."
+            fi
           else
             C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Hadolint report not available."
           fi
@@ -437,7 +452,11 @@ jobs:
           if [ -f "$TFS_FILE" ] && [ -s "$TFS_FILE" ]; then
             C=$(jq '.' "$TFS_FILE")
             VC=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TFS_FILE" 2>/dev/null || echo 0)
-            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No HIGH/CRITICAL filesystem vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+            if [ "$VC" -eq 0 ]; then
+              SC="#3fb950"; ST="✅ Passed"; DT="No HIGH/CRITICAL filesystem vulnerabilities."
+            else
+              SC="#f85149"; ST="❌ Failed"; DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+            fi
           else
             C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Trivy filesystem report not available."
           fi
@@ -448,7 +467,11 @@ jobs:
           if [ -f "$TIMG_FILE" ] && [ -s "$TIMG_FILE" ]; then
             C=$(jq '.' "$TIMG_FILE")
             VC=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$TIMG_FILE" 2>/dev/null || echo 0)
-            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No HIGH/CRITICAL image vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+            if [ "$VC" -eq 0 ]; then
+              SC="#3fb950"; ST="✅ Passed"; DT="No HIGH/CRITICAL image vulnerabilities."
+            else
+              SC="#f85149"; ST="❌ Failed"; DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+            fi
           else
             C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Trivy image report not available."
           fi
@@ -459,7 +482,11 @@ jobs:
           if [ -f "$GR_FILE" ] && [ -s "$GR_FILE" ]; then
             C=$(jq '.' "$GR_FILE")
             VC=$(jq '[.matches[]? | select(.vulnerability.severity=="High" or .vulnerability.severity=="Critical")] | length' "$GR_FILE" 2>/dev/null || echo 0)
-            [ "$VC" -eq 0 ] && SC="#3fb950" && ST="✅ Passed" && DT="No HIGH/CRITICAL image vulnerabilities." || SC="#f85149" && ST="❌ Failed" && DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+            if [ "$VC" -eq 0 ]; then
+              SC="#3fb950"; ST="✅ Passed"; DT="No HIGH/CRITICAL image vulnerabilities."
+            else
+              SC="#f85149"; ST="❌ Failed"; DT="Found ${VC} HIGH/CRITICAL vulnerabilities."
+            fi
           else
             C='{"error":"Report not available"}'; SC="#e3b341"; ST="⚠️ Skipped"; DT="Grype image report not available."
           fi
