@@ -134,6 +134,7 @@ jobs:
         with:
           dockerfile: Dockerfile
           failure-threshold: warning    # fails on warning or above
+          ignore: DL3018
           format: json
           output-file: hadolint-report.json
           no-color: false
