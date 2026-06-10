@@ -383,7 +383,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: tools-service
-          image: REGISTRY/tools-service:TAG
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-tools-service:2028fa990e9d6fec76a93ded002e6bd097fd3711
           imagePullPolicy: Always
           ports:
             - name: http
