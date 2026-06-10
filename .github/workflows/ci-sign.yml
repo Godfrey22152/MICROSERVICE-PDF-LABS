@@ -1,0 +1,120 @@
+# ============================================================
+# ci-sign.yml  —  Cosign Sign & Verify
+# ============================================================
+# Called by: Shared-CI.yml (sign job)
+#
+# Inputs (passed via `with:` from Shared-CI.yml):
+#   image   — full image name without tag
+#   tag     — git SHA tag
+#   digest  — sha256 digest of the pushed image
+#
+# Responsibilities:
+#   1. Sign the pushed image using keyless Sigstore/Cosign
+#      (identity is the GitHub Actions OIDC token — no long-
+#      lived key material is stored anywhere).
+#   2. Independently verify the signature to confirm the
+#      signing step succeeded before the manifest is updated.
+#
+# Why sign by digest and not by tag?
+#   Tags are mutable — someone could push a different image
+#   to the same tag after signing. The sha256 digest is
+#   immutable: it is a cryptographic hash of the image layers.
+#   Signing/verifying by digest guarantees we are always
+#   referring to the exact bytes that were scanned and pushed.
+#
+# Jobs:
+#   cosign-sign  →  cosign-verify
+# ============================================================
+
+name: Sign & Verify
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: "Full image name (no tag)"
+        required: true
+        type: string
+      tag:
+        description: "Image tag (git SHA)"
+        required: true
+        type: string
+      digest:
+        description: "sha256 digest of the pushed image"
+        required: true
+        type: string
+
+jobs:
+
+  # ── Cosign Sign ──────────────────────────────────────────────
+  # Uses Sigstore keyless signing via GitHub Actions OIDC.
+  # No private key is needed — the OIDC token from GitHub
+  # proves the identity of the workflow that built the image.
+  # The signature and a transparency log entry are pushed to
+  # the Rekor public ledger automatically.
+  cosign-sign:
+    name: Sign Container Image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write    # required for OIDC token (keyless signing)
+      packages: write    # required to attach the signature to GHCR
+
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.1.0
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sign image by digest
+        # Signing by digest (not tag) ensures the signature is
+        # cryptographically tied to the exact image bytes.
+        # --yes suppresses the interactive confirmation prompt.
+        run: |
+          cosign sign --yes \
+            ${{ inputs.image }}@${{ inputs.digest }}
+
+  # ── Cosign Verify ────────────────────────────────────────────
+  # Runs AFTER sign to independently confirm the signature is
+  # present and valid in the Rekor transparency log.
+  # Verifying here (inside CI) catches any signing failure
+  # before the manifest update stage runs.
+  #
+  # --certificate-oidc-issuer  confirms the token came from
+  #   GitHub Actions and not some other OIDC provider.
+  # --certificate-identity-regexp  pins the identity to
+  #   workflows inside THIS repository, preventing a signature
+  #   made by a workflow in a fork from being accepted.
+  cosign-verify:
+    name: Verify Cosign Signature
+    runs-on: ubuntu-latest
+    needs: cosign-sign
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.1.0
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify signature
+        run: |
+          cosign verify \
+            --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+            --certificate-identity-regexp="https://github.com/${{ github.repository }}/.github/workflows/.*" \
+            ${{ inputs.image }}@${{ inputs.digest }}
