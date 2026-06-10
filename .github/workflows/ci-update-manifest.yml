@@ -83,14 +83,16 @@ jobs:
       - name: Derive service name and new image reference
         id: vars
         run: |
-          SERVICE=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          OWNER=$(echo "${{ github.repository_owner }}"        | tr '[:upper:]' '[:lower:]')
-          BRANCH=$(echo "${{ github.ref_name }}"               | tr '[:upper:]' '[:lower:]')
+          # Service name = branch name (see comment above).
+          SERVICE=$(echo "${{ github.ref_name }}" | tr '[:upper:]' '[:lower:]')
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
 
-          # Reconstruct the full image:tag string that was pushed.
-          # This matches exactly what ci-docker.yml built and pushed.
-          NEW_IMAGE="ghcr.io/${OWNER}/${SERVICE}/pdf-labs-deployment-${BRANCH}:${{ inputs.tag }}"
-
+          # Reconstruct the exact image:tag string built and pushed by
+          # ci-docker.yml. The formula must stay in sync with that file:
+          #   ghcr.io/<owner>/<central-repo>/pdf-labs-deployment-<branch>:<sha>
+          CENTRAL_REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          NEW_IMAGE="ghcr.io/${OWNER}/${CENTRAL_REPO}/pdf-labs-deployment-${SERVICE}:${{ inputs.tag }}"
+ 
           echo "service_name=${SERVICE}"   >> $GITHUB_OUTPUT
           echo "new_image=${NEW_IMAGE}"    >> $GITHUB_OUTPUT
 
