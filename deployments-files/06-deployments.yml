@@ -555,7 +555,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: image-to-pdf-service
-          image: REGISTRY/image-to-pdf-service:TAG
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-image-to-pdf-service:525910f6b0177986c5c19ffae2a4b8ef9ef40455
           imagePullPolicy: Always
           ports:
             - name: http
