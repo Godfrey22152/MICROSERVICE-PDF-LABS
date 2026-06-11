@@ -297,7 +297,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: logout-service
-          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-logout-service:2cef72e4157582ef47749877f69829581285c515
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-logout-service:fd24e837b3310617148cb65262641060c92d843a
           imagePullPolicy: Always
           ports:
             - name: http
