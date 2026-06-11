@@ -904,7 +904,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: sheetlab-service
-          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-sheetlab-service:e742016160ea1cc354e9aa8fe34e7c134816dfa6
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-sheetlab-service:5328a0b65ff98ff5228bafbc0fb63de3712bd22e
           imagePullPolicy: Always
           ports:
             - name: http
