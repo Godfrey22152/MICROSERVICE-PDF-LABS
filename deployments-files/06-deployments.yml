@@ -469,7 +469,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: pdf-to-image-service
-          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-to-image-service:ef6ed5029799f05de7a7fccab2d9d72c3902f574
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-to-image-service:d7ffe101580f9bd55c1ef185c01e6cbbc169fa06
           imagePullPolicy: Always
           ports:
             - name: http
