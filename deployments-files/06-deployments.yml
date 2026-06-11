@@ -641,7 +641,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: pdf-compressor-service
-          image: REGISTRY/pdf-compressor-service:TAG
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-compressor-service:f3b8e72d93ea8988cff9d21830e7c83851291563
           imagePullPolicy: Always
           ports:
             - name: http
