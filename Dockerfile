@@ -42,7 +42,7 @@ RUN find node_modules \
     -o -name '*.spec.*' -o -name '*.test.*' -o -name 'LICENSE' -o -name '*.txt' \) -delete \
  && find node_modules \
     -type d \( -name 'test' -o -name 'tests' -o -name 'docs' -o -name 'example*' \
-    -o -name '__*__' -o -name '.github' \) -exec rm -rf {} + || true \
+    -o -name '__*__' -o -name '.github' \) -exec rm -rf {} + ; true \
  && mkdir -p /prod \
  && cp -r server.js routes config middleware public views node_modules controllers models utils /prod
 
@@ -52,7 +52,11 @@ RUN find node_modules \
 # =============================================================
 FROM alpine:3.23.4 AS poppler-builder
 ARG POPPLER_VERSION=25.05.0
-RUN apk add --no-cache \
+
+# apk upgrade ensures openssl>=3.5.7-r0 is installed, patching
+# CVE-2026-45447 (heap use-after-free in PKCS7_verify).
+RUN apk upgrade --no-cache \
+ && apk add --no-cache \
     build-base \
     cmake \
     ninja \
@@ -107,7 +111,10 @@ LABEL org.opencontainers.image.title="PDF TO IMAGE APP" \
       org.opencontainers.image.source="https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/pdf-to-image-service"
 
 # Install runtime libs and create non-root user — all in one layer
-RUN apk add --no-cache \
+# apk upgrade ensures openssl>=3.5.7-r0 is installed, patching
+# CVE-2026-45447 (heap use-after-free in PKCS7_verify).
+RUN apk upgrade --no-cache \
+ && apk add --no-cache \
     libstdc++ \
     cairo \
     freetype \
