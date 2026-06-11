@@ -20,7 +20,7 @@ RUN find node_modules \
     -o -name '*.spec.*' -o -name '*.test.*' -o -name 'LICENSE' -o -name '*.txt' \) -delete \
  && find node_modules \
     -type d \( -name 'test' -o -name 'tests' -o -name 'docs' -o -name 'example*' \
-    -o -name '__*__' -o -name '.github' \) -exec rm -rf {} +, true
+    -o -name '__*__' -o -name '.github' \) -exec rm -rf {} + ; true
 
 # Copy only production essentials into /prod
 RUN mkdir -p /prod \
