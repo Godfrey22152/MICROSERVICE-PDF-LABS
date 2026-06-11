@@ -22,7 +22,7 @@ RUN find node_modules \
  && find node_modules \
     -type d \( -name 'test' -o -name 'tests' -o -name 'docs' \
     -o -name 'example*' -o -name '__*__' -o -name '.github' \) \
-    -exec rm -rf {} + 2>/dev/null || true
+    -exec rm -rf {} + 2>/dev/null; true
 
 # Copy only production essentials into /prod
 RUN mkdir -p /prod \
