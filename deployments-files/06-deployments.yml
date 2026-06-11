@@ -813,7 +813,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: pdf-to-word-service
-          image: REGISTRY/pdf-to-word-service:TAG
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-pdf-to-word-service:261a1b65a40095d5d71f3e32be152a8ba1fa6cc4
           imagePullPolicy: Always
           ports:
             - name: http
