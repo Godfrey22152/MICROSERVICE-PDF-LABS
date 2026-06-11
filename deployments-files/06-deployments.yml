@@ -39,7 +39,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: account-service
-          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-account-service:973a66171f96b09ee0b3b42ecfc1b0707fcbd118        # ← replace
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-account-service:fc9df2a6bd587ff85f922dd1c5aa4396453fc9dd        # ← replace
           imagePullPolicy: Always
           ports:
             - name: http
