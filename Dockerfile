@@ -55,7 +55,8 @@ LABEL org.opencontainers.image.title="Image to PDF APP" \
 COPY --from=builder /node-bin/node /usr/local/bin/node
 
 # libstdc++ is the only runtime dependency the musl node binary needs
-RUN apk add --no-cache libstdc++ \
+RUN apk upgrade --no-cache \
+ && apk add --no-cache libstdc++ \
  && rm -rf /var/cache/apk/* /usr/share/man /tmp/* /usr/lib/node_modules
 
 # Create non-root user and working directory for enhanced security
