@@ -1,0 +1,963 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>🔬 Grype Docker Image Scan — account-service #184</title>
+<style>body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:32px;margin:0}h1{color:#58a6ff;margin-bottom:4px}.meta{color:#8b949e;font-size:.85rem;margin-bottom:8px}.status{font-size:.9rem;font-weight:600;margin-bottom:4px}.detail{color:#8b949e;font-size:.85rem;margin-bottom:24px}pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;overflow:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}.string{color:#79c0ff}.number{color:#79c0ff}.boolean{color:#56d364}.null{color:#f85149}.key{color:#e3b341}</style></head><body>
+<h1>🔬 Grype Docker Image Scan</h1>
+<div class="meta">Branch: account-service &nbsp;|&nbsp; Run: #184</div>
+<div class="status" style="color:#3fb950">Status: ✅ Passed</div>
+<div class="detail">Details: No HIGH/CRITICAL image vulnerabilities.</div>
+<pre id="j"></pre>
+<script>
+  const data={
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm",
+          "https://cert-portal.siemens.com/productcert/html/ssa-253495.html"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00069,
+            "percentile": 0.21241,
+            "date": "2026-06-09"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.039674999999999995
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r14"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "6ca5b246959782cd",
+        "name": "busybox",
+        "version": "1.37.0-r14",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b3abdd46d6e0f3019643908dbfd71c6eb8d8ef76f0d03e373965f3ea97f572ef",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:busybox:busybox:1.37.0-r14:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/busybox@1.37.0-r14?arch=x86_64&distro=alpine-3.21.7",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/bin"
+            },
+            {
+              "path": "/bin/busybox"
+            },
+            {
+              "path": "/etc"
+            },
+            {
+              "path": "/etc/securetty"
+            },
+            {
+              "path": "/etc/busybox-paths.d"
+            },
+            {
+              "path": "/etc/busybox-paths.d/busybox"
+            },
+            {
+              "path": "/etc/logrotate.d"
+            },
+            {
+              "path": "/etc/logrotate.d/acpid"
+            },
+            {
+              "path": "/etc/network"
+            },
+            {
+              "path": "/etc/network/if-down.d"
+            },
+            {
+              "path": "/etc/network/if-post-down.d"
+            },
+            {
+              "path": "/etc/network/if-post-up.d"
+            },
+            {
+              "path": "/etc/network/if-pre-down.d"
+            },
+            {
+              "path": "/etc/network/if-pre-up.d"
+            },
+            {
+              "path": "/etc/network/if-up.d"
+            },
+            {
+              "path": "/etc/network/if-up.d/dad"
+            },
+            {
+              "path": "/etc/udhcpc"
+            },
+            {
+              "path": "/etc/udhcpc/udhcpc.conf"
+            },
+            {
+              "path": "/sbin"
+            },
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/sbin"
+            },
+            {
+              "path": "/usr/share"
+            },
+            {
+              "path": "/usr/share/udhcpc"
+            },
+            {
+              "path": "/usr/share/udhcpc/default.script"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm",
+          "https://cert-portal.siemens.com/productcert/html/ssa-253495.html"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00069,
+            "percentile": 0.21241,
+            "date": "2026-06-09"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.039674999999999995
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r14"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "647e208285fe9a62",
+        "name": "busybox-binsh",
+        "version": "1.37.0-r14",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b3abdd46d6e0f3019643908dbfd71c6eb8d8ef76f0d03e373965f3ea97f572ef",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:busybox-binsh:busybox-binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox-binsh:busybox_binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox_binsh:busybox-binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox_binsh:busybox_binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox:busybox-binsh:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:busybox:busybox_binsh:1.37.0-r14:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/busybox-binsh@1.37.0-r14?arch=x86_64&distro=alpine-3.21.7&upstream=busybox",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/bin"
+            },
+            {
+              "path": "/bin/sh"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2025-60876",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-60876",
+        "namespace": "nvd:cpe",
+        "severity": "Medium",
+        "urls": [
+          "https://gist.github.com/subyumatest/41554af6a72aedaacaec026adc311092",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250823/ccdc96ef/attachment-0001.htm",
+          "https://lists.busybox.net/pipermail/busybox/attachments/20250828/e7f90492/attachment.htm",
+          "https://cert-portal.siemens.com/productcert/html/ssa-253495.html"
+        ],
+        "description": "BusyBox wget thru 1.3.7 accepted raw CR (0x0D)/LF (0x0A) and other C0 control bytes in the HTTP request-target (path/query), allowing the request line to be split and attacker-controlled headers to be injected. To preserve the HTTP/1.1 request-line shape METHOD SP request-target SP HTTP/1.1, a raw space (0x20) in the request-target must also be rejected (clients should use %20).",
+        "cvss": [
+          {
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "metrics": {
+              "baseScore": 6.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 2.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-60876",
+            "epss": 0.00069,
+            "percentile": 0.21241,
+            "date": "2026-06-09"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-60876",
+            "cwe": "CWE-284",
+            "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [],
+          "state": ""
+        },
+        "advisories": [],
+        "risk": 0.039674999999999995
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "cpe-match",
+          "matcher": "apk-matcher",
+          "searchedBy": {
+            "namespace": "nvd:cpe",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:1.37.0:*:*:*:*:*:*:*"
+            ],
+            "package": {
+              "name": "busybox",
+              "version": "1.37.0-r14"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "CVE-2025-60876",
+            "versionConstraint": "<= 1.37.0 (unknown)",
+            "cpes": [
+              "cpe:2.3:a:busybox:busybox:*:*:*:*:*:*:*:*"
+            ]
+          }
+        }
+      ],
+      "artifact": {
+        "id": "75b5ba1004bc765a",
+        "name": "ssl_client",
+        "version": "1.37.0-r14",
+        "type": "apk",
+        "locations": [
+          {
+            "path": "/lib/apk/db/installed",
+            "layerID": "sha256:b3abdd46d6e0f3019643908dbfd71c6eb8d8ef76f0d03e373965f3ea97f572ef",
+            "accessPath": "/lib/apk/db/installed",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:ssl-client:ssl-client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl-client:ssl_client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl_client:ssl-client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl_client:ssl_client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl:ssl-client:1.37.0-r14:*:*:*:*:*:*:*",
+          "cpe:2.3:a:ssl:ssl_client:1.37.0-r14:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:apk/alpine/ssl_client@1.37.0-r14?arch=x86_64&distro=alpine-3.21.7&upstream=busybox",
+        "upstreams": [
+          {
+            "name": "busybox"
+          }
+        ],
+        "metadataType": "ApkMetadata",
+        "metadata": {
+          "files": [
+            {
+              "path": "/usr"
+            },
+            {
+              "path": "/usr/bin"
+            },
+            {
+              "path": "/usr/bin/ssl_client"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-q8mj-m7cp-5q26",
+        "dataSource": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+        "namespace": "github:language:javascript",
+        "severity": "Medium",
+        "urls": [
+          "https://github.com/ljharb/qs/security/advisories/GHSA-q8mj-m7cp-5q26",
+          "https://nvd.nist.gov/vuln/detail/CVE-2026-8723",
+          "https://github.com/ljharb/qs/commit/21f80b33e5c8b3f7eba1034fff0da4a4a37a1d41"
+        ],
+        "description": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          },
+          {
+            "type": "Secondary",
+            "version": "4.0",
+            "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+            "metrics": {
+              "baseScore": 6.3
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2026-8723",
+            "epss": 0.00044,
+            "percentile": 0.13795,
+            "date": "2026-06-09"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2026-8723",
+            "cwe": "CWE-476",
+            "source": "7ffcee3d-2c14-4c3e-b844-86c6a321a158",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "6.15.2"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "6.15.2",
+              "date": "2026-05-23",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.023760000000000003
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2026-8723",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2026-8723",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/ljharb/qs/commit/21f80b33e5c8b3f7eba1034fff0da4a4a37a1d41",
+            "https://github.com/ljharb/qs/security/advisories/GHSA-q8mj-m7cp-5q26"
+          ],
+          "description": "### Summary\n\n\n\n`qs.stringify` throws `TypeError` when called with `arrayFormat: 'comma'` and `encodeValuesOnly: true` on an array containing `null` or `undefined`. The throw is synchronous and not handled by any of qs's null-related options (`skipNulls`, `strictNullHandling`).\n\n\n\n### Details\n\n\n\nIn the comma + `encodeValuesOnly` branch, `lib/stringify.js:145` mapped the array through the raw encoder before joining:\n\n\n\n```js\n\n\n\nobj = utils.maybeMap(obj, encoder);\n\n\n\n```\n\n\n\n`utils.encode` (`lib/utils.js:195`) reads `str.length` with no null guard, so a `null` or `undefined` element throws `TypeError`. `skipNulls` and `strictNullHandling` are both checked in the per-element loop below this line and never get a chance to run.\n\n\n\nSame class of bug as the filter-array path fixed in 0c180a4. The vulnerable shape of the comma + `encodeValuesOnly` branch was introduced in 4c4b23d (\"encode comma values more consistently\", PR #463, 2023-01-19), first released in v6.11.1.\n\n\n\n#### PoC\n\n\n\n```js\n\n\n\nconst qs = require('qs');\n\n\n\nqs.stringify({ a: [null, 'b'] },      { arrayFormat: 'comma', encodeValuesOnly: true });\n\n\n\nqs.stringify({ a: [undefined, 'b'] }, { arrayFormat: 'comma', encodeValuesOnly: true });\n\n\n\nqs.stringify({ a: [null] },           { arrayFormat: 'comma', encodeValuesOnly: true });\n\n\n\n// TypeError: Cannot read properties of null (reading 'length')\n\n\n\n//     at encode (lib/utils.js:195:13)\n\n\n\n//     at Object.maybeMap (lib/utils.js:322:37)\n\n\n\n//     at stringify (lib/stringify.js:145:25)\n\n\n\n```\n\n\n\n#### Fix\n\n\n\n`lib/stringify.js:145`, applied in 21f80b3 on `main` and released as v6.15.2:\n\n\n\n```diff\n\n\n\n- obj = utils.maybeMap(obj, encoder);\n\n\n\n+ obj = utils.maybeMap(obj, function (v) {\n\n\n\n+     return v == null ? v : encoder(v);\n\n\n\n+ });\n\n\n\n```\n\n\n\n`null` and `undefined` now pass through `maybeMap` unchanged and reach the `join(',')` step as-is. For `{ a: [null, 'b'] }` this produces `a=,b`, matching the non-`encodeValuesOnly` comma path (which already joins before encoding and produces `a=%2Cb` for the same input). Single-element `[null]` arrays still collapse via the existing `obj.join(',') || null` and remain subject to `skipNulls` / `strictNullHandling` in the main loop.\n\n\n\n### Affected versions\n\n\n\n`>=6.11.1 <6.15.2` — fixed in v6.15.2.\n\n\n\nThe vulnerable code shape was introduced in 4c4b23d and first shipped in v6.11.1. Earlier versions — including all of 6.7.x, 6.8.x, 6.9.x, 6.10.x, and 6.11.0 — implemented the comma + `encodeValuesOnly` path differently (joining before encoding) and are not affected. Empirically verified across released versions.\n\n\n\n### Impact\n\n\n\nApplication code that calls `qs.stringify` with both `arrayFormat: 'comma'` and `encodeValuesOnly: true` (both non-default) on input that may contain a `null` or `undefined` array element will throw synchronously instead of producing a query string. In a typical Node.js HTTP framework (Express, Fastify, Koa, hapi) the sync throw is caught by the framework's error boundary and the affected request returns a 500; the worker process does not exit and subsequent requests are unaffected. The \"kills the worker process\" framing applies only to call sites outside a request-handler error boundary (background jobs, startup paths, stream pipelines) or to deployments with framework error handling explicitly disabled.\n\n\n\nThe vulnerable input is a `null` or `undefined` entry inside an array; this is reachable from JSON request bodies or from application code constructing arrays from user input, but not from standard HTML form submissions (which produce strings or omitted fields, not literal `null`).",
+          "cvss": [
+            {
+              "source": "7ffcee3d-2c14-4c3e-b844-86c6a321a158",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 6.3
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "7ffcee3d-2c14-4c3e-b844-86c6a321a158",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2026-8723",
+              "epss": 0.00044,
+              "percentile": 0.13795,
+              "date": "2026-06-09"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2026-8723",
+              "cwe": "CWE-476",
+              "source": "7ffcee3d-2c14-4c3e-b844-86c6a321a158",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "javascript-matcher",
+          "searchedBy": {
+            "language": "javascript",
+            "namespace": "github:language:javascript",
+            "package": {
+              "name": "qs",
+              "version": "6.14.2"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-q8mj-m7cp-5q26",
+            "versionConstraint": ">=6.11.1,<=6.15.1 (semantic)"
+          },
+          "fix": {
+            "suggestedVersion": "6.15.2"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "23103e1b528355a0",
+        "name": "qs",
+        "version": "6.14.2",
+        "type": "npm",
+        "locations": [
+          {
+            "path": "/usr/src/app/node_modules/qs/package.json",
+            "layerID": "sha256:d217b1820902dc52325d6398e684bf199d1c23e7239cdcbcfb74af9fd60c8e14",
+            "accessPath": "/usr/src/app/node_modules/qs/package.json",
+            "annotations": {
+              "evidence": "primary"
+            }
+          }
+        ],
+        "language": "javascript",
+        "licenses": [
+          "BSD-3-Clause"
+        ],
+        "cpes": [
+          "cpe:2.3:a:qs_project:qs:6.14.2:*:*:*:*:node.js:*:*"
+        ],
+        "purl": "pkg:npm/qs@6.14.2",
+        "upstreams": []
+      }
+    }
+  ],
+  "source": {
+    "type": "image",
+    "target": {
+      "userInput": "ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-account-service:973a66171f96b09ee0b3b42ecfc1b0707fcbd118",
+      "imageID": "sha256:0a5828538446164cb8e27188bd2aa054edca7f4dcc321829efa9b1d97b371c5f",
+      "manifestDigest": "sha256:b10975b02ab212620f0dccaf42d1636da03d14ac04c8a0cb26aea455517ff962",
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "tags": [
+        "ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-account-service:973a66171f96b09ee0b3b42ecfc1b0707fcbd118"
+      ],
+      "imageSize": 44918259,
+      "layers": [
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:7211d01aba8fa2e9eb71ad34395cd313df5fc51a6b69b92d2dfad32cc37759cb",
+          "size": 7828692
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:cc0adfed3a17f21235760c5327b519196b50abf2c4eba54b2561b9b1b011f8fb",
+          "size": 22758796
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:b3abdd46d6e0f3019643908dbfd71c6eb8d8ef76f0d03e373965f3ea97f572ef",
+          "size": 2971506
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:7a53b3645c90dc6f27a6a1d6a025684597370f67ca0ec31487ce388d00bbaa3f",
+          "size": 3059
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "size": 0
+        },
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "digest": "sha256:d217b1820902dc52325d6398e684bf199d1c23e7239cdcbcfb74af9fd60c8e14",
+          "size": 11356206
+        }
+      ],
+      "manifest": "eyJzY2hlbWFWZXJzaW9uIjoyLCJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmRpc3RyaWJ1dGlvbi5tYW5pZmVzdC52Mitqc29uIiwiY29uZmlnIjp7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuY29udGFpbmVyLmltYWdlLnYxK2pzb24iLCJzaXplIjozMjIwLCJkaWdlc3QiOiJzaGEyNTY6MGE1ODI4NTM4NDQ2MTY0Y2I4ZTI3MTg4YmQyYWEwNTRlZGNhN2Y0ZGNjMzIxODI5ZWZhOWIxZDk3YjM3MWM1ZiJ9LCJsYXllcnMiOlt7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLCJzaXplIjo4MTIwMzIwLCJkaWdlc3QiOiJzaGEyNTY6NzIxMWQwMWFiYThmYTJlOWViNzFhZDM0Mzk1Y2QzMTNkZjVmYzUxYTZiNjliOTJkMmRmYWQzMmNjMzc3NTljYiJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjIyNzYxOTg0LCJkaWdlc3QiOiJzaGEyNTY6Y2MwYWRmZWQzYTE3ZjIxMjM1NzYwYzUzMjdiNTE5MTk2YjUwYWJmMmM0ZWJhNTRiMjU2MWI5YjFiMDExZjhmYiJ9LHsibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjI5ODE4ODgsImRpZ2VzdCI6InNoYTI1NjpiM2FiZGQ0NmQ2ZTBmMzAxOTY0MzkwOGRiZmQ3MWM2ZWI4ZDhlZjc2ZjBkMDNlMzczOTY1ZjNlYTk3ZjU3MmVmIn0seyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwic2l6ZSI6MTIyODgsImRpZ2VzdCI6InNoYTI1Njo3YTUzYjM2NDVjOTBkYzZmMjdhNmExZDZhMDI1Njg0NTk3MzcwZjY3Y2EwZWMzMTQ4N2NlMzg4ZDAwYmJhYTNmIn0seyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwic2l6ZSI6MTAyNCwiZGlnZXN0Ijoic2hhMjU2OjVmNzBiZjE4YTA4NjAwNzAxNmU5NDhiMDRhZWQzYjgyMTAzYTM2YmVhNDE3NTViNmNkZGZhZjEwYWNlM2M2ZWYifSx7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLCJzaXplIjoxMjQzODUyOCwiZGlnZXN0Ijoic2hhMjU2OmQyMTdiMTgyMDkwMmRjNTIzMjVkNjM5OGU2ODRiZjE5OWQxYzIzZTcyMzljZGNiY2ZiNzRhZjlmZDYwYzhlMTQifV19",
+      "config": "eyJhcmNoaXRlY3R1cmUiOiJhbWQ2NCIsImNvbmZpZyI6eyJVc2VyIjoiYXBwdXNlciIsIkV4cG9zZWRQb3J0cyI6eyIzMDAwL3RjcCI6e319LCJFbnYiOlsiUEFUSD0vdXNyL2xvY2FsL3NiaW46L3Vzci9sb2NhbC9iaW46L3Vzci9zYmluOi91c3IvYmluOi9zYmluOi9iaW4iXSwiQ21kIjpbIm5vZGUiLCJhcHAuanMiXSwiV29ya2luZ0RpciI6Ii91c3Ivc3JjL2FwcCIsIkxhYmVscyI6eyJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuYXV0aG9ycyI6IkdvZGZyZXkgXHUwMDNjZ29kZnJleWlmZWFueWk1MEBnbWFpbC5jb21cdTAwM2UiLCJvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UuZGVzY3JpcHRpb24iOiJMaWdodHdlaWdodCBhbmQgc2VjdXJlIEFjY291bnQtcGFnZSBtaWNyb3NlcnZpY2UgZm9yIFBERiBMYWJzIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnNvdXJjZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Hb2RmcmV5MjIxNTIvTUlDUk9TRVJWSUNFLVBERi1MQUJTL3RyZWUvcHJvZmlsZS1zZXJ2aWNlIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnRpdGxlIjoiUERGIExhYnMgQXBwIiwib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnZlcnNpb24iOiIxLjAuMCJ9LCJBcmdzRXNjYXBlZCI6dHJ1ZX0sImNyZWF0ZWQiOiIyMDI2LTA2LTExVDAzOjMyOjI2LjQ4OTc1OTE1OVoiLCJoaXN0b3J5IjpbeyJjcmVhdGVkIjoiMjAyNi0wNC0xNlQyMzo1MzoxNS43MDQxMTA0MTRaIiwiY3JlYXRlZF9ieSI6IkFERCBhbHBpbmUtbWluaXJvb3Rmcy0zLjIxLjcteDg2XzY0LnRhci5neiAvICMgYnVpbGRraXQiLCJjb21tZW50IjoiYnVpbGRraXQuZG9ja2VyZmlsZS52MCJ9LHsiY3JlYXRlZCI6IjIwMjYtMDQtMTZUMjM6NTM6MTUuNzA0MTEwNDE0WiIsImNyZWF0ZWRfYnkiOiJDTUQgW1wiL2Jpbi9zaFwiXSIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDYtMTFUMDM6MzI6MjUuNjg2MjA0NDA4WiIsImNyZWF0ZWRfYnkiOiJMQUJFTCBvcmcub3BlbmNvbnRhaW5lcnMuaW1hZ2UudGl0bGU9UERGIExhYnMgQXBwIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5kZXNjcmlwdGlvbj1MaWdodHdlaWdodCBhbmQgc2VjdXJlIEFjY291bnQtcGFnZSBtaWNyb3NlcnZpY2UgZm9yIFBERiBMYWJzIG9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5hdXRob3JzPUdvZGZyZXkgXHUwMDNjZ29kZnJleWlmZWFueWk1MEBnbWFpbC5jb21cdTAwM2Ugb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnZlcnNpb249MS4wLjAgb3JnLm9wZW5jb250YWluZXJzLmltYWdlLnNvdXJjZT1odHRwczovL2dpdGh1Yi5jb20vR29kZnJleTIyMTUyL01JQ1JPU0VSVklDRS1QREYtTEFCUy90cmVlL3Byb2ZpbGUtc2VydmljZSIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIiwiZW1wdHlfbGF5ZXIiOnRydWV9LHsiY3JlYXRlZCI6IjIwMjYtMDYtMTFUMDM6MzI6MjUuNjg2MjA0NDA4WiIsImNyZWF0ZWRfYnkiOiJDT1BZIC9ub2RlLWJpbi9ub2RlIC91c3IvbG9jYWwvYmluL25vZGUgIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNi0xMVQwMzozMjoyNi4yNTYyNzI0MTFaIiwiY3JlYXRlZF9ieSI6IlJVTiAvYmluL3NoIC1jIGFwayBhZGQgLS1uby1jYWNoZSBsaWJzdGRjKysgIFx1MDAyNlx1MDAyNiBybSAtcmYgL3Zhci9jYWNoZS9hcGsvKiAvdXNyL3NoYXJlL21hbiAvdG1wLyogIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNi0xMVQwMzozMjoyNi4zMTM2NjQyNjFaIiwiY3JlYXRlZF9ieSI6IlJVTiAvYmluL3NoIC1jIGFkZGdyb3VwIC1TIGFwcGdyb3VwICBcdTAwMjZcdTAwMjYgYWRkdXNlciAtUyBhcHB1c2VyIC1HIGFwcGdyb3VwICBcdTAwMjZcdTAwMjYgbWtkaXIgLXAgL3Vzci9zcmMvYXBwICBcdTAwMjZcdTAwMjYgY2hvd24gLVIgYXBwdXNlcjphcHBncm91cCAvdXNyL3NyYy9hcHAgIyBidWlsZGtpdCIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIn0seyJjcmVhdGVkIjoiMjAyNi0wNi0xMVQwMzozMjoyNi4zMjAzNDY1MzZaIiwiY3JlYXRlZF9ieSI6IldPUktESVIgL3Vzci9zcmMvYXBwIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA2LTExVDAzOjMyOjI2LjMyMDM0NjUzNloiLCJjcmVhdGVkX2J5IjoiVVNFUiBhcHB1c2VyIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAiLCJlbXB0eV9sYXllciI6dHJ1ZX0seyJjcmVhdGVkIjoiMjAyNi0wNi0xMVQwMzozMjoyNi40ODk3NTkxNTlaIiwiY3JlYXRlZF9ieSI6IkNPUFkgL3Byb2QgLiAjIGJ1aWxka2l0IiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAifSx7ImNyZWF0ZWQiOiIyMDI2LTA2LTExVDAzOjMyOjI2LjQ4OTc1OTE1OVoiLCJjcmVhdGVkX2J5IjoiRVhQT1NFIFszMDAwL3RjcF0iLCJjb21tZW50IjoiYnVpbGRraXQuZG9ja2VyZmlsZS52MCIsImVtcHR5X2xheWVyIjp0cnVlfSx7ImNyZWF0ZWQiOiIyMDI2LTA2LTExVDAzOjMyOjI2LjQ4OTc1OTE1OVoiLCJjcmVhdGVkX2J5IjoiQ01EIFtcIm5vZGVcIiBcImFwcC5qc1wiXSIsImNvbW1lbnQiOiJidWlsZGtpdC5kb2NrZXJmaWxlLnYwIiwiZW1wdHlfbGF5ZXIiOnRydWV9XSwib3MiOiJsaW51eCIsInJvb3RmcyI6eyJ0eXBlIjoibGF5ZXJzIiwiZGlmZl9pZHMiOlsic2hhMjU2OjcyMTFkMDFhYmE4ZmEyZTllYjcxYWQzNDM5NWNkMzEzZGY1ZmM1MWE2YjY5YjkyZDJkZmFkMzJjYzM3NzU5Y2IiLCJzaGEyNTY6Y2MwYWRmZWQzYTE3ZjIxMjM1NzYwYzUzMjdiNTE5MTk2YjUwYWJmMmM0ZWJhNTRiMjU2MWI5YjFiMDExZjhmYiIsInNoYTI1NjpiM2FiZGQ0NmQ2ZTBmMzAxOTY0MzkwOGRiZmQ3MWM2ZWI4ZDhlZjc2ZjBkMDNlMzczOTY1ZjNlYTk3ZjU3MmVmIiwic2hhMjU2OjdhNTNiMzY0NWM5MGRjNmYyN2E2YTFkNmEwMjU2ODQ1OTczNzBmNjdjYTBlYzMxNDg3Y2UzODhkMDBiYmFhM2YiLCJzaGEyNTY6NWY3MGJmMThhMDg2MDA3MDE2ZTk0OGIwNGFlZDNiODIxMDNhMzZiZWE0MTc1NWI2Y2RkZmFmMTBhY2UzYzZlZiIsInNoYTI1NjpkMjE3YjE4MjA5MDJkYzUyMzI1ZDYzOThlNjg0YmYxOTlkMWMyM2U3MjM5Y2RjYmNmYjc0YWY5ZmQ2MGM4ZTE0Il19fQ==",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "os": "linux",
+      "labels": {
+        "org.opencontainers.image.authors": "Godfrey <godfreyifeanyi50@gmail.com>",
+        "org.opencontainers.image.description": "Lightweight and secure Account-page microservice for PDF Labs",
+        "org.opencontainers.image.source": "https://github.com/Godfrey22152/MICROSERVICE-PDF-LABS/tree/profile-service",
+        "org.opencontainers.image.title": "PDF Labs App",
+        "org.opencontainers.image.version": "1.0.0"
+      }
+    }
+  },
+  "distro": {
+    "name": "alpine",
+    "version": "3.21.7",
+    "idLike": []
+  },
+  "descriptor": {
+    "name": "grype",
+    "version": "0.110.0",
+    "configuration": {
+      "output": [
+        "json"
+      ],
+      "file": "grype-image-report.json",
+      "pretty": false,
+      "distro": "",
+      "add-cpes-if-none": false,
+      "output-template-file": "",
+      "check-for-app-update": false,
+      "only-fixed": false,
+      "only-notfixed": false,
+      "ignore-wontfix": "",
+      "platform": "",
+      "search": {
+        "scope": "squashed",
+        "unindexed-archives": false,
+        "indexed-archives": true
+      },
+      "ignore": [
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "kernel-headers",
+            "version": "",
+            "language": "",
+            "type": "rpm",
+            "location": "",
+            "upstream-name": "kernel"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux(-.*)?-headers-.*",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux.*"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux-libc-dev",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        }
+      ],
+      "exclude": [],
+      "externalSources": {
+        "enable": false,
+        "maven": {
+          "searchUpstreamBySha1": true,
+          "baseUrl": "https://search.maven.org/solrsearch/select",
+          "rateLimit": 300000000
+        }
+      },
+      "match": {
+        "java": {
+          "using-cpes": false
+        },
+        "jvm": {
+          "using-cpes": true
+        },
+        "dotnet": {
+          "using-cpes": false
+        },
+        "golang": {
+          "using-cpes": false,
+          "always-use-cpe-for-stdlib": true,
+          "allow-main-module-pseudo-version-comparison": false
+        },
+        "javascript": {
+          "using-cpes": false
+        },
+        "python": {
+          "using-cpes": false
+        },
+        "ruby": {
+          "using-cpes": false
+        },
+        "rust": {
+          "using-cpes": false
+        },
+        "hex": {
+          "using-cpes": false
+        },
+        "stock": {
+          "using-cpes": true
+        },
+        "dpkg": {
+          "using-cpes": false,
+          "missing-epoch-strategy": "zero",
+          "use-cpes-for-eol": false
+        },
+        "rpm": {
+          "using-cpes": false,
+          "missing-epoch-strategy": "auto",
+          "use-cpes-for-eol": false
+        }
+      },
+      "fail-on-severity": "high",
+      "registry": {
+        "insecure-skip-tls-verify": false,
+        "insecure-use-http": false,
+        "ca-cert": ""
+      },
+      "show-suppressed": false,
+      "by-cve": false,
+      "SortBy": {
+        "sort-by": "risk"
+      },
+      "name": "",
+      "default-image-pull-source": "",
+      "from": null,
+      "vex-documents": [],
+      "vex-add": [],
+      "match-upstream-kernel-headers": false,
+      "fix-channel": {
+        "redhat-eus": {
+          "apply": "auto",
+          "versions": ">= 8.0"
+        }
+      },
+      "timestamp": true,
+      "alerts": {
+        "enable-eol-distro-warnings": true
+      },
+      "db": {
+        "cache-dir": "/home/runner/.cache/grype/db",
+        "update-url": "https://grype.anchore.io/databases",
+        "ca-cert": "",
+        "auto-update": true,
+        "validate-by-hash-on-start": true,
+        "validate-age": true,
+        "max-allowed-built-age": 432000000000000,
+        "require-update-check": false,
+        "update-available-timeout": 30000000000,
+        "update-download-timeout": 300000000000,
+        "max-update-check-frequency": 7200000000000
+      },
+      "exp": {},
+      "dev": {
+        "db": {
+          "debug": false
+        }
+      }
+    },
+    "db": {
+      "status": {
+        "schemaVersion": "v6.1.7",
+        "from": "https://grype.anchore.io/databases/v6/vulnerability-db_v6.1.7_2026-06-10T00:57:05Z_1781078141.tar.zst?checksum=sha256%3A8e86820083b7bfca39123663ae64ef83fa5d69e9c5047f04248b2980d1432ed5",
+        "built": "2026-06-10T07:55:41Z",
+        "path": "/home/runner/.cache/grype/db/6/vulnerability.db",
+        "valid": true
+      },
+      "providers": {
+        "alma": {
+          "captured": "2026-06-10T00:57:07Z",
+          "input": "xxh64:6960575e6e51891d"
+        },
+        "alpine": {
+          "captured": "2026-06-10T00:57:05Z",
+          "input": "xxh64:dc4d7e4641187862"
+        },
+        "amazon": {
+          "captured": "2026-06-10T00:57:06Z",
+          "input": "xxh64:7ba002974637a6a1"
+        },
+        "arch": {
+          "captured": "2026-06-10T00:57:29Z",
+          "input": "xxh64:f22c392036a5185d"
+        },
+        "bitnami": {
+          "captured": "2026-06-10T00:57:12Z",
+          "input": "xxh64:3e9abd7428f4d5c8"
+        },
+        "chainguard": {
+          "captured": "2026-06-10T00:57:16Z",
+          "input": "xxh64:5c3394eee466adc9"
+        },
+        "chainguard-libraries": {
+          "captured": "2026-06-10T00:57:12Z",
+          "input": "xxh64:694bd5c31116957a"
+        },
+        "debian": {
+          "captured": "2026-06-10T00:57:24Z",
+          "input": "xxh64:fed62e6d24c15678"
+        },
+        "echo": {
+          "captured": "2026-06-10T00:57:52Z",
+          "input": "xxh64:14b6039724f8ad15"
+        },
+        "eol": {
+          "captured": "2026-06-10T00:57:08Z",
+          "input": "xxh64:05d742d406638495"
+        },
+        "epss": {
+          "captured": "2026-06-10T00:57:34Z",
+          "input": "xxh64:23fda00e69893ce7"
+        },
+        "fedora": {
+          "captured": "2026-06-10T00:57:16Z",
+          "input": "xxh64:7f401ca85edd43d2"
+        },
+        "github": {
+          "captured": "2026-06-10T00:57:11Z",
+          "input": "xxh64:b73bc9138b9dda06"
+        },
+        "govulndb": {
+          "captured": "2026-06-10T00:57:15Z",
+          "input": "xxh64:636f57a251e7b1ef"
+        },
+        "hummingbird": {
+          "captured": "2026-06-10T00:57:18Z",
+          "input": "xxh64:53978c1b7e14bf09"
+        },
+        "kev": {
+          "captured": "2026-06-10T00:57:43Z",
+          "input": "xxh64:193b71ecd019446a"
+        },
+        "mariner": {
+          "captured": "2026-06-10T00:57:05Z",
+          "input": "xxh64:10688c1b508aac18"
+        },
+        "minimos": {
+          "captured": "2026-06-10T00:57:12Z",
+          "input": "xxh64:63ab30821f14ccdd"
+        },
+        "nvd": {
+          "captured": "2026-06-10T00:57:54Z",
+          "input": "xxh64:0a1d19fea5821f73"
+        },
+        "oracle": {
+          "captured": "2026-06-10T00:57:08Z",
+          "input": "xxh64:cc03c4ed2997dce0"
+        },
+        "photon": {
+          "captured": "2026-06-10T00:57:12Z",
+          "input": "xxh64:992a39460338379e"
+        },
+        "rhel": {
+          "captured": "2026-06-10T00:58:18Z",
+          "input": "xxh64:6d49db469185ecb0"
+        },
+        "secureos": {
+          "captured": "2026-06-10T00:57:27Z",
+          "input": "xxh64:f1c9e1712d81d1b0"
+        },
+        "sles": {
+          "captured": "2026-06-10T00:57:39Z",
+          "input": "xxh64:e1b07b7fdbab3e64"
+        },
+        "ubuntu": {
+          "captured": "2026-06-10T02:53:36Z",
+          "input": "xxh64:007813173b443957"
+        },
+        "wolfi": {
+          "captured": "2026-06-10T00:57:30Z",
+          "input": "xxh64:3ae0e4c2bfe7ff77"
+        }
+      }
+    },
+    "timestamp": "2026-06-11T03:33:44.073063929Z"
+  }
+};
+  function highlight(json){return JSON.stringify(json,null,2).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){let cls="number";if(/^"/.test(m)){cls=/:$/.test(m)?"key":"string";}else if(/true|false/.test(m)){cls="boolean";}else if(/null/.test(m)){cls="null";}return"<span class=\""+cls+"\">"+m+"</span>";});}
+  document.getElementById('j').innerHTML=highlight(data);
+</script></body></html>
