@@ -16,11 +16,13 @@ COPY . .
 
 # Strip dev/docs noise from node_modules to shrink the layer
 RUN find node_modules \
-    -type f \( -name '*.md' -o -name '*.ts' -o -name '*.map' -o -name '*.tsbuildinfo' \
-    -o -name '*.spec.*' -o -name '*.test.*' -o -name 'LICENSE' -o -name '*.txt' \) -delete \
+    -type f \( -name '*.md' -o -name '*.ts' -o -name '*.map' \
+    -o -name '*.tsbuildinfo' -o -name '*.spec.*' -o -name '*.test.*' \
+    -o -name 'LICENSE' -o -name '*.txt' \) -delete \
  && find node_modules \
-    -type d \( -name 'test' -o -name 'tests' -o -name 'docs' -o -name 'example*' \
-    -o -name '__*__' -o -name '.github' \) -exec rm -rf {} + 2>/dev/null || true 
+    -type d \( -name 'test' -o -name 'tests' -o -name 'docs' \
+    -o -name 'example*' -o -name '__*__' -o -name '.github' \) \
+    -exec rm -rf {} + 2>/dev/null || true
 
 # Copy only production essentials into /prod
 RUN mkdir -p /prod \
