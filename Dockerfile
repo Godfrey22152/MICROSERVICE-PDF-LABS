@@ -24,7 +24,7 @@ RUN find node_modules \
  && find node_modules \
     -type d \( -name 'test' -o -name 'tests' -o -name 'docs' \
     -o -name 'example*' -o -name '__*__' -o -name '.github' \) \
-    -exec rm -rf {} + 2>/dev/null || true
+    -exec rm -rf {} + 2>/dev/null; true
 
 RUN mkdir -p /prod \
  && cp -r server.js routes config middleware public views \
