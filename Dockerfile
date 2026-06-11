@@ -97,7 +97,7 @@ RUN cmake -B build -G Ninja \
     -DENABLE_LIBCURL=OFF \
     -DENABLE_ZLIB_UNCOMPRESS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
- && cmake --build build -- -j$(nproc) \
+ && cmake --build build -- -j"$(nproc)" \
  && cmake --install build
 
 # =============================================================
