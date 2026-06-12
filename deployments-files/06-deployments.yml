@@ -1086,7 +1086,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: edit-pdf-service
-          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-edit-pdf-service:4388cb977a94c9abb86481c482047a2f10b1b33b
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-edit-pdf-service:aaad50b4f67e7768c47dc1b3a0b4fb72aa8177fd
           imagePullPolicy: Always
           ports:
             - name: http
