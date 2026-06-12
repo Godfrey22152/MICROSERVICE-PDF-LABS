@@ -6,10 +6,10 @@ FROM node:20.20.2-alpine AS builder
 # Set working directory
 WORKDIR /usr/src/app
 
-# Only copy dependency manifest files for faster caching
+# Only copy dependency manifest files for faster caching.
 COPY package*.json ./
 
-# npm install (not ci) to avoid lock-file sync errors when deps change
+# npm install (not ci) to avoid lock-file sync errors when deps change.
 RUN npm install --omit=dev \
  && npm cache clean --force
 
