@@ -1,6 +1,6 @@
 # =============================================================
 # Stage 1: Extract & compress the musl Node binary
-# Isolated so it only re-runs when NODE_VERSION changes
+# Isolated so it only re-runs when NODE_VERSION changes.
 # =============================================================
 FROM node:20.20.2-alpine AS node-binary
 ARG NODE_VERSION=20.20.2
