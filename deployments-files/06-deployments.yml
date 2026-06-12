@@ -21,7 +21,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: account-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: account-service
@@ -62,8 +62,8 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
@@ -108,7 +108,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: home-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: home-service
@@ -148,8 +148,8 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
@@ -194,7 +194,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: profile-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: profile-service
@@ -234,8 +234,8 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
@@ -280,7 +280,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: logout-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: logout-service
@@ -320,8 +320,8 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
@@ -366,7 +366,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: tools-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: tools-service
@@ -406,8 +406,8 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
@@ -452,7 +452,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-image-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pdf-to-image-service
@@ -492,11 +492,11 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -538,7 +538,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: image-to-pdf-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: image-to-pdf-service
@@ -578,11 +578,11 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -624,7 +624,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-compressor-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pdf-compressor-service
@@ -664,11 +664,11 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -710,7 +710,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-audio-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pdf-to-audio-service
@@ -750,11 +750,11 @@ spec:
                   key: JWT_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -796,7 +796,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-word-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pdf-to-word-service
@@ -841,11 +841,11 @@ spec:
                   key: CONVERTAPI_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -887,7 +887,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: sheetlab-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: sheetlab-service
@@ -932,11 +932,11 @@ spec:
                   key: CONVERTAPI_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -978,7 +978,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: word-to-pdf-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: word-to-pdf-service
@@ -1023,11 +1023,11 @@ spec:
                   key: CONVERTAPI_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -1069,7 +1069,7 @@ metadata:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: edit-pdf-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: edit-pdf-service
@@ -1114,11 +1114,11 @@ spec:
                   key: CONVERTAPI_SECRET
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "512Mi"
           startupProbe:
             httpGet:
               path: /health
