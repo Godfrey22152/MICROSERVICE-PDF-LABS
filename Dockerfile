@@ -66,7 +66,8 @@ RUN find node_modules \
 # =============================================================
 FROM alpine:3.23.4 AS poppler-builder
 ARG POPPLER_VERSION=25.05.0
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache \
+ && apk add --no-cache \
     build-base \
     cmake \
     ninja \
@@ -131,7 +132,8 @@ LABEL org.opencontainers.image.title="PDF TO AUDIO APP" \
 # layer to minimise image layers and avoid intermediate state.
 #
 # Note: Cairo is intentionally absent — pdftotext does not use it.
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache \
+ && apk add --no-cache \
     libstdc++ \
     freetype \
     fontconfig \
