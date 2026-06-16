@@ -257,7 +257,7 @@ This architecture treats CI/CD logic exactly like application code: it has a sin
 <!-- and place it at docs/images/cicd-pipeline-architecture.png   -->
 <!-- ============================================================ -->
 
-![PDF-Labs CI/CD Pipeline Architecture](./images/cicd-pipeline-architecture.png)
+![PDF-Labs CI/CD Pipeline Architecture](./images/cicd-pipeline-architecture.jpg)
 
 *Figure 1 — Full pipeline DAG: 13 service repos → Shared-CI orchestrator → security scans → Docker build/scan/gate/push → keyless signing + Allure reporting (parallel) → GitOps manifest update.*
 
