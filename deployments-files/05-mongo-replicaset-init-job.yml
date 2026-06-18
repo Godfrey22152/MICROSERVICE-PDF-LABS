@@ -29,7 +29,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: mongo-init
-          image: mongo:7.0.31-jammy
+          image: mongo:4.4
           imagePullPolicy: IfNotPresent
 
           resources:
@@ -55,7 +55,7 @@ spec:
               wait_for_mongo() {
                 local host="$1"
                 local attempt=0
-                until mongosh --host "$host" --quiet --eval "db.adminCommand('ping').ok" 2>/dev/null | grep -q "1"; do
+                until mongo --host "$host" --quiet --eval "db.adminCommand('ping').ok" 2>/dev/null | grep -q "1"; do
                   attempt=$((attempt + 1))
                   if [ "$attempt" -ge "$MAX" ]; then
                     echo "ERROR: timed out waiting for $host"; exit 1
@@ -71,7 +71,7 @@ spec:
               wait_for_mongo "$MEMBER2"
 
               echo "=== Checking replica-set status ==="
-              RS_STATUS=$(mongosh --host "$PRIMARY" --quiet --eval "
+              RS_STATUS=$(mongo --host "$PRIMARY" --quiet --eval "
                 try { JSON.stringify(rs.status()); }
                 catch(e) { JSON.stringify({ok:0, codeName: e.codeName}); }
               " 2>/dev/null || echo '{"ok":0}')
@@ -82,7 +82,7 @@ spec:
                 echo "Replica set already initialised — skipping rs.initiate()."
               else
                 echo "=== Initialising replica set rs0 ==="
-                mongosh --host "$PRIMARY" --quiet --eval "
+                mongo --host "$PRIMARY" --quiet --eval "
                   rs.initiate({
                     _id: 'rs0',
                     members: [
@@ -97,7 +97,7 @@ spec:
 
               echo "=== Waiting for PRIMARY election ==="
               attempt=0
-              until mongosh --host "$PRIMARY" --quiet --eval "db.isMaster().ismaster" 2>/dev/null | grep -q "true"; do
+              until mongo --host "$PRIMARY" --quiet --eval "db.isMaster().ismaster" 2>/dev/null | grep -q "true"; do
                 attempt=$((attempt + 1))
                 if [ "$attempt" -ge "$MAX" ]; then
                   echo "ERROR: timed out waiting for PRIMARY election"; exit 1
@@ -108,7 +108,7 @@ spec:
               echo "Primary elected on $PRIMARY."
 
               echo "=== Ensuring application databases and collections exist ==="
-              mongosh --host "$PRIMARY" --quiet --eval "
+              mongo --host "$PRIMARY" --quiet --eval "
                 // account-service (shared by home, profile, logout)
                 db = db.getSiblingDB('account-service');
                 db.createCollection('accounts');
