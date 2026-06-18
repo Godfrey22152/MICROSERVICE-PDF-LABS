@@ -77,7 +77,7 @@ spec:
 
       containers:
         - name: mongo
-          image: mongo:7.0.31-jammy  # Verified Publisher with small image size  
+          image: mongo:4.4 # Verified Publisher with small image size  
           imagePullPolicy: IfNotPresent
           command:
             - mongod
@@ -116,7 +116,7 @@ spec:
           startupProbe:
             exec:
               command:
-                - mongosh
+                - mongo
                 - --quiet
                 - --eval
                 - "db.adminCommand('ping').ok"
@@ -131,7 +131,7 @@ spec:
           livenessProbe:
             exec:
               command:
-                - mongosh
+                - mongo
                 - --quiet
                 - --eval
                 - "db.adminCommand('ping').ok"
@@ -148,7 +148,7 @@ spec:
           readinessProbe:
             exec:
               command:
-                - mongosh
+                - mongo
                 - --quiet
                 - --eval
                 - |
