@@ -77,7 +77,7 @@ spec:
 
       containers:
         - name: mongo
-          image: rapidfort/mongodb-official:latest  #Verified Publisher with small image siz  # mongo:7.0.31-jammy
+          image: mongo:7.0.31-jammy  # Verified Publisher with small image size  
           imagePullPolicy: IfNotPresent
           command:
             - mongod
