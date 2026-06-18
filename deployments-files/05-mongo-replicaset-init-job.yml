@@ -29,7 +29,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: mongo-init
-          image: rapidfort/mongodb-official:latest
+          image: mongo:7.0.31-jammy
           imagePullPolicy: IfNotPresent
 
           resources:
