@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: pdf-labs-config
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: config
@@ -25,6 +27,8 @@ data:
   MONGO_URI_HOME:          "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
   MONGO_URI_PROFILE:       "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
   MONGO_URI_LOGOUT:        "mongodb://mongo-pdf-labs-0.mongo-pdf-labs:27017,mongo-pdf-labs-1.mongo-pdf-labs:27017,mongo-pdf-labs-2.mongo-pdf-labs:27017/account-service?replicaSet=rs0"
+  # Mongo Express connection URL
+  MONGO_EXPRESS_URL:       "mongodb://mongo-pdf-labs-0.mongo-pdf-labs.pdf-labs.svc.cluster.local:27017,mongo-pdf-labs-1.mongo-pdf-labs.pdf-labs.svc.cluster.local:27017,mongo-pdf-labs-2.mongo-pdf-labs.pdf-labs.svc.cluster.local:27017/?replicaSet=rs0"
 
 ---
 # MongoDB replica-set bootstrap config
