@@ -9,7 +9,7 @@
 #
 # The Job waits for all 3 pods, initiates the replica set,
 # creates all application databases and collections, then
-# auto-deletes itself after 5 minutes.
+# auto-deletes itself after 2 minutes.
 # ============================================================
 
 # ── 1. Headless Service ──────────────────────────────────────
@@ -179,7 +179,7 @@ spec:
 # Initiates rs0, waits for PRIMARY election, then creates all
 # application databases and collections.
 # Idempotent — safe to re-apply.
-# Auto-deletes 2 minutes after completion.
+# Auto-deletes 1 minute after completion.
 # ============================================================
 apiVersion: batch/v1
 kind: Job
@@ -193,7 +193,7 @@ metadata:
     app.kubernetes.io/component: mongo-init
 spec:
   backoffLimit: 5
-  ttlSecondsAfterFinished: 120
+  ttlSecondsAfterFinished: 60
   template:
     metadata:
       labels:
