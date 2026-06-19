@@ -17,6 +17,8 @@ kind: Deployment
 metadata:
   name: account-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: account-service
@@ -104,6 +106,8 @@ kind: Deployment
 metadata:
   name: home-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: home-service
@@ -190,6 +194,8 @@ kind: Deployment
 metadata:
   name: profile-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: profile-service
@@ -276,6 +282,8 @@ kind: Deployment
 metadata:
   name: logout-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: logout-service
@@ -362,6 +370,8 @@ kind: Deployment
 metadata:
   name: tools-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: tools-service
@@ -448,6 +458,8 @@ kind: Deployment
 metadata:
   name: pdf-to-image-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-image-service
@@ -534,6 +546,8 @@ kind: Deployment
 metadata:
   name: image-to-pdf-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: image-to-pdf-service
@@ -620,6 +634,8 @@ kind: Deployment
 metadata:
   name: pdf-compressor-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-compressor-service
@@ -706,6 +722,8 @@ kind: Deployment
 metadata:
   name: pdf-to-audio-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-audio-service
@@ -792,6 +810,8 @@ kind: Deployment
 metadata:
   name: pdf-to-word-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-word-service
@@ -883,6 +903,8 @@ kind: Deployment
 metadata:
   name: sheetlab-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: sheetlab-service
@@ -974,6 +996,8 @@ kind: Deployment
 metadata:
   name: word-to-pdf-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: word-to-pdf-service
@@ -1065,6 +1089,8 @@ kind: Deployment
 metadata:
   name: edit-pdf-service
   namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: edit-pdf-service
