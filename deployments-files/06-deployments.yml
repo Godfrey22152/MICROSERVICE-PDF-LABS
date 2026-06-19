@@ -68,7 +68,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -156,7 +156,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -244,7 +244,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -332,7 +332,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -420,7 +420,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -508,7 +508,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -596,7 +596,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -684,7 +684,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -772,7 +772,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -865,7 +865,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -958,7 +958,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -1051,7 +1051,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
@@ -1144,7 +1144,7 @@ spec:
               memory: "64Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
           startupProbe:
             httpGet:
               path: /health
