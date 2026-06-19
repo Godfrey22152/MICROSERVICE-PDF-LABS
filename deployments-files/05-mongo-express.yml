@@ -1,0 +1,93 @@
+# ============================================================
+# Mongo Express — Web GUI for MongoDB
+# ============================================================
+# Depends on:
+#   - Secret:    pdf-labs-secrets    (02-secrets.yml)
+#   - ConfigMap: pdf-labs-config     (01-configmap.yml)
+#   - Service:   mongo-express-service (07-services.yml)
+#
+# Access the GUI at: http://<external-ip>:8081
+# Login credentials are set in 02-secrets.yml:
+#   ME_USER / ME_PASSWORD
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+  namespace: pdf-labs
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: mongo-express
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+        app.kubernetes.io/component: mongo-express
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: mongo-express
+          image: mongo-express:1.0.2-20
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+
+          env:
+            # Basic-auth credentials for the web UI
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: ME_USER
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pdf-labs-secrets
+                  key: ME_PASSWORD
+            # MongoDB replica set connection URL
+            - name: ME_CONFIG_MONGODB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: pdf-labs-config
+                  key: MONGO_EXPRESS_URL
+            # Enable full admin access (no MongoDB auth configured)
+            - name: ME_CONFIG_MONGODB_ENABLE_ADMIN
+              value: "true"
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+          # TCP probes — On the MongoDB Express Port: 8081
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 5
+
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
+            timeoutSeconds: 5
