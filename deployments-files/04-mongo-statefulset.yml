@@ -9,7 +9,7 @@
 #
 # The Job waits for all 3 pods, initiates the replica set,
 # creates all application databases and collections, then
-# auto-deletes itself after 2 minutes.
+# auto-deletes itself after 1 minute.
 # ============================================================
 
 # ── 1. Headless Service ──────────────────────────────────────
@@ -188,6 +188,8 @@ metadata:
   namespace: pdf-labs
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: mongo-init
