@@ -1,7 +1,8 @@
 # ============================================================
 # Services
 # ============================================================
-# account-service → LoadBalancer (external entry point)
+# account-service  → LoadBalancer (external entry point)
+# mongo-express    → LoadBalancer (admin GUI)
 # All other services → ClusterIP (internal only)
 # ============================================================
 
@@ -11,12 +12,11 @@ kind: Service
 metadata:
   name: account-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: account-service
-  annotations:
-    # Uncomment if your load-balancer supports session affinity
-    # service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
 spec:
   type: LoadBalancer
   selector:
@@ -34,6 +34,8 @@ kind: Service
 metadata:
   name: home-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: home-service
@@ -54,6 +56,8 @@ kind: Service
 metadata:
   name: profile-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: profile-service
@@ -74,6 +78,8 @@ kind: Service
 metadata:
   name: logout-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: logout-service
@@ -94,6 +100,8 @@ kind: Service
 metadata:
   name: tools-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: tools-service
@@ -114,6 +122,8 @@ kind: Service
 metadata:
   name: pdf-to-image-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-image-service
@@ -134,6 +144,8 @@ kind: Service
 metadata:
   name: image-to-pdf-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: image-to-pdf-service
@@ -154,6 +166,8 @@ kind: Service
 metadata:
   name: pdf-compressor-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-compressor-service
@@ -174,6 +188,8 @@ kind: Service
 metadata:
   name: pdf-to-audio-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-audio-service
@@ -194,6 +210,8 @@ kind: Service
 metadata:
   name: pdf-to-word-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: pdf-to-word-service
@@ -214,6 +232,8 @@ kind: Service
 metadata:
   name: sheetlab-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: sheetlab-service
@@ -234,6 +254,8 @@ kind: Service
 metadata:
   name: word-to-pdf-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: word-to-pdf-service
@@ -254,6 +276,8 @@ kind: Service
 metadata:
   name: edit-pdf-service
   namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/component: edit-pdf-service
@@ -266,3 +290,26 @@ spec:
       port: 5800
       targetPort: 5800
       protocol: TCP
+
+---
+# ── mongo-express-service (LoadBalancer — admin GUI) ─────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-express-service
+  namespace: pdf-labs
+  annotations: 
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app.kubernetes.io/name: pdf-labs
+    app.kubernetes.io/component: mongo-express
+spec:
+  type: LoadBalancer
+  selector:
+    app: mongo-express
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30081
