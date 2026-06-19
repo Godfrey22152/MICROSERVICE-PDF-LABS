@@ -18,6 +18,7 @@ kind: StorageClass
 metadata:
   name: openebs-hostpath
   annotations:
+    argocd.argoproj.io/sync-wave: "0"
     storageclass.kubernetes.io/is-default-class: "false"
     openebs.io/cas-type: local
     cas.openebs.io/config: |
