@@ -5,3 +5,5 @@ metadata:
   labels:
     app.kubernetes.io/name: pdf-labs
     app.kubernetes.io/managed-by: kubectl
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
