@@ -240,28 +240,28 @@ jobs:
   #   dist/build    — generated output, not source
   #   .github       — CI config, not application logic
   #   .gitignore / .dockerignore — config files, not code
-  #sonarqube-scan:
-    #name: SonarQube Static Analysis
-    #runs-on: self-hosted-runner
-    #needs: owasp-dependency-check
-    #steps:
-      #- name: Check out Git repository
-        #uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        #with:
-          #fetch-depth: 0  # full history required for accurate analysis
+  sonarqube-scan:
+    name: SonarQube Static Analysis
+    runs-on: self-hosted-runner
+    needs: owasp-dependency-check
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0  # full history required for accurate analysis
  
-      #- name: SonarQube Scan
-        #uses: SonarSource/sonarqube-scan-action@master
-        #with:
-          #args: >
-            #-Dsonar.projectKey=PDF-Labs-Project-key
-            #-Dsonar.projectName=PDF-Labs-Project
-            #-Dsonar.sources=.
-            #-Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/.github/**,**/.gitignore,**/.dockerignore
-        #env:
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=PDF-Labs-Project-key
+            -Dsonar.projectName=PDF-Labs-Project
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/.github/**,**/.gitignore,**/.dockerignore
+        env:
           # SONAR_TOKEN: personal access token 
           # created in your SonarQube instance under
           # My Account → Security → Generate Tokens.
-          #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           # SONAR_HOST_URL: base URL of your SonarQube server
-          #SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
