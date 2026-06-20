@@ -129,7 +129,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: home-service
-          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-home-service:a0eed4cae08c8ab37bd247b427c6798d672e9017
+          image: ghcr.io/godfrey22152/microservice-pdf-labs/pdf-labs-deployment-home-service:368c6856b1aa180623ba407350c254a0e6b23056
           imagePullPolicy: Always
           ports:
             - name: http
